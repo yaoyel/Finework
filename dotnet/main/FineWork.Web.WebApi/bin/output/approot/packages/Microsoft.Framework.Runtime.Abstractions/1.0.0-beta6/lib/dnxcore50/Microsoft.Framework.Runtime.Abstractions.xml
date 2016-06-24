@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Framework.Runtime.Abstractions</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Framework.Runtime.Infrastructure.CallContextServiceLocator">
+            <summary>
+            Exposes the ambient service provider.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Framework.Runtime.Infrastructure.CallContextServiceLocator.Locator">
+            <summary>
+            Provides access to the <see cref="T:Microsoft.Framework.Runtime.Infrastructure.IServiceProviderLocator"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.Infrastructure.IServiceProviderLocator">
+            <summary>
+            Provides access to the current <see cref="T:System.IServiceProvider"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.Infrastructure.IServiceProviderLocator.ServiceProvider">
+            <summary>
+            Gets or sets the current <see cref="T:System.IServiceProvider"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IApplicationEnvironment">
+            <summary>
+            Provides access to common application information.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationEnvironment.ApplicationName">
+            <summary>
+            Gets the application name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationEnvironment.Version">
+            <summary>
+            Gets the version of the application, as specified in the project.json file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationEnvironment.ApplicationBasePath">
+            <summary>
+            Gets the base directory of the application, defined as the path to the directory containing the project.json file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationEnvironment.Configuration">
+            <summary>
+            Gets the configuration. This should only be used for runtime compilation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationEnvironment.RuntimeFramework">
+            <summary>
+            Gets the target version and profile of the .NET Framework for the application.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IApplicationShutdown">
+            <summary>
+            Exposes methods that allow control over the application lifetime.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IApplicationShutdown.RequestShutdown">
+            <summary>
+            Requests termination the current application.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IApplicationShutdown.ShutdownRequested">
+            <summary>
+            Gets a <see cref="T:System.Threading.CancellationToken"/> that is signaled when application shutdown is requested.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IAssemblyLoadContext">
+            <summary>
+            A context in which assemblies can be loaded.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoadContext.Load(System.Reflection.AssemblyName)">
+            <summary>
+            Load an assembly by name.
+            </summary>
+            <param name="assemblyName">The name of the assembly.</param>
+            <returns>The loaded assembly.</returns>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoadContext.LoadFile(System.String)">
+            <summary>
+            Loads the assembly located at the provided file system path.
+            </summary>
+            <param name="path">The fully qualified path of the file to load.</param>
+            <returns>The loaded assembly.</returns>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoadContext.LoadStream(System.IO.Stream,System.IO.Stream)">
+            <summary>
+            Loads the assembly with a common object file format (COFF)-based image containing an emitted assembly, optionally including symbols for the assembly.
+            </summary>
+            <param name="assemblyStream">The stream representing the assembly.</param>
+            <param name="assemblySymbols">The stream representing the symbols.</param>
+            <returns>The loaded assembly.</returns>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IAssemblyLoadContextAccessor">
+            <summary>
+            Provides access to created <see cref="T:Microsoft.Framework.Runtime.IAssemblyLoadContext"/>
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IAssemblyLoadContextAccessor.Default">
+            <summary>
+            Gets the default <see cref="T:Microsoft.Framework.Runtime.IAssemblyLoadContext"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoadContextAccessor.GetLoadContext(System.Reflection.Assembly)">
+            <summary>
+            Gets the <see cref="T:Microsoft.Framework.Runtime.IAssemblyLoadContext"/> associated with the specified <see cref="T:System.Reflection.Assembly"/>.
+            </summary>
+            <param name="assembly">The assembly.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IAssemblyLoader">
+            <summary>
+            Defines a contract for an assembly loader. This is an extension point that can be used to implement custom assembly loading logic.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoader.Load(System.Reflection.AssemblyName)">
+            <summary>
+            Load an assembly by name.
+            </summary>
+            <param name="assemblyName">The name of the assembly.</param>
+            <returns>The loaded assembly.</returns>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IAssemblyLoaderContainer">
+            <summary>
+            Provides access to assembly loaders used for runtime assembly resolution.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.IAssemblyLoaderContainer.AddLoader(Microsoft.Framework.Runtime.IAssemblyLoader)">
+            <summary>
+            Adds an <see cref="T:Microsoft.Framework.Runtime.IAssemblyLoader"/> to the runtime.
+            </summary>
+            <param name="loader">The loader to add.</param>
+            <returns>A disposable object representing the registration of the loader. Disposing it removes the loader from the runtime.</returns>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ILibraryInformation">
+            <summary>
+            Exposes information about a library which can be an assembly, project, or a package.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.Name">
+            <summary>
+            Gets the name of the library.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.Version">
+            <summary>
+             Gets the version of the library.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.Path">
+            <summary>
+            Gets the path to the library. For projects, this is a path to the project.json file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.Type">
+            <summary>
+            Gets the type of library. Common values include Project, Package, and Assembly.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.Dependencies">
+            <summary>
+            Gets a list of dependencies for the library. The dependencies are names are other <see cref="T:Microsoft.Framework.Runtime.ILibraryInformation"/> objects.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ILibraryInformation.LoadableAssemblies">
+            <summary>
+            Gets a list of assembly names from the library that can be loaded. Packages can contain multiple assemblies.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ILibraryManager">
+            <summary>
+            Provides access to the complete graph of dependencies for the application.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IRuntimeEnvironment">
+            <summary>
+            Provides access to the runtime environment.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IRuntimeEnvironment.OperatingSystem">
+            <summary>
+            Gets the current operating system name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IRuntimeEnvironment.OperatingSystemVersion">
+            <summary>
+            Gets the current operating system version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IRuntimeEnvironment.RuntimeType">
+            <summary>
+            Gets the runtime type. Common values include CLR, CoreCLR and Mono.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IRuntimeEnvironment.RuntimeArchitecture">
+            <summary>
+            Gets the runtime architecture. Common values include x86 and x64.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IRuntimeEnvironment.RuntimeVersion">
+            <summary>
+            Gets the runtime version.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IRuntimeOptions">
+            <summary>
+            Represents the options passed into the runtime on boot
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IServiceManifest">
+            <summary>
+            Provides a list of service types exposed by the runtime.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.IServiceManifest.Services">
+            <summary>
+            Gets the list of exposed service types.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.CompilationMessageSeverity">
+            <summary>
+            Specifies the severity of a <see cref="T:Microsoft.Framework.Runtime.ICompilationMessage"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ICompilationException">
+            <summary>
+            Specifies the contract for an exception representing compilation failure.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationException.CompilationFailures">
+            <summary>
+            Gets a sequence of <see cref="T:Microsoft.Framework.Runtime.ICompilationFailure"/> with compilation failures.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ICompilationFailure">
+            <summary>
+            Specifies the contract for a file that fails compilation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationFailure.SourceFilePath">
+            <summary>
+            Path of the file that produced the compilation exception.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationFailure.SourceFileContent">
+            <summary>
+            Contents of the file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationFailure.CompiledContent">
+            <summary>
+            Contents being compiled.
+            </summary>
+            <remarks>
+            For templated files, the <see cref="P:Microsoft.Framework.Runtime.ICompilationFailure.SourceFileContent"/> represents the original content and
+            <see cref="P:Microsoft.Framework.Runtime.ICompilationFailure.CompiledContent"/> represents the transformed content. This property can be null if
+            the exception is encountered during transformation.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationFailure.Messages">
+            <summary>
+            Gets a sequence of <see cref="T:Microsoft.Framework.Runtime.ICompilationMessage"/> produced as a result of compilation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ICompilationMessage">
+            <summary>
+            Specifies the contract for diagnostic messages produced as result of compiling an instance
+            of <see cref="T:Microsoft.Framework.Runtime.ICompilationFailure"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.SourceFilePath">
+            <summary>
+            Path of the file that produced the compilation message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.Message">
+            <summary>
+            Gets the error message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.FormattedMessage">
+            <summary>
+            Gets the formatted error message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.Severity">
+            <summary>
+            Gets the <see cref="T:Microsoft.Framework.Runtime.CompilationMessageSeverity"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.StartLine">
+            <summary>
+            Gets the one-based line index for the start of the compilation error.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.StartColumn">
+            <summary>
+            Gets the zero-based column index for the start of the compilation error.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.EndLine">
+            <summary>
+            Gets the one-based line index for the end of the compilation error.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Runtime.ICompilationMessage.EndColumn">
+            <summary>
+            Gets the zero-based column index for the end of the compilation error.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.Compilation.ICompilationProject">
+            <summary>
+            DO NOT USE. Provides a (temporary) interface to abstract between old runtime Project and new runtime Project.
+            Eventually the Project class itself will move into this assembly!
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ICompilerOptions">
+            <summary>
+            Provides an interface to well-known Compiler Options like "defines" and "optimize", as well as a
+            general-purpose interface for reading from the 'compilerOptions' section.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.ICompilerOptionsProvider">
+            <summary>
+            Specifies the contracts for a type that provides the <see cref="T:Microsoft.Framework.Runtime.ICompilerOptions"/> for
+            a <c>project.json</c> file.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Runtime.ICompilerOptionsProvider.GetCompilerOptions(System.String,System.Runtime.Versioning.FrameworkName,System.String)">
+            <summary>
+            Returns the parsed <see cref="T:Microsoft.Framework.Runtime.ICompilerOptions"/> for a project file specified by
+            <paramref name="projectName"/>.
+            </summary>
+            <param name="projectName">Name or path of the project to read compilation settings from.</param>
+            <param name="targetFramework">The <see cref="T:System.Runtime.Versioning.FrameworkName"/> to read framework-specific options from.
+            When non-null, options for the specified framework are merged in to the result.</param>
+            <param name="configurationName">The configuration to read configuration-specific options from.
+            When non-null, options for the specified configuration are merged in to the result.</param>
+            <returns>The parsed <see cref="T:Microsoft.Framework.Runtime.ICompilerOptions"/>.</returns>
+        </member>
+        <member name="T:Microsoft.Framework.Runtime.IProjectFilesCollection">
+            <summary>
+            Do not use this! It is going to go away soon!
+            </summary>
+        </member>
+    </members>
+</doc>

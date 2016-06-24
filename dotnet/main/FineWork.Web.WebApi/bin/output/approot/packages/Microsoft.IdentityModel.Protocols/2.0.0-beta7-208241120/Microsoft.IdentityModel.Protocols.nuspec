@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel.Protocols</id>
+    <version>2.0.0-beta7-208241120</version>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <authors>Microsoft Open Technologies, Inc.</authors>
+    <owners>Microsoft Open Technologies, Inc.</owners>
+    <licenseUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/blob/master/LICENSE.txt</licenseUrl>
+    <description>Provides types that are common across different protocols.</description>
+    <copyright>Copyright (c) Microsoft Corporation. All rights reserved.</copyright>
+    <dependencies>
+      <group targetFramework="DNX4.5.1">
+        <dependency id="System.IdentityModel.Tokens.Jwt" version="5.0.0-beta7-208241120" />
+      </group>
+      <group targetFramework="DNXCore5.0">
+        <dependency id="System.IdentityModel.Tokens.Jwt" version="5.0.0-beta7-208241120" />
+        <dependency id="System.Collections.Specialized" version="4.0.1-beta-23220" />
+        <dependency id="System.Diagnostics.Contracts" version="4.0.1-beta-23220" />
+        <dependency id="System.Globalization" version="4.0.11-beta-23220" />
+        <dependency id="System.IO.FileSystem" version="4.0.1-beta-23220" />
+        <dependency id="System.Net.Http" version="4.0.1-beta-23220" />
+        <dependency id="System.Xml.ReaderWriter" version="4.0.11-beta-23220" />
+      </group>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="System.IdentityModel.Tokens.Jwt" version="5.0.0-beta7-208241120" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.IO" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="mscorlib" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

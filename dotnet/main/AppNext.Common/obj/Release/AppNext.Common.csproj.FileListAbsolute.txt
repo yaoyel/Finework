@@ -1,0 +1,10 @@
+D:\HRDSource\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Release\AppNext.Common.dll
+D:\HRDSource\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Release\AppNext.Common.pdb
+D:\HRDSource\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.dll
+D:\HRDSource\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.pdb
+D:\HRDSource\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.csprojResolveAssemblyReference.cache
+E:\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Release\AppNext.Common.dll
+E:\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Release\AppNext.Common.pdb
+E:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.csprojResolveAssemblyReference.cache
+E:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.dll
+E:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Release\AppNext.Common.pdb

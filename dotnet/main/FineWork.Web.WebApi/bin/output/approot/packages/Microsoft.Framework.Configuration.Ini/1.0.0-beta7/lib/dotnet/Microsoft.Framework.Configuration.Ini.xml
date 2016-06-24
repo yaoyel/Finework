@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Framework.Configuration.Ini</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.Framework.Configuration.IniConfigurationExtensions.AddIniFile(Microsoft.Framework.Configuration.IConfigurationBuilder,System.String)">
+            <summary>
+            Adds the INI configuration source at <paramref name="path"/> to <paramref name="configuraton"/>.
+            </summary>
+            <param name="configuration">The <see cref="T:Microsoft.Framework.Configuration.IConfigurationBuilder"/> to add to.</param>
+            <param name="path">Absolute path or path relative to <see cref="P:Microsoft.Framework.Configuration.IConfigurationBuilder.BasePath"/> of
+            <paramref name="configuration"/>.</param>
+            <returns>The <see cref="T:Microsoft.Framework.Configuration.IConfigurationBuilder"/>.</returns>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.IniConfigurationExtensions.AddIniFile(Microsoft.Framework.Configuration.IConfigurationBuilder,System.String,System.Boolean)">
+            <summary>
+            Adds the JSON configuration source at <paramref name="path"/> to <paramref name="configuraton"/>.
+            </summary>
+            <param name="configuration">The <see cref="T:Microsoft.Framework.Configuration.IConfigurationBuilder"/> to add to.</param>
+            <param name="path">Absolute path or path relative to <see cref="P:Microsoft.Framework.Configuration.IConfigurationBuilder.BasePath"/> of
+            <paramref name="configuration"/>.</param>
+            <param name="optional">Determines if loading the configuration source is optional.</param>
+            <returns>The <see cref="T:Microsoft.Framework.Configuration.IConfigurationBuilder"/>.</returns>
+            <exception cref="T:System.ArgumentException">If <paramref name="path"/> is null or empty.</exception>
+            <exception cref="T:System.IO.FileNotFoundException">If <paramref name="optional"/> is <c>false</c> and the file cannot
+            be resolved.</exception>
+        </member>
+        <member name="T:Microsoft.Framework.Configuration.Ini.IniConfigurationSource">
+            <summary>
+            An INI file based <see cref="T:Microsoft.Framework.Configuration.ConfigurationSource"/>.
+            Files are simple line structures (<a href="http://en.wikipedia.org/wiki/INI_file">INI Files on Wikipedia</a>)
+            </summary>
+            <examples>
+            [Section:Header]
+            key1=value1
+            key2 = " value2 "
+            ; comment
+            # comment
+            / comment
+            </examples>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.Framework.Configuration.Ini.IniConfigurationSource"/>.
+            </summary>
+            <param name="path">Absolute path of the INI configuration file.</param>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.#ctor(System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.Framework.Configuration.Ini.IniConfigurationSource"/>.
+            </summary>
+            <param name="path">Absolute path of the INI configuration file.</param>
+            <param name="optional">Determines if the configuration is optional.</param>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Optional">
+            <summary>
+            Gets a value that determines if this instance of <see cref="T:Microsoft.Framework.Configuration.Ini.IniConfigurationSource"/> is optional.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Path">
+            <summary>
+            The absolute path of the file backing this instance of <see cref="T:Microsoft.Framework.Configuration.Ini.IniConfigurationSource"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Load">
+            <summary>
+            Loads the contents of the file at <see cref="P:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Path"/>.
+            </summary>
+            <exception cref="T:System.IO.FileNotFoundException">If <see cref="P:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Optional"/> is <c>false</c> and a
+            file does not exist at <see cref="P:Microsoft.Framework.Configuration.Ini.IniConfigurationSource.Path"/>.</exception>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.Resources.Error_FileNotFound">
+            <summary>
+            The configuration file '{0}' was not found and is not optional.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.Resources.FormatError_FileNotFound(System.Object)">
+            <summary>
+            The configuration file '{0}' was not found and is not optional.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.Resources.Error_InvalidFilePath">
+            <summary>
+            File path must be a non-empty string.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.Resources.FormatError_InvalidFilePath">
+            <summary>
+            File path must be a non-empty string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.Resources.Error_KeyIsDuplicated">
+            <summary>
+            A duplicate key '{0}' was found.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.Resources.FormatError_KeyIsDuplicated(System.Object)">
+            <summary>
+            A duplicate key '{0}' was found.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Framework.Configuration.Ini.Resources.Error_UnrecognizedLineFormat">
+            <summary>
+            Unrecognized line format: '{0}'.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Framework.Configuration.Ini.Resources.FormatError_UnrecognizedLineFormat(System.Object)">
+            <summary>
+            Unrecognized line format: '{0}'.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "bin": {
+        "assembly": "../../packages/WindowsAzure.ServiceBus.2.7.6/lib/net40-full/Microsoft.ServiceBus.dll"
+      }
+    }
+  },
+  "entryPoint": "Microsoft.ServiceBus",
+  "loadable": false,
+  "dependencies": {
+    "Microsoft.ServiceBus": "1.0.0"
+  }
+}

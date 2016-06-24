@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.AspNet.Server.WebListener</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.AspNet.Server.WebListener.ServerFactory">
+            <summary>
+            Implements the setup process for this server.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Server.WebListener.ServerFactory.Initialize(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Creates a configurable instance of the server.
+            </summary>
+            <param name="properties"></param>
+        </member>
+        <member name="M:Microsoft.AspNet.Server.WebListener.ServerFactory.Start(Microsoft.AspNet.Http.Features.IFeatureCollection,System.Func{Microsoft.AspNet.Http.Features.IFeatureCollection,System.Threading.Tasks.Task})">
+            <summary>
+            </summary>
+            <param name="app">The per-request application entry point.</param>
+            <param name="server">The value returned </param>
+            <returns>The server.  Invoke Dispose to shut down.</returns>
+        </member>
+    </members>
+</doc>

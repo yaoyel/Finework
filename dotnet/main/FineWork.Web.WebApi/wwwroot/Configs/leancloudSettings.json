@@ -1,0 +1,43 @@
+﻿{
+  "LeanCloud": {
+    "AppId": "aTYSaCsREYpfvHLyYha2cwJ3-gzGzoHsz",
+    "AppKey": "sNNwopkOHMJTY92p3BLqsnAQ",
+    "MasterKey": "RQ7PjAraufSyilX4jQNb9gJk",
+    "Urls": {
+      "SendMessage": "https://leancloud.cn/1.1/rtm/messages"
+    },
+    "Messages": {
+      "Task": {
+        "ChangeParentTask": " {0} 将上级任务设置为「{1}」",
+        "ChangeTaskGoal": " {0} 将任务目标设置为「{1}」",
+        "ChangeTaskLevel": " {0} 将任务优先级设置为「{1}」",
+        "ChangeTaskName": " {0} 将任务名称设置为「{1}」",
+        "ChangeTaskRecruitmentStatus": " {0} 「{1}」了任务招募",
+        "ChangeTaskRecruitmentRoles": " {0} 将招募角色设置为「{1}」",
+        "ChangeTaskRecruitmentDesc": " {0} 修改了招募说明",
+        "ChangePartakerKind": " {0} 将「{1}」调整为「{2}」",
+        "ChangeTaskCollabratorInvStatus": " {0} {1}任务邀请协同者",
+        "ChangeTaskMentorInvStatus": " {0} {1}任务邀请指导者",
+        "Alarm": {
+          "Create": " {0} 设置了定时预警",
+          "Delete": " {0} 删除了定时预警",
+          "Update": " {0} 修改了定时预警",
+          "Enable": " {0} 「{1}」了定时预警"
+        },
+        "CloseTaskAlarm": "{0} 结束了会议",
+        "PartakerInv": " {0} 邀请 {1} 加入「{2}」",
+        "Join": " {0} 加入任务",
+        "Remove": " {0} 将 {1} 移出任务",
+        "Exit": " {0} 退出了任务",
+        "Transfer": " {0} 将任务移交给了 {1} ",
+        "News": " {0} 创建了一个好消息",
+        "Sharing": " {0} 创建了一个共享",
+        "Vote": " {0} 创建了一个共识",
+        "Incentive": " {0} 将 {1} 设置为「{2}」"
+      },
+      "Staff": {
+        "ChangeStatus": " {0} 已被管理员「{1}」"
+      }
+    }
+  }
+}

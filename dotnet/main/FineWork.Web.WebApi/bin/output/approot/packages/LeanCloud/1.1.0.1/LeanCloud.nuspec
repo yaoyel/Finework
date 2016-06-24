@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>LeanCloud</id>
+        <version>1.1.0.1</version>
+        <title>LeanCloud 官方 SDK.</title>
+        <authors>LeanCloud</authors>
+        <owners>LeanCloud</owners>
+        <licenseUrl>https://leancloud.cn/terms.html</licenseUrl>
+        <iconUrl>https://cn.avoscloud.com/images/static/press/Logo - Avatar.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>## 支持以下运行时：
+Windows Phone Silverlight （8.0 &amp; 8.1）
+Windows Desktop .NET Framework 4.5+
+Xamarin iOS 8+
+Xamarin Android 5+</description>
+        <summary>LeanCloud SDK for .NET.</summary>
+        <releaseNotes>1.删除本地缓存功能，精简 SDK，
+2.代码重构，提高性能。</releaseNotes>
+        <copyright>LeanCloud</copyright>
+        <language>en-US</language>
+        <dependencies>
+            <group targetFramework="WindowsPhone8.0">
+                <dependency id="WebSocket4Net" version="0.12" />
+            </group>
+            <group targetFramework="WindowsPhone8.1">
+                <dependency id="WebSocket4Net" version="0.12" />
+            </group>
+        </dependencies>
+    </metadata>
+</package>

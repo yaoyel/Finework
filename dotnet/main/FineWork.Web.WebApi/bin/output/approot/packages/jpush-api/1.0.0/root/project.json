@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "dnx451": {
+      "bin": {
+        "assembly": "../../libs/dnx451/jpush-api.dll"
+      }
+    },
+    "net451": {
+      "bin": {
+        "assembly": "../../libs/dnx451/jpush-api.dll",
+        "pdb": "../../../../JPush/jpush-api.pdb"
+      }
+    }
+  },
+  "entryPoint": "jpush-api",
+  "loadable": false,
+  "dependencies": {
+    "jpush-api": "1.0.0"
+  }
+}

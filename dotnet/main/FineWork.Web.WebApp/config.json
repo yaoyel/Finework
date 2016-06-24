@@ -1,0 +1,10 @@
+{
+  "AppSettings": {
+    "SiteTitle": "FineWork.Web.WebApp"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=U\\CHINAHRD;User Id=sa;Password=042410408;Initial Catalog=FineWork;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;"
+    }
+  }
+}

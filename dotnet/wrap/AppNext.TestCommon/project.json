@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net45": {
+      "wrappedProject": "../../src/AppNext.TestCommon/AppNext.TestCommon.csproj",
+      "bin": {
+        "assembly": "../../src/AppNext.TestCommon/obj/{configuration}/AppNext.TestCommon.dll",
+        "pdb": "../../src/AppNext.TestCommon/obj/{configuration}/AppNext.TestCommon.pdb"
+      },
+      "dependencies": {
+        "Moq": "4.2.1502.911",
+        "NUnit": "2.6.4",
+        "nunit.framework": "1.0.0-*"
+      }
+    },
+    "net451": {
+      "wrappedProject": "../../main/AppNext.TestCommon/AppNext.TestCommon.csproj",
+      "bin": {
+        "assembly": "../../main/AppNext.TestCommon/obj/{configuration}/AppNext.TestCommon.dll",
+        "pdb": "../../main/AppNext.TestCommon/obj/{configuration}/AppNext.TestCommon.pdb"
+      },
+      "dependencies": {
+        "Moq": "4.2.1502.911",
+        "NUnit": "2.6.4"
+      }
+    }
+  }
+}

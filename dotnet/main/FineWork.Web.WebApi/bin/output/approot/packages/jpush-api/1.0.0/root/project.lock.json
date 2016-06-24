@@ -1,0 +1,130 @@
+{
+  "locked": false,
+  "version": 2,
+  "targets": {
+    "DNX,Version=v4.5.1": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/jpush-api.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/net451/jpush-api.dll": {}
+        }
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x86": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/jpush-api.dll": {}
+        }
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x64": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/jpush-api.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x86": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/net451/jpush-api.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x64": {
+      "jpush-api/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/jpush-api.dll": {}
+        },
+        "runtime": {
+          "lib/net451/jpush-api.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "jpush-api/1.0.0": {
+      "type": "package",
+      "sha512": "8JS3hIR2831uQ/Pfwe4IjE9+XNW8JalSnw8GC7HOAtFfFTm8gsgmQmmXhvoGnMnmL74oHmZNPoPYpPDFhZm+Qg==",
+      "files": [
+        "jpush-api.1.0.0.nupkg",
+        "jpush-api.1.0.0.nupkg.sha512",
+        "jpush-api.nuspec",
+        "lib/dnx451/jpush-api.dll",
+        "lib/net451/jpush-api.dll",
+        "root/project.json",
+        "root/project.lock.json"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [
+      "jpush-api >= 1.0.0"
+    ],
+    "DNX,Version=v4.5.1": [],
+    ".NETFramework,Version=v4.5.1": []
+  }
+}

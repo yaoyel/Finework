@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "wrappedProject": "../../main/AppNext.Data/AppNext.Data.csproj",
+      "bin": {
+        "assembly": "../../main/AppNext.Data/obj/{configuration}/AppNext.Data.dll",
+        "pdb": "../../main/AppNext.Data/obj/{configuration}/AppNext.Data.pdb"
+      },
+      "dependencies": {
+        "AppNext.Common": "1.0.0-*"
+      }
+    }
+  },
+  "entryPoint": "AppNext.Data",
+  "loadable": false,
+  "dependencies": {
+    "AppNext.Data": "1.0.0"
+  }
+}

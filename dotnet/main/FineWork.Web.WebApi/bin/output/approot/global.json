@@ -1,0 +1,11 @@
+{
+  "projects": [
+    "src"
+  ],
+  "sdk": {
+    "version": "1.0.0-rc1-final",
+    "runtime": "clr",
+    "architecture": "x64"
+  },
+  "packages": "packages"
+}

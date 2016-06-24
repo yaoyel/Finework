@@ -1,0 +1,4 @@
+{ 
+    "ConnectionStrings": {
+      "FineWork": "Server=192.168.1.200\\CHINAHRD;User Id=sa;Password=chrdwvr450G;Initial Catalog=FineWork;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;"
+}

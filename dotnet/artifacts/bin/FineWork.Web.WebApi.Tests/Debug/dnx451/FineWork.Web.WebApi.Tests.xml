@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FineWork.Web.WebApi.Tests</name>
+    </assembly>
+    <members>
+        <member name="T:FineWork.Web.WebApi.Tests.Core.FwApiBed">
+            <summary> The enviornment setup/cleanup for web api unit tests. </summary>
+            <remarks> This class is created only once and is shared among all test classes.
+            <see cref="!:http://xunit.github.io/docs/shared-context.html#collection-fixture"/> </remarks>
+        </member>
+        <member name="F:FineWork.Web.WebApi.Tests.Core.FwApiTestBase.FakePhoneNumber">
+            <summary> ���ڲ��Եļ��ֻ���. </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Tests.Core.FwApiTestBase.#ctor(FineWork.Web.WebApi.Tests.Core.FwApiBed)">
+            <summary>  Creates an instance. </summary>
+            <param name="bed"> The <see cref="T:FineWork.Web.WebApi.Tests.Core.FwApiBed"/> injected by xUnit. </param>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Tests.Core.FwApiTestBase.Services">
+            <summary> Gets the services. </summary>
+            <remarks> 
+            The <see cref="T:System.IServiceProvider"/> is created for each test method 
+            for the maximum test isolation. 
+            </remarks>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Tests.Core.FwFakerServices">
+            <summary>
+            ������һ�����ڵ�Ԫ���Եķ���
+            </summary>
+        </member>
+    </members>
+</doc>

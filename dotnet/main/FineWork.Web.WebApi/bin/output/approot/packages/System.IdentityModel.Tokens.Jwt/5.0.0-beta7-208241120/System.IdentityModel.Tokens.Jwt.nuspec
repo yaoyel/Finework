@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>System.IdentityModel.Tokens.Jwt</id>
+    <version>5.0.0-beta7-208241120</version>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <authors>Microsoft Open Technologies, Inc.</authors>
+    <owners>Microsoft Open Technologies, Inc.</owners>
+    <licenseUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/blob/master/LICENSE.txt</licenseUrl>
+    <description>System.IdentityModel.Tokens.Jwt</description>
+    <copyright>Copyright (c) Microsoft Corporation. All rights reserved.</copyright>
+    <dependencies>
+      <group targetFramework="DNX4.5.1">
+        <dependency id="System.IdentityModel.Tokens" version="5.0.0-beta7-208241120" />
+      </group>
+      <group targetFramework="DNXCore5.0">
+        <dependency id="System.IdentityModel.Tokens" version="5.0.0-beta7-208241120" />
+        <dependency id="System.Collections" version="4.0.11-beta-23220" />
+        <dependency id="System.Diagnostics.Tools" version="4.0.1-beta-23220" />
+        <dependency id="System.Globalization" version="4.0.11-beta-23220" />
+        <dependency id="System.IO" version="4.0.11-beta-23220" />
+        <dependency id="System.Runtime.Extensions" version="4.0.11-beta-23220" />
+        <dependency id="System.Runtime.InteropServices" version="4.0.21-beta-23220" />
+        <dependency id="System.Security.Claims" version="4.0.1-beta-23220" />
+        <dependency id="System.Security.Cryptography.Algorithms" version="4.0.0-beta-23220" />
+        <dependency id="System.Security.Cryptography.X509Certificates" version="4.0.0-beta-23220" />
+        <dependency id="System.Security.Principal" version="4.0.1-beta-23220" />
+        <dependency id="System.Text.RegularExpressions" version="4.0.11-beta-23220" />
+        <dependency id="System.Threading" version="4.0.11-beta-23220" />
+      </group>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="System.IdentityModel.Tokens" version="5.0.0-beta7-208241120" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="mscorlib" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework="DNX4.5.1" />
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.5.1" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

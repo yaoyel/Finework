@@ -1,0 +1,48 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "FineWork.Web.WebApi.Tests Class Library",
+  "authors": [ "Yaojian" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+    "System.Runtime": "4.0.21-beta-23516", 
+    "Microsoft.AspNet.Authentication": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Authentication.OAuth": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Authentication.OAuthBearer": "1.0.0-beta7",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Server.WebListener": "1.0.0-rc1-final",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
+    "Microsoft.AspNet.Server.IIS": "1.0.0-beta7",
+    "Microsoft.Framework.Runtime.Abstractions": "1.0.0-beta6", 
+    "xunit": "2.1.0-rc2-build3176",
+    "xunit.runner.dnx": "2.1.0-beta3-*",
+    "xunit.runner.visualstudio": "2.1.0-beta3-*", 
+    "FineWork.Web.WebApi": "1.0.0-*", 
+    "System.Collections": "4.0.11-beta-23516",
+    "System.Threading": "4.0.11-beta-23516",
+    "Microsoft.CSharp": "4.0.1-beta-23516",
+    "System.Linq": "4.0.1-beta-23516"
+  },
+
+  "commands": {
+    "test": "xunit.runner.dnx"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

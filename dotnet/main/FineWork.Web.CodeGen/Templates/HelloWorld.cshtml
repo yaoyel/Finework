@@ -1,0 +1,15 @@
+﻿@using System
+@using FineWork.Web.CodeGen.Core
+@using FineWork.Web.CodeGen
+@inherits FineWork.Web.CodeGen.Core.FwTemplateBase<CustomInfo>
+
+@if (true)
+{
+    <text>
+        public class HelloWorld {
+            public void SayHello() {
+                Console.Out.WriteLine("Hello, @Model.Name");
+            }
+        }
+    </text>
+}

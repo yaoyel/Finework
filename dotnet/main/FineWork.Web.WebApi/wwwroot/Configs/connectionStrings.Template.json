@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "FineWork": "Data Source=localhost\\MSSQL01;Initial Catalog=FineWork;Integrated Security=True;MultipleActiveResultSets=True;Application Name=FineWork;"
+  }
+}

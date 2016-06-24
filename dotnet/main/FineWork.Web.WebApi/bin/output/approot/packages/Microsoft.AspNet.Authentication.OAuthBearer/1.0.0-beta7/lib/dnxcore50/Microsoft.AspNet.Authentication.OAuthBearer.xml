@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.AspNet.Authentication.OAuthBearer</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.AspNet.Builder.OAuthBearerAppBuilderExtensions">
+            <summary>
+            Extension methods to add OAuth Bearer authentication capabilities to an HTTP application pipeline
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Builder.OAuthBearerAppBuilderExtensions.UseOAuthBearerAuthentication(Microsoft.AspNet.Builder.IApplicationBuilder,System.Action{Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions},System.String)">
+            <summary>
+            Adds Bearer token processing to an HTTP application pipeline. This middleware understands appropriately
+            formatted and secured tokens which appear in the request header. If the Options.AuthenticationMode is Active, the
+            claims within the bearer token are added to the current request's IPrincipal User. If the Options.AuthenticationMode 
+            is Passive, then the current request is not modified, but IAuthenticationManager AuthenticateAsync may be used at
+            any time to obtain the claims from the request's bearer token.
+            See also http://tools.ietf.org/html/rfc6749
+            </summary>
+            <param name="app">The application builder</param>
+            <param name="options">Options which control the processing of the bearer header.</param>
+            <returns>The application builder</returns>
+        </member>
+        <member name="T:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationDefaults">
+            <summary>
+            Default values used by authorization server and bearer authentication.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationDefaults.AuthenticationScheme">
+            <summary>
+            Default value for AuthenticationScheme property in the OAuthBearerAuthenticationOptions and
+            OAuthAuthorizationServerOptions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationHandler.HandleAuthenticateAsync">
+            <summary>
+            Searches the 'Authorization' header for a 'Bearer' token. If the 'Bearer' token is found, it is validated using <see cref="T:System.IdentityModel.Tokens.TokenValidationParameters"/> set in the options.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationMiddleware">
+            <summary>
+            Bearer authentication middleware component which is added to an HTTP pipeline. This class is not
+            created by application code directly, instead it is added by calling the the IAppBuilder UseOAuthBearerAuthentication
+            extension method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationMiddleware.#ctor(Microsoft.AspNet.Builder.RequestDelegate,Microsoft.Framework.Logging.ILoggerFactory,Microsoft.Framework.WebEncoders.IUrlEncoder,Microsoft.Framework.OptionsModel.IOptions{Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions},Microsoft.Framework.OptionsModel.ConfigureOptions{Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions})">
+            <summary>
+            Bearer authentication component which is added to an HTTP pipeline. This constructor is not
+            called by application code directly, instead it is added by calling the the IAppBuilder UseOAuthBearerAuthentication 
+            extension method.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationMiddleware.CreateHandler">
+            <summary>
+            Called by the AuthenticationMiddleware base class to create a per-request handler. 
+            </summary>
+            <returns>A new instance of the request handler</returns>
+        </member>
+        <member name="T:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions">
+            <summary>
+            Options class provides information needed to control Bearer Authentication middleware behavior
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.#ctor">
+            <summary>
+            Creates an instance of bearer authentication options with default values.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.MetadataAddress">
+            <summary>
+            Gets or sets the discovery endpoint for obtaining metadata
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.Authority">
+            <summary>
+            Gets or sets the Authority to use when making OpenIdConnect calls.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.Audience">
+            <summary>
+            Gets or sets the audience for any received JWT token.
+            </summary>
+            <value>
+            The expected audience for any received JWT token.
+            </value>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.Challenge">
+            <summary>
+            Gets or sets the challenge to put in the "WWW-Authenticate" header.
+            </summary>
+            TODO - brentschmaltz, should not be null.
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.Notifications">
+            <summary>
+            The object provided by the application to process events raised by the bearer authentication middleware.
+            The application may implement the interface fully, or it may create an instance of OAuthBearerAuthenticationProvider
+            and assign delegates only to the events it wants to process.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.BackchannelHttpHandler">
+            <summary>
+            The HttpMessageHandler used to retrieve metadata.
+            This cannot be set at the same time as BackchannelCertificateValidator unless the value
+            is a WebRequestHandler.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.BackchannelTimeout">
+            <summary>
+            Gets or sets the timeout when using the backchannel to make an http call.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.Configuration">
+            <summary>
+            Configuration provided directly by the developer. If provided, then MetadataAddress and the Backchannel properties
+            will not be used. This information should not be updated during request processing.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.ConfigurationManager">
+            <summary>
+            Responsible for retrieving, caching, and refreshing the configuration from metadata.
+            If not provided, then one will be created using the MetadataAddress and Backchannel properties.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.RefreshOnIssuerKeyNotFound">
+            <summary>
+            Gets or sets if a metadata refresh should be attempted after a SecurityTokenSignatureKeyNotFoundException. This allows for automatic
+            recovery in the event of a signature key rollover. This is enabled by default.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.SystemClock">
+            <summary>
+            Used to know what the current clock time is when calculating or validating token expiration. When not assigned default is based on
+            DateTimeOffset.UtcNow. This is typically needed only for unit testing.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.SecurityTokenValidators">
+            <summary>
+            Gets or sets the <see cref="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.SecurityTokenValidators"/> for validating tokens.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">if 'value' is null.</exception>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationOptions.TokenValidationParameters">
+            <summary>
+            Gets or sets the TokenValidationParameters
+            </summary>
+            <remarks>Contains the types and definitions required for validating a token.</remarks>
+            <exception cref="T:System.ArgumentNullException">if 'value' is null.</exception>
+        </member>
+        <member name="T:Microsoft.AspNet.Authentication.OAuthBearer.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.Resources.Exception_OptionMustBeProvided">
+            <summary>
+              Looks up a localized string similar to The &apos;{0}&apos; option must be provided..
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.Resources.Exception_ValidatorHandlerMismatch">
+            <summary>
+              Looks up a localized string similar to An ICertificateValidator cannot be specified at the same time as an HttpMessageHandler unless it is a WebRequestHandler..
+            </summary>
+        </member>
+        <member name="T:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications">
+            <summary>
+            OAuth bearer token middleware provider
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="!:OAuthBearerAuthenticationProvider"/> class
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.AuthenticationFailed">
+            <summary>
+            Invoked if exceptions are thrown during request processing. The exceptions will be re-thrown after this event unless suppressed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.MessageReceived">
+            <summary>
+            Invoked when a protocol message is first received.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.SecurityTokenReceived">
+            <summary>
+            Invoked with the security token that has been extracted from the protocol message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.SecurityTokenValidated">
+            <summary>
+            Invoked after the security token has passed validation and a ClaimsIdentity has been generated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AspNet.Authentication.OAuthBearer.OAuthBearerAuthenticationNotifications.ApplyChallenge">
+            <summary>
+            Invoked to apply a challenge sent back to the caller.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Framework.DependencyInjection.OAuthBearerServiceCollectionExtensions">
+            <summary>
+            Extension methods to add OAuth Bearer authentication capabilities to an HTTP application pipeline
+            </summary>
+        </member>
+    </members>
+</doc>

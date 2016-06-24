@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "wrappedProject": "../../main/AppNext.Data.Aef/AppNext.Data.Aef.csproj",
+      "bin": {
+        "assembly": "../../main/AppNext.Data.Aef/obj/{configuration}/AppNext.Data.Aef.dll",
+        "pdb": "../../main/AppNext.Data.Aef/obj/{configuration}/AppNext.Data.Aef.pdb"
+      },
+      "dependencies": {
+        "EntityFramework": "6.1.3",
+        "AppNext.Common": "1.0.0-*",
+        "AppNext.Data": "1.0.0-*"
+      }
+    }
+  },
+  "entryPoint": "AppNext.Data.Aef",
+  "loadable": false,
+  "dependencies": {
+    "AppNext.Data.Aef": "1.0.0"
+  }
+}

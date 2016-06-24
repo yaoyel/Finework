@@ -1,0 +1,17 @@
+﻿{
+  "JPush": {
+    "AppKey": "229d1cb589bb0ccd4bd1ec77",
+    "MasterSecret": "b79a9e1fea89e45813e6ccfb"
+  },
+
+  "PushMessage": {
+    "StaffInv": { 
+      "description": "{0}邀请你加入{1}。"
+      //"review": "{0}同意加入组织！"
+    },
+    "StaffReq": { 
+      "description": "{0}申请加入{1}。",
+      "review":"{0}{1}您加入。"
+    }
+  }
+}

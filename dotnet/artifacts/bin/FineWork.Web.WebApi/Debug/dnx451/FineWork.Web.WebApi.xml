@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FineWork.Web.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:FineWork.Web.WebApi.Colla.OrgController.FetchOrgs">
+            <summary>
+            获取所有组织机构信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.CreateCollabrator(System.Guid,System.Guid)">
+            <summary>
+            创建协同者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.CreateMentor(System.Guid,System.Guid)">
+            <summary>
+            创建指导者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.CreateRecipient(System.Guid,System.Guid)">
+            <summary>
+            创建接受者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveCollabrator(System.Guid,System.Guid)">
+            <summary>
+            移除协同者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveMentor(System.Guid,System.Guid)">
+            <summary>
+            移除指导者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveRecipient(System.Guid,System.Guid)">
+            <summary>
+            移除接受者
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.ChangeLeader(System.Guid,System.Guid)">
+            <summary>
+            移交任务
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.ExitTask(System.Guid,System.Guid)">
+            <summary>
+            退出任务
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.FetchPartakersByOrg(System.Guid,System.Guid)">
+            <summary>
+             获取战友信息
+            </summary>
+            <param name="orgId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerInvController.QuickAdd(FineWork.Colla.Models.CreatePartakerInvModel)">
+            <summary>
+            直接将员工加入任务，不需要审核
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerReqController.CreatePartakerReq(System.Guid,System.Guid,FineWork.Colla.PartakerKinds)">
+            <summary> 申请加入任务. </summary>
+            <param name="taskId"> 任务的 <see cref="!:TaskEntity.Id"/>. </param>
+            <param name="requestorStaffId"> 申请人的 <see cref="!:StaffEntity.Id"/>. </param>
+            <param name="kind"> 申请成为的角色. </param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerReqController.ReviewPartakerReq(System.Guid,FineWork.Colla.ReviewStatuses)">
+            <summary> 审批任务的加入申请. </summary>
+            <param name="partakerReqId"> 申请的 <see cref="!:PartakerReqEntity.Id"/> </param>
+            <param name="reviewStatus"> 审批的结果. </param>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Colla.PartakerReqViewModel.Task">
+            <summary> 任务. </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Colla.PartakerReqViewModel.Staff">
+            <summary> 申请人. </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Colla.PartakerReqViewModel.PartakerKind">
+            <summary> 成员资格类型 </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Colla.PartakerReqViewModel.Message">
+            <summary> 申请内容. </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.StaffController.ChangeStaffStatus(System.Guid,System.Boolean)">
+            <summary>
+            员工退出组织，管理员删除员工通用此接口 
+            </summary>
+            <param name="staffIds"></param>
+            <param name="newStatus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.StaffInvController.CreateStuffInv(FineWork.Core.Colla.Models.CreateStaffInvModel)">
+            <summary>
+            
+            </summary>
+            <param name="invStaffs">item1:name,item2:phonenumber</param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskAlarmController.ChangeResolvedStatus(System.Guid,FineWork.Colla.ResolveStatus,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="taskAlarmId"></param>
+            <param name="newStatus"></param>
+            <param name="comment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskAlarmController.FindAlarmByChatRoomKind(System.Guid,FineWork.Colla.ChatRoomKinds,System.Guid)">
+            <summary>
+            根据聊天室类型返回未处理的预警
+            </summary> 
+            <param name="taskId"></param>
+            <param name="chatRoomKind"></param>
+            <param name="creatorStaffId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskAlarmViewModelExtensions.ToViewModel(FineWork.Colla.TaskAlarmEntity,System.Boolean,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <param name="isShowhighOnly">是否只显示标记为high的字段</param>
+            <param name="isShowLow">标记为low的字段是否需要显示</param>
+            <returns></returns>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.FindTaskGroupedListsByStaffId(System.Guid)">
+            <summary> 获取员工的所有相关任务. </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.FetchTasksByOrgAndStaff(System.Guid,System.Guid)">
+            <summary> 获取某机构下所有任务 </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskMentorInvStatus(System.Guid,System.Boolean)">
+            <summary>
+            是否允许邀请指导者
+            </summary>
+            <param name="taskId"></param>
+            <param name="newMentorInvStatus"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskCollabratorInvStatus(System.Guid,System.Boolean)">
+            <summary>
+            是否允许要求协同者
+            </summary>
+            <param name="taskId"></param>
+            <param name="newCollabratorInvStatus"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskRecruitmentStatus(System.Guid,System.Boolean)">
+             <summary>
+            是否允许招募
+             </summary>
+             <param name="taskId"></param>
+             <param name="newRecuitmentStatus"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskRecruitmentRoles(System.Guid,System.String)">
+            <summary>
+            更新招募的角色
+            </summary>
+            <param name="taskId"></param>
+            <param name="newRecuitmentRoles"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskRecruitmentDesc(System.Guid,System.String)">
+            <summary>
+            更新招募的信息
+            </summary>
+            <param name="taskId"></param>
+            <param name="newRecuitmentDesc"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.VoteController.FetchUnApprovedVotesByTaskIdAndStaffId(System.Guid,System.Guid)">
+            <summary>
+            为方便处理，将待共识的投票按照staff分类
+            分为创建的，已投票，未参与三类
+            </summary>
+            <param name="taskId"></param>
+            <param name="staffId"></param>
+            <returns></returns>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Colla.VoteOptionViewModel.VotingNumber">
+            <summary>
+            匿名情况下，不允许查看选票详情，只显示投票数
+            </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Common.HttpUtil.IsActionDefined``1(Microsoft.AspNet.Mvc.Filters.ActionExecutingContext)">
+            <summary> ��� Action �������Ƿ�������Ϊ <typeparamref name="T"/> ������. </summary>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.IgnoreDataScopedAttribute">
+            <summary> 忽略当前的 <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/>. </summary>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.DataScopedAttribute">
+            <summary> 对 MVC Action 采用自动化的 数据访问. </summary>
+            <remarks>
+            <para>
+            当本属性应用在 Controller 上时，相当于所有的方法均应用此属性.
+            可以通过 <see cref="T:FineWork.Web.WebApi.Core.IgnoreDataScopedAttribute"/> 忽略部分方法. 
+            </para>
+            <para>
+            当 Controller 与 Action 均有 <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/> 标记时,
+            则只有与 Action 上的属性被启用.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.DataScopedAttribute.HasChanges">
+            <summary> 设置是否涉及数据更改. 默认为<c>true</c>.</summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.DataScopedAttribute.UseTransaction">
+            <summary> 设置是否使用事务. 默认为 <c>true</c> </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.DataScopedAttribute.IsEnabled">
+            <summary> 标记本实例是否启用. </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.DataScopedAttribute.Session">
+            <summary>
+            The session retrieved from the ISessionProvider{T} which is injected in controller
+            </summary>
+            <remarks>In finework, the session is disposed by the IoC container.</remarks>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.FwApiController">
+            <summary> The base class for all FineWork WebAPI controllers. </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.FwApiController.AutoTransactionScope">
+            <summary> Gets the <see cref="T:System.Transactions.TransactionScope"/> provided by <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/>. </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.FwApiController.AccountId">
+            <summary> 获取相关联的 <see cref="P:FineWork.Security.IAccount.Id"/>. </summary>
+            <exception cref="T:System.Security.Authentication.AuthenticationException"> 若不存在相应的 <see cref="P:FineWork.Security.IAccount.Id"/>. </exception>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Core.FwApiController.InternalSetAccount(FineWork.Security.IAccount)">
+            <summary> 用于在单元测试中设置当前用户. </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Core.FwApiController.InternalSetUser(System.Security.Claims.ClaimsPrincipal)">
+            <summary> 用于在单元测试中设置当前用户. </summary>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.FwDefaultFilterOrders">
+            <summary> Defines the execution order for <see cref="!:IActionFilter"/>s centricly. </summary>
+            <remarks> The action filter with the lowest value will be executed firstly. 
+            <para> MSDN: https://msdn.microsoft.com/en-us/library/system.web.mvc.filterattribute.order(v=vs.118).aspx </para>
+            <para>
+            The Order property takes an integer value that must be 0 (the default) or greater, with one exception. 
+            Omitting the Order property gives the filter an order value of -1, which indicates an unspecified order. 
+            Any action filter in a scope whose Order property is set to -1 will be executed in an undetermined order, 
+            but before the filters that have a specified order.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.HandleErrorsAttribute">
+            <summary> ��������������е��쳣. </summary>
+            <remarks> ���쳣�������´���:
+            <list type="bullet">
+            <item> �� <see cref="T:FineWork.Common.FineWorkException"/>, ���� Http status code 5xx, ���ṩ��ϸ�Ĵ�����Ϣ. </item>
+            <item> ���������͵��쳣����ϵͳĬ�ϵĽ��. </item>
+            </list>
+            �����Բ������� ModelState �Ĵ���, ModelState ������ <see cref="T:FineWork.Web.WebApi.Core.ValidateModelStateAttribute"/> ����.
+            </remarks>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.HttpErrorInfo.Message">
+            <summary> �û��Ѻõ���ʾ. </summary>
+            <remarks> ���� <see cref="T:FineWork.Common.FineWorkException"/>, ��ֵΪ <see cref="P:FineWork.Common.FineWorkException.FriendlyMessage"/>. </remarks>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.IDataScopedCallback">
+            <summary> ���ڹ��� <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/> �뱻���ǵ� <see cref="T:Microsoft.AspNet.Mvc.Controller"/>. </summary>
+            <remarks> �ýӿ��� controller ʵ��. </remarks>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Core.IDataScopedCallback.SessionProvider">
+            <summary> 
+            �� Controller ��<see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/> �ṩ���ڴ��� 
+            <see cref="T:AppBoot.Repos.Aef.AefSession"/> �� <see cref="T:AppBoot.Repos.ISessionProvider"/>.
+            </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Core.IDataScopedCallback.AfterEnter(AppBoot.Repos.Aef.AefSession)">
+            <summary>
+            �� <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/> �� action ����ִ��ǰ����.
+            controller ͨ���˷������洴���� <see cref="T:AppBoot.Repos.Aef.AefSession"/>.
+            </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Core.IDataScopedCallback.BeforeExit(AppBoot.Repos.Aef.AefSession)">
+            <summary>
+            �� <see cref="T:FineWork.Web.WebApi.Core.DataScopedAttribute"/> �� action ����ִ�к����.
+            controller ͨ���˷����������� <see cref="T:AppBoot.Repos.Aef.AefSession"/>.
+            </summary>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.IgnoreTransactionScopedAttribute">
+            <summary> 忽略当前的 <see cref="T:FineWork.Web.WebApi.Core.TransactionScopedAttribute"/>. </summary>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.TransactionScopedAttribute">
+            <summary> 对 MVC Action 采用自动化的 <see cref="T:System.Transactions.TransactionScope"/>. </summary>
+            <remarks>
+            对于应用了本属性的方法，其执行过程如下：
+            <list type="number">
+            <item>创建 <see cref="T:System.Transactions.TransactionScope"/>.</item>
+            <item>执行 Action 方法.</item>
+            <item>若执行正常，则调用 <see cref="M:System.Transactions.TransactionScope.Complete"/> 方法, 若有异常则不调用.</item>
+            <item>释放 <see cref="T:System.Transactions.TransactionScope"/>.</item>
+            </list>
+            <para>当本属性应用在 Controller 上时，相当于所有的方法均应用此属性.
+            可以通过 <see cref="T:FineWork.Web.WebApi.Core.IgnoreDataScopedAttribute"/> 忽略部分方法. </para>
+            </remarks>
+        </member>
+        <member name="T:FineWork.Web.WebApi.Core.ValidateModelStateAttribute">
+            <summary> 
+            检查 <see cref="T:Microsoft.AspNet.Mvc.ModelBinding.ModelStateDictionary"/>, 
+            若 <see cref="P:Microsoft.AspNet.Mvc.ModelBinding.ModelStateDictionary.IsValid"/> 为 <c>false</c>
+            则向调用方返回 <see cref="T:Microsoft.AspNet.Mvc.BadRequestObjectResult"/>.
+            </summary>
+            <remarks> <see cref="T:FineWork.Web.WebApi.Core.FwApiController"/> 已经应用了本属性，它的派生类不需要再加上这个属性了. </remarks>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Message.MultimediaMessageModel.AccountId">
+            <summary>
+            用户获取发送者的头像
+            </summary>
+        </member>
+        <member name="P:FineWork.Web.WebApi.Message.MultimediaMessageModel.FromId">
+            <summary>
+            区分个人/聊天室
+            </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Security.AccountsController.FindAccountById(System.Nullable{System.Guid})">
+            <summary> 根据 <see cref="P:FineWork.Security.IAccount.Id"/> 获取用户信息. </summary>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Security.OAuthBearerAuthenticationExtensions.LoadRsaSecurityKey(System.String)">
+            <summary> Loads the RsaSecurityKey from <c>Configs\RSA.Key</c>. </summary>
+        </member>
+    </members>
+</doc>

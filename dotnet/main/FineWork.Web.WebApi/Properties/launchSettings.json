@@ -1,0 +1,30 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:5712/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchUrl": "api/values",
+      "environmentVariables": {
+        "ASPNET_ENV": "Development"
+      },
+      "sdkVersion": "dnx-clr-win-x64.1.0.0-rc1-final"
+    },
+    "web": {
+      "commandName": "web",
+      "workingDirectory": "D:\\publicsh101\\wwwroot",
+      "launchBrowser": true,
+      "launchUrl": "http://api.chinahrd.com",
+      "environmentVariables": {
+        "Hosting:Environment": "Development"
+      },
+      "sdkVersion": "dnx-clr-win-x64.1.0.0-beta5-12103"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.AspNet.Tooling.Razor</name>
+    </assembly>
+    <members>
+        <member name="P:Microsoft.AspNet.Tooling.Razor.Resources.ValueMustBeProvidedInMessage">
+            <summary>
+            '{0}' must be provided for a '{1}' message.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNet.Tooling.Razor.Resources.FormatValueMustBeProvidedInMessage(System.Object,System.Object)">
+            <summary>
+            '{0}' must be provided for a '{1}' message.
+            </summary>
+        </member>
+    </members>
+</doc>

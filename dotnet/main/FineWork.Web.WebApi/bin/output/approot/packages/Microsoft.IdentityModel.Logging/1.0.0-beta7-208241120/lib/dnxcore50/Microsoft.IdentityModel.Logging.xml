@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.IdentityModel.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.IdentityModel.Logging.IdentityModelEventSource">
+            <summary>
+            Event source based logger to log different events.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.Logger">
+            <summary>
+            Static logger that is exposed externally. An external application or framework can hook up a listener to this event source to log data in a custom way.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.LogLevel">
+            <summary>
+            Minimum log level to log events. Default is Warning.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Logging.LogHelper">
+            <summary>
+            Helper class for logging.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Logging.LogHelper.Throw(System.String,System.Type,System.Diagnostics.Tracing.EventLevel,System.Exception)">
+            <summary>
+            Logs an event using the event source logger and throws the exception.
+            </summary>
+            <param name="message">message to log.</param>
+            <param name="exceptionType">Type of the exception to be thrown.</param>
+            <param name="logLevel">Identifies the level of an event to be logged. Default is Error.</param>
+            <param name="innerException">the inner <see cref="T:System.Exception"/> to be added to the outer exception.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,400 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{417F3088-0CEE-4556-9AC8-2E62BB333BF2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FineWork</RootNamespace>
+    <AssemblyName>FineWork.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AVOSCloud.NetFx45, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LeanCloud.1.1.0.1\lib\net45\AVOSCloud.NetFx45.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="jpush-api">
+      <HintPath>..\..\libs\dnx451\2.0.0\jpush-api.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Configuration.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Configuration.Abstractions.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Primitives.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WindowsAzure.Storage.6.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Collections.Concurrent" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Spatial, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp, Version=1.0.2.42043, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LeanCloud.1.1.0.1\lib\net45\websocket-sharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Avatar\AvatarManager.cs" />
+    <Compile Include="Avatar\AvatarSizes.cs" />
+    <Compile Include="Azure\AzureFileManager.cs" />
+    <Compile Include="Colla\AccessTimeEntity.cs" />
+    <Compile Include="Colla\AnncAttEntity.cs" />
+    <Compile Include="Colla\AnncIncentiveEntity.cs" />
+    <Compile Include="Colla\AnnouncementEntity.cs" />
+    <Compile Include="Colla\AnnouncementKinds.cs" />
+    <Compile Include="Colla\Checkers\AccessTimeExistsResult.cs" />
+    <Compile Include="Colla\Checkers\MomentFileExistsResult.cs" />
+    <Compile Include="Colla\Checkers\MomentLikeExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskReportExistsResult.cs" />
+    <Compile Include="Colla\Impls\TaskAnnouncementManager.cs" />
+    <Compile Include="Colla\ITaskAnnouncementManager.cs" />
+    <Compile Include="Colla\Models\CreateTaskAnnouncementModel.cs" />
+    <Compile Include="Colla\TaskAnnouncementEntity.cs" />
+    <Compile Include="Colla\TaskExilsEntity.cs" />
+    <Compile Include="Colla\IExcPartakerManager.cs" />
+    <Compile Include="Colla\Impls\AccessTimeManager.cs" />
+    <Compile Include="Colla\ActionKinds.cs" />
+    <Compile Include="Colla\AlarmEntity.cs" />
+    <Compile Include="Colla\ChatRoomKinds.cs" />
+    <Compile Include="Colla\Checkers\AccountIsNotPartakerResult.cs" />
+    <Compile Include="Colla\Checkers\AccountIsPartakerResult.cs" />
+    <Compile Include="Colla\Checkers\AlarmPeriodExistsResult.cs" />
+    <Compile Include="Colla\Checkers\IncentiveKindExistsResult.cs" />
+    <Compile Include="Colla\Checkers\InvCodeExistsResult.cs" />
+    <Compile Include="Colla\Checkers\MomentCommentExistsResult.cs" />
+    <Compile Include="Colla\Checkers\MomentExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerInvExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerInvIsEnabledResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerInvNotExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerKindUpdateResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerReqExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerReqIsEnabledResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerReqNotExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskAlarmExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskAnnouncementExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskIncentiveExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskSharingExistsResult.cs" />
+    <Compile Include="Colla\Checkers\VoteExistsResult.cs" />
+    <Compile Include="Colla\Checkers\VoteOptionExistsResult.cs" />
+    <Compile Include="Colla\IAccessTimeManager.cs" />
+    <Compile Include="Colla\IAlarmManager.cs" />
+    <Compile Include="Colla\IInvCodeManager.cs" />
+    <Compile Include="Colla\IMomentCommentManager.cs" />
+    <Compile Include="Colla\IMomentFileManager.cs" />
+    <Compile Include="Colla\IMomentLikeManager.cs" />
+    <Compile Include="Colla\IMomentManager.cs" />
+    <Compile Include="Colla\Impls\InvCodeManager.cs" />
+    <Compile Include="Colla\Impls\MomentCommentManager.cs" />
+    <Compile Include="Colla\Impls\MomentFileManager.cs" />
+    <Compile Include="Colla\Impls\MomentLikeManager.cs" />
+    <Compile Include="Colla\Impls\MomentManager.cs" />
+    <Compile Include="Colla\Impls\TaskReportManager.cs" />
+    <Compile Include="Colla\InvCodeEntity.cs" />
+    <Compile Include="Colla\IIncentiveKindManager.cs" />
+    <Compile Include="Colla\IIncentiveManager.cs" />
+    <Compile Include="Colla\Impls\AlarmManager.cs" />
+    <Compile Include="Colla\Impls\IMServiceExtensions.cs" />
+    <Compile Include="Colla\Impls\IncentiveKindManager.cs" />
+    <Compile Include="Colla\Impls\IncentiveManager.cs" />
+    <Compile Include="Colla\Impls\PartakerInvManager.cs" />
+    <Compile Include="Colla\Impls\PartakerReqManager.cs" />
+    <Compile Include="Colla\Impls\TaskAlarmManager.cs" />
+    <Compile Include="Colla\Impls\TaskNewsManager.cs" />
+    <Compile Include="Colla\Impls\TaskIncentiveManager.cs" />
+    <Compile Include="Colla\Impls\TaskLogManager.cs" />
+    <Compile Include="Colla\Impls\TaskSharingManager.cs" />
+    <Compile Include="Colla\Impls\VoteManager.cs" />
+    <Compile Include="Colla\Impls\VoteOptioinManager.cs" />
+    <Compile Include="Colla\Impls\VotingManager.cs" />
+    <Compile Include="Colla\IncentiveEntity.cs" />
+    <Compile Include="Colla\IncentiveKindEntity.cs" />
+    <Compile Include="Colla\IPartakerInvManager.cs" />
+    <Compile Include="Colla\IPartakerReqManager.cs" />
+    <Compile Include="Colla\ITaskAlarmManager.cs" />
+    <Compile Include="Colla\ITaskNewsManager.cs" />
+    <Compile Include="Colla\ITaskIncentiveManager.cs" />
+    <Compile Include="Colla\ITaskLogManager.cs" />
+    <Compile Include="Colla\ITaskReportManager.cs" />
+    <Compile Include="Colla\ITaskSharingManager.cs" />
+    <Compile Include="Colla\IVoteManager.cs" />
+    <Compile Include="Colla\IVoteOptionManager.cs" />
+    <Compile Include="Colla\IVotingManager.cs" />
+    <Compile Include="Colla\Models\CreateMomentCommetModel.cs" />
+    <Compile Include="Colla\Models\CreateTaskReportModel.cs" />
+    <Compile Include="Colla\Models\UpdateTaskReportModel.cs" />
+    <Compile Include="Colla\MomentCommentEntity.cs" />
+    <Compile Include="Colla\MomentEntity.cs" />
+    <Compile Include="Colla\MomentFileEntity.cs" />
+    <Compile Include="Colla\MomentLikeEntity.cs" />
+    <Compile Include="Colla\MomentType.cs" />
+    <Compile Include="Colla\Models\CreateMementModel.cs" />
+    <Compile Include="Colla\Models\CreatePartakerInvModel.cs" />
+    <Compile Include="Colla\Models\CreateTaskAlarmModel.cs" />
+    <Compile Include="Colla\Models\CreateTaskNewsModel.cs" />
+    <Compile Include="Colla\Models\CreateTaskModel.cs" />
+    <Compile Include="Colla\Models\CreateVoteModel.cs" />
+    <Compile Include="Colla\Models\CreateVoteOptionModel.cs" />
+    <Compile Include="Colla\Models\CreateVotingModel.cs" />
+    <Compile Include="Colla\Models\StaffAlarmsModel.cs" />
+    <Compile Include="Colla\PartakerInvEntity.cs" />
+    <Compile Include="Colla\PartakerReqEntity.cs" />
+    <Compile Include="Colla\ResolveStatus.cs" />
+    <Compile Include="Colla\TaskAlarmEntity.cs" />
+    <Compile Include="Colla\TaskAlarmKinds.cs" />
+    <Compile Include="Colla\TaskNewsEntity.cs" />
+    <Compile Include="Colla\TaskIncentiveEntity.cs" />
+    <Compile Include="Colla\TaskLogEntity.cs" />
+    <Compile Include="Colla\TaskReportEntity.cs" />
+    <Compile Include="Colla\TaskSharingEntity.cs" />
+    <Compile Include="Colla\TaskTransferEntity.cs" />
+    <Compile Include="Colla\VoteEntity.cs" />
+    <Compile Include="Colla\VoteOptionEntity.cs" />
+    <Compile Include="Colla\VotingEntity.cs" />
+    <Compile Include="Colla\WeekDays.cs" />
+    <Compile Include="Common\FineWorkCheckResult.cs" />
+    <Compile Include="Common\IFriendlyMessage.cs" />
+    <Compile Include="Common\INamed.cs" />
+    <Compile Include="Core\FwKnownServicesExtensions.cs" />
+    <Compile Include="Core\LazyResolver.cs" />
+    <Compile Include="Files\IFileManager.cs" />
+    <Compile Include="Common\ImageUtil.cs" />
+    <Compile Include="Colla\Checkers\InvitationIsEnabledResult.cs" />
+    <Compile Include="Colla\Checkers\PermissionIsAdminResult.cs" />
+    <Compile Include="Colla\Checkers\OrgExistsResult.cs" />
+    <Compile Include="Colla\Checkers\OrgNotExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerExistsResult.cs" />
+    <Compile Include="Colla\Checkers\PartakerNotExistsResult.cs" />
+    <Compile Include="Colla\Checkers\StaffExistsResult.cs" />
+    <Compile Include="Colla\Checkers\StaffInvExistsResult.cs" />
+    <Compile Include="Colla\Checkers\StaffNotExistsResult.cs" />
+    <Compile Include="Colla\Checkers\StaffReqExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskExistsResult.cs" />
+    <Compile Include="Colla\Checkers\TaskNotExistsResult.cs" />
+    <Compile Include="Colla\Impls\PartakerManager.cs" />
+    <Compile Include="Colla\Impls\StaffInvManager.cs" />
+    <Compile Include="Colla\Impls\StaffReqManager.cs" />
+    <Compile Include="Colla\IPartakerManager.cs" />
+    <Compile Include="Colla\IStaffInvManager.cs" />
+    <Compile Include="Colla\IStaffManager.cs" />
+    <Compile Include="Colla\IStaffReqManager.cs" />
+    <Compile Include="Colla\ITaskManager.cs" />
+    <Compile Include="Colla\IOrgManager.cs" />
+    <Compile Include="Colla\Impls\OrgManager.cs" />
+    <Compile Include="Colla\Impls\StaffManager.cs" />
+    <Compile Include="Colla\Impls\TaskManager.cs" />
+    <Compile Include="Colla\Models\CreateStaffInvModel.cs" />
+    <Compile Include="Colla\PartakerKinds.cs" />
+    <Compile Include="Colla\OrgEntity.cs" />
+    <Compile Include="Colla\PartakerEntity.cs" />
+    <Compile Include="Colla\ReviewStatuses.cs" />
+    <Compile Include="Colla\StaffEntity.cs" />
+    <Compile Include="Colla\StaffInvEntity.cs" />
+    <Compile Include="Colla\StaffReqEntity.cs" />
+    <Compile Include="Colla\TaskEntity.cs" />
+    <Compile Include="Common\Assignment.cs" />
+    <Compile Include="Common\EntityBase.cs" />
+    <Compile Include="Common\FineWorkException.cs" />
+    <Compile Include="Core\FineWorkServiceBuilder.cs" />
+    <Compile Include="Data\Aef\FineWorkDbContext.cs" />
+    <Compile Include="Data\Aef\FineWorkDbContextInitializer.cs" />
+    <Compile Include="Core\FineWorkServiceExtensions.cs" />
+    <Compile Include="Data\Aef\IFineWorkDbSessionProvider.cs" />
+    <Compile Include="Logging\LogManager.cs" />
+    <Compile Include="Message\Checkers\DeviceRegistrationExistsResult.cs" />
+    <Compile Include="Message\DeviceRegistrationEntity.cs" />
+    <Compile Include="Message\INotificationManager.cs" />
+    <Compile Include="Message\NotificationManager.cs" />
+    <Compile Include="Net\IM\IIMService.cs" />
+    <Compile Include="Net\IM\LCIMService.cs" />
+    <Compile Include="Net\Mail\EmailService.cs" />
+    <Compile Include="Net\Mail\IEmailService.cs" />
+    <Compile Include="Net\Mail\MailUtil.cs" />
+    <Compile Include="Net\Mail\NullEmailService.cs" />
+    <Compile Include="Net\Push\DeviceRegistration.cs" />
+    <Compile Include="Net\Push\IAliasService.cs" />
+    <Compile Include="Net\Push\IPushService.cs" />
+    <Compile Include="Net\Push\ITagsService.cs" />
+    <Compile Include="Net\Push\PushResult.cs" />
+    <Compile Include="Net\Sms\ISmsService.cs" />
+    <Compile Include="Net\Sms\LCSmsService.cs" />
+    <Compile Include="Net\Sms\NullSmsService.cs" />
+    <Compile Include="Net\Sms\SmsMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\Checkers\AccountExistsResult.cs" />
+    <Compile Include="Security\Checkers\AccountNotExistsResult.cs" />
+    <Compile Include="Security\Checkers\EmailAvailableResult.cs" />
+    <Compile Include="Security\Checkers\LoginExistsResult.cs" />
+    <Compile Include="Security\Checkers\LoginNotExistsResult.cs" />
+    <Compile Include="Security\Checkers\LoginRemovableResult.cs" />
+    <Compile Include="Security\Checkers\PasswordMatchResult.cs" />
+    <Compile Include="Security\Checkers\PasswordMayEmptyResult.cs" />
+    <Compile Include="Security\Checkers\PhoneNumberAvailableResult.cs" />
+    <Compile Include="Security\Checkers\PrincipalIsAccountResult.cs" />
+    <Compile Include="Security\Checkers\RoleExistsResult.cs" />
+    <Compile Include="Security\Checkers\RoleNotExistsResult.cs" />
+    <Compile Include="Security\Configuration\TestAccountConfigurationElement.cs" />
+    <Compile Include="Security\Configuration\TestAccountConfigurationElementCollection.cs" />
+    <Compile Include="Security\Configuration\TestAccountConfigurationSection.cs" />
+    <Compile Include="Security\IAccount.cs" />
+    <Compile Include="Security\IAccountManager.cs" />
+    <Compile Include="Avatar\IAvatarManager.cs" />
+    <Compile Include="Security\IClaim.cs" />
+    <Compile Include="Security\ILogin.cs" />
+    <Compile Include="Security\Impls\AccountManager.cs" />
+    <Compile Include="Security\Impls\EmailConfirmationToken.cs" />
+    <Compile Include="Security\Impls\RoleManager.cs" />
+    <Compile Include="Security\IRole.cs" />
+    <Compile Include="Security\IRoleManager.cs" />
+    <Compile Include="Security\Models\CreateAccountModel.cs" />
+    <Compile Include="Security\Passwords\Argorithms\AspNetIdentityAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\ClearTextAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\HashedPasswordAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\IPasswordAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\ITransformedPassword.cs" />
+    <Compile Include="Security\Passwords\Argorithms\NoPasswordAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\PasswordAlgorithmBase.cs" />
+    <Compile Include="Security\Passwords\Argorithms\PasswordAlgorithmRegistry.cs" />
+    <Compile Include="Security\Passwords\Argorithms\SHA256ManagedPasswordAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Argorithms\SymmetricPasswordAlgorithmBase.cs" />
+    <Compile Include="Security\Passwords\Argorithms\TripleDESPasswordAlgorithm.cs" />
+    <Compile Include="Security\Passwords\Impls\PasswordService.cs" />
+    <Compile Include="Security\Passwords\IPasswordService.cs" />
+    <Compile Include="Security\Passwords\PasswordUtil.cs" />
+    <Compile Include="Security\Repos\Aef\AccountEntity.cs" />
+    <Compile Include="Security\Repos\Aef\AccountRepository.cs" />
+    <Compile Include="Security\Repos\Aef\ClaimEntity.cs" />
+    <Compile Include="Security\Repos\Aef\ClaimRepository.cs" />
+    <Compile Include="Security\Repos\Aef\LoginEntity.cs" />
+    <Compile Include="Security\Repos\Aef\LoginRepository.cs" />
+    <Compile Include="Security\Repos\Aef\RoleEntity.cs" />
+    <Compile Include="Security\Repos\Aef\RoleRepository.cs" />
+    <Compile Include="Security\Repos\IAccountRepository.cs" />
+    <Compile Include="Security\Repos\IClaimRepository.cs" />
+    <Compile Include="Security\Repos\ILoginRepository.cs" />
+    <Compile Include="Security\Repos\IRoleRepository.cs" />
+    <Compile Include="Security\SecurityHelper.cs" />
+    <Compile Include="Security\SecuritySettings.cs" />
+    <Compile Include="Settings\ISettingManager.cs" />
+    <Compile Include="Settings\Repos\Aef\SettingEntity.cs" />
+    <Compile Include="Settings\Repos\Aef\SettingRepository.cs" />
+    <Compile Include="Settings\Repos\ISetting.cs" />
+    <Compile Include="Settings\Repos\ISettingRepository.cs" />
+    <Compile Include="Settings\SettingManager.cs" />
+    <Compile Include="Settings\SettingRegistry.cs" />
+    <Compile Include="Settings\SettingUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AppNext.Common\AppNext.Common.csproj">
+      <Project>{6bfdec0b-5c9f-4c1e-95c6-ed55b6e4d196}</Project>
+      <Name>AppNext.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AppNext.Data.Aef\AppNext.Data.Aef.csproj">
+      <Project>{533ffb9c-ca21-4311-8a55-b2680b800f40}</Project>
+      <Name>AppNext.Data.Aef</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AppNext.Data\AppNext.Data.csproj">
+      <Project>{1ed9b057-385a-4624-af23-77bc743051ad}</Project>
+      <Name>AppNext.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

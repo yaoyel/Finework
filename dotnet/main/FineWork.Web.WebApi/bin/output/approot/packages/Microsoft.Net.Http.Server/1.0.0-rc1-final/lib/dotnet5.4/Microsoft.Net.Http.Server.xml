@@ -1,0 +1,637 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Net.Http.Server</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Net.Http.Server.AuthenticationManager">
+            <summary>
+            Exposes the Http.Sys authentication configurations.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.Helpers.GetChunkHeader(System.Int32)">
+            <summary>
+            A private utility routine to convert an integer to a chunk header,
+            which is an ASCII hex number followed by a CRLF.The header is returned
+            as a byte array.
+            Generates a right-aligned hex string and returns the start offset.
+            </summary>
+            <param name="size">Chunk size to be encoded</param>
+            <param name="offset">Out parameter where we store offset into buffer.</param>
+            <returns>A byte array with the header in int.</returns>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_ArrayTooSmall">
+            <summary>
+              Looks up a localized string similar to The destination array is too small..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_EndCalledMultipleTimes">
+            <summary>
+              Looks up a localized string similar to End has already been called..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_InvalidStatusCode">
+            <summary>
+              Looks up a localized string similar to The status code &apos;{0}&apos; is not supported..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_NoSeek">
+            <summary>
+              Looks up a localized string similar to The stream is not seekable..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_PrefixAlreadyRegistered">
+            <summary>
+              Looks up a localized string similar to The prefix &apos;{0}&apos; is already registered..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_ReadOnlyStream">
+            <summary>
+              Looks up a localized string similar to This stream only supports read operations..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_TooMuchWritten">
+            <summary>
+              Looks up a localized string similar to More data written than specified in the Content-Length header..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_UnsupportedScheme">
+            <summary>
+              Looks up a localized string similar to Only the http and https schemes are supported..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_WriteOnlyStream">
+            <summary>
+              Looks up a localized string similar to This stream only supports write operations..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Exception_WrongIAsyncResult">
+            <summary>
+              Looks up a localized string similar to The given IAsyncResult does not match this opperation..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.Resources.Warning_ExceptionInOnResponseCompletedAction">
+            <summary>
+            An exception occured while running an action registered with {0}.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.TimeoutManager">
+            <summary>
+            Exposes the Http.Sys timeout configurations.  These may also be configured in the registry.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.EntityBody">
+             <summary>
+             The time, in seconds, allowed for the request entity body to arrive.  The default timer is 2 minutes.
+             
+             The HTTP Server API turns on this timer when the request has an entity body. The timer expiration is 
+             initially set to the configured value. When the HTTP Server API receives additional data indications on the 
+             request, it resets the timer to give the connection another interval.
+            
+             Use TimeSpan.Zero to indicate that system defaults should be used.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.DrainEntityBody">
+             <summary>
+             The time, in seconds, allowed for the HTTP Server API to drain the entity body on a Keep-Alive connection. 
+             The default timer is 2 minutes.
+             
+             On a Keep-Alive connection, after the application has sent a response for a request and before the request 
+             entity body has completely arrived, the HTTP Server API starts draining the remainder of the entity body to 
+             reach another potentially pipelined request from the client. If the time to drain the remaining entity body 
+             exceeds the allowed period the connection is timed out.
+            
+             Use TimeSpan.Zero to indicate that system defaults should be used.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.RequestQueue">
+             <summary>
+             The time, in seconds, allowed for the request to remain in the request queue before the application picks 
+             it up.  The default timer is 2 minutes.
+            
+             Use TimeSpan.Zero to indicate that system defaults should be used.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.IdleConnection">
+             <summary>
+             The time, in seconds, allowed for an idle connection.  The default timer is 2 minutes.
+             
+             This timeout is only enforced after the first request on the connection is routed to the application.
+            
+             Use TimeSpan.Zero to indicate that system defaults should be used.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.HeaderWait">
+             <summary>
+             The time, in seconds, allowed for the HTTP Server API to parse the request header.  The default timer is 
+             2 minutes.
+              
+             This timeout is only enforced after the first request on the connection is routed to the application.
+            
+             Use TimeSpan.Zero to indicate that system defaults should be used.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.TimeoutManager.MinSendBytesPerSecond">
+             <summary>
+             The minimum send rate, in bytes-per-second, for the response. The default response send rate is 150 
+             bytes-per-second.
+            
+             To disable this timer set it to UInt32.MaxValue
+             </summary>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.UrlPrefix.Create(System.String,System.String,System.String,System.String)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/windows/desktop/aa364698(v=vs.85).aspx
+            </summary>
+            <param name="scheme">http or https. Will be normalized to lower case.</param>
+            <param name="host">+, *, IPv4, [IPv6], or a dns name. Http.Sys does not permit punycode (xn--), use Unicode instead.</param>
+            <param name="port">If empty, the default port for the given scheme will be used (80 or 443).</param>
+            <param name="path">Should start and end with a '/', though a missing trailing slash will be added. This value must be un-escaped.</param>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.UrlPrefix.Create(System.String,System.String,System.Nullable{System.Int32},System.String)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/windows/desktop/aa364698(v=vs.85).aspx
+            </summary>
+            <param name="scheme">http or https. Will be normalized to lower case.</param>
+            <param name="host">+, *, IPv4, [IPv6], or a dns name. Http.Sys does not permit punycode (xn--), use Unicode instead.</param>
+            <param name="port">If empty, the default port for the given scheme will be used (80 or 443).</param>
+            <param name="path">Should start and end with a '/', though a missing trailing slash will be added. This value must be un-escaped.</param>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.UrlPrefixCollection">
+            <summary>
+            A collection or URL prefixes
+            </summary>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.WebListener">
+            <summary>
+            An HTTP server wrapping the Http.Sys APIs that accepts requests.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.WebListener.TimeoutManager">
+            <summary>
+            Exposes the Http.Sys timeout configurations.  These may also be configured in the registry.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.WebListener.SetRequestQueueLimit(System.Int64)">
+            <summary>
+            Sets the maximum number of requests that will be queued up in Http.Sys.
+            </summary>
+            <param name="limit"></param>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.WebListener.Dispose">
+            <summary>
+            Stop the server and clean up.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.AddressFamily">
+            <devdoc>
+               <para>
+                  Specifies the address families that an instance of the <see cref='!:System.Net.Sockets.Socket'/>
+                  class can use.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Unknown">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Unspecified">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Unix">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.InterNetwork">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.ImpLink">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Pup">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Chaos">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.NS">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Ipx">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Iso">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Osi">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Ecma">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.DataKit">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Ccitt">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Sna">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.DecNet">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.DataLink">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Lat">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.HyperChannel">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.AppleTalk">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.NetBios">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.VoiceView">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.FireFox">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Banyan">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Atm">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.InterNetworkV6">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Cluster">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Ieee12844">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Irda">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.NetworkDesigners">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.AddressFamily.Max">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.SocketAddress">
+            <devdoc>
+               <para>
+                  This class is used when subclassing EndPoint, and provides indication
+                  on how to format the memory buffers that winsock uses for network addresses.
+               </para>
+            </devdoc>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.SocketAddress.#ctor(Microsoft.Net.Http.Server.AddressFamily,System.Int32)">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.SocketAddress.Item(System.Int32)">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.TokenBindingUtil">
+            <summary>
+            Contains helpers for dealing with TLS token binding.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Net.Http.Server.TokenBindingUtil.GetProvidedTokenIdFromBindingInfo(Microsoft.Net.Http.Server.UnsafeNclNativeMethods.HttpApi.HTTP_REQUEST_TOKEN_BINDING_INFO*,System.Byte[]@)">
+            <summary>
+            Returns the 'provided' token binding identifier, optionally also returning the
+            'referred' token binding identifier. Returns null on failure.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Net.Http.Server.HttpStatusCode">
+            <devdoc>
+               <para>Contains the values of status
+                  codes defined for the HTTP protocol.</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Continue">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.SwitchingProtocols">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.OK">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Created">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Accepted">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NonAuthoritativeInformation">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NoContent">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.ResetContent">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.PartialContent">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.MultipleChoices">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Ambiguous">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.MovedPermanently">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Moved">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Found">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Redirect">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.SeeOther">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RedirectMethod">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NotModified">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.UseProxy">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Unused">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.TemporaryRedirect">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RedirectKeepVerb">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.BadRequest">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Unauthorized">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.PaymentRequired">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Forbidden">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NotFound">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.MethodNotAllowed">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NotAcceptable">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.ProxyAuthenticationRequired">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RequestTimeout">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Conflict">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.Gone">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.LengthRequired">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.PreconditionFailed">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RequestEntityTooLarge">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RequestUriTooLong">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.UnsupportedMediaType">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.RequestedRangeNotSatisfiable">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.ExpectationFailed">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.InternalServerError">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.NotImplemented">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.BadGateway">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.ServiceUnavailable">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.GatewayTimeout">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="F:Microsoft.Net.Http.Server.HttpStatusCode.HttpVersionNotSupported">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="P:Microsoft.Net.Http.Server.RequestContext.AuthenticationChallenges">
+            <summary>
+            The authentication challengest that will be added to the response if the status code is 401.
+            This must be a subset of the AuthenticationSchemes enabled on the server.
+            </summary>
+        </member>
+    </members>
+</doc>

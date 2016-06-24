@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0-*",
+  "description": "FineWork.Web.WebApi.Tests Class Library",
+  "authors": [
+    "Yaojian"
+  ],
+  "tags": [
+    ""
+  ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "dependencies": {
+    "FineWork.Web.WebApi.Tests": "1.0.0"
+  },
+  "commands": {
+    "test": "xunit.runner.dnx"
+  },
+  "frameworks": {
+    "dnx451": {}
+  },
+  "entryPoint": "FineWork.Web.WebApi.Tests",
+  "loadable": false
+}

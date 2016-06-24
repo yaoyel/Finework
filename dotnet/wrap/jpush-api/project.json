@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0-*",
+  "frameworks": {
+    "net451": {
+      "bin": {
+        "assembly": "../../libs/dnx451/2.0.0/jpush-api.dll"
+      }
+    }
+  }
+}

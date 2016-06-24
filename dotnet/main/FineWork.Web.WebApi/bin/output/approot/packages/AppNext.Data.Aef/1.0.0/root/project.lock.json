@@ -1,0 +1,289 @@
+{
+  "locked": false,
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.5.1": {
+      "AppNext.Common/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Common.dll": {}
+        }
+      },
+      "AppNext.Data/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.dll": {}
+        }
+      },
+      "AppNext.Data.Aef/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0",
+          "AppNext.Data": "1.0.0",
+          "EntityFramework": "6.1.3"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        }
+      },
+      "EntityFramework/6.1.3": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.ComponentModel.DataAnnotations"
+        ],
+        "compile": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        },
+        "runtime": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x86": {
+      "AppNext.Common/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Common.dll": {}
+        }
+      },
+      "AppNext.Data/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.dll": {}
+        }
+      },
+      "AppNext.Data.Aef/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0",
+          "AppNext.Data": "1.0.0",
+          "EntityFramework": "6.1.3"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        }
+      },
+      "EntityFramework/6.1.3": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.ComponentModel.DataAnnotations"
+        ],
+        "compile": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        },
+        "runtime": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.1/win7-x64": {
+      "AppNext.Common/1.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Common.dll": {}
+        }
+      },
+      "AppNext.Data/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.dll": {}
+        }
+      },
+      "AppNext.Data.Aef/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "AppNext.Common": "1.0.0",
+          "AppNext.Data": "1.0.0",
+          "EntityFramework": "6.1.3"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        },
+        "runtime": {
+          "lib/net451/AppNext.Data.Aef.dll": {}
+        }
+      },
+      "EntityFramework/6.1.3": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.ComponentModel.DataAnnotations"
+        ],
+        "compile": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        },
+        "runtime": {
+          "lib/net45/EntityFramework.dll": {},
+          "lib/net45/EntityFramework.SqlServer.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AppNext.Common/1.0.0": {
+      "type": "package",
+      "sha512": "RVNqMEJdK1z6d/SqcGE7GOe/pyzSxSGAQDdIxOutguJM4BgYY1/TsghIko4QHJ6vwKZ5tnX5N6kgOF2ETNmDYQ==",
+      "files": [
+        "AppNext.Common.1.0.0.nupkg",
+        "AppNext.Common.1.0.0.nupkg.sha512",
+        "AppNext.Common.nuspec",
+        "lib/net451/AppNext.Common.dll",
+        "root/project.json",
+        "root/project.lock.json"
+      ]
+    },
+    "AppNext.Data/1.0.0": {
+      "type": "package",
+      "sha512": "lGZw3n/XptB/DBvShgRSy7VmHFsCubvTYLe6Ln/SthJAgk855Du9VIu1kqYxRrt/l8BVCUSXwnqeaX5ckxwH1Q==",
+      "files": [
+        "AppNext.Data.1.0.0.nupkg",
+        "AppNext.Data.1.0.0.nupkg.sha512",
+        "AppNext.Data.nuspec",
+        "lib/net451/AppNext.Data.dll",
+        "root/project.json",
+        "root/project.lock.json"
+      ]
+    },
+    "AppNext.Data.Aef/1.0.0": {
+      "type": "package",
+      "sha512": "Q0iThx8b8C5ocWnqt07W3Kt0fXibNg/JP3MWbeuTNlvjIlXoh47Q8QNOc+0eXNchd/I5K8tV1v5flw6eGcMYCA==",
+      "files": [
+        "AppNext.Data.Aef.1.0.0.nupkg",
+        "AppNext.Data.Aef.1.0.0.nupkg.sha512",
+        "AppNext.Data.Aef.nuspec",
+        "lib/net451/AppNext.Data.Aef.dll",
+        "root/project.json",
+        "root/project.lock.json"
+      ]
+    },
+    "EntityFramework/6.1.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "2xzFHAF3VVdmTR3//MygtQpwfbDjeaq+nQwCcokLzen7MKHOojPaxNPQPa4diHY1QtcR7zlHAJHNRqPB7W2Syw==",
+      "files": [
+        "content/App.config.transform",
+        "content/Web.config.transform",
+        "EntityFramework.6.1.3.nupkg",
+        "EntityFramework.6.1.3.nupkg.sha512",
+        "EntityFramework.nuspec",
+        "lib/net40/EntityFramework.dll",
+        "lib/net40/EntityFramework.SqlServer.dll",
+        "lib/net40/EntityFramework.SqlServer.xml",
+        "lib/net40/EntityFramework.xml",
+        "lib/net45/EntityFramework.dll",
+        "lib/net45/EntityFramework.SqlServer.dll",
+        "lib/net45/EntityFramework.SqlServer.xml",
+        "lib/net45/EntityFramework.xml",
+        "tools/about_EntityFramework.help.txt",
+        "tools/EntityFramework.PowerShell.dll",
+        "tools/EntityFramework.PowerShell.Utility.dll",
+        "tools/EntityFramework.psd1",
+        "tools/EntityFramework.psm1",
+        "tools/init.ps1",
+        "tools/install.ps1",
+        "tools/migrate.exe"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [
+      "AppNext.Data.Aef >= 1.0.0"
+    ],
+    ".NETFramework,Version=v4.5.1": [
+      "EntityFramework >= 6.1.3",
+      "AppNext.Common >= 1.0.0-*",
+      "AppNext.Data >= 1.0.0-*"
+    ]
+  }
+}

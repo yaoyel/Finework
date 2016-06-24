@@ -1,0 +1,8 @@
+{
+  "AzureSettings": {
+    "FullSharedAccessSignature": "Endpoint=sb://chrd-ns.servicebus.chinacloudapi.cn/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=7YXmjI1WH4aL/Fv4f9xiT9RXA4czENhSBW8kLu6N/Dc=",
+    "ListenSharedAccessSignature": "Endpoint=sb://chrd-ns.servicebus.chinacloudapi.cn/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=TvxlL29P9yI03Y+o47g4ywNIe0IzlmcAOSrZyrY2SX0=",
+    "NotificationHubName": "fineworknotificationhub",
+    "StorageConnectionString": "TableEndpoint=https:\/\/chrd.table.core.chinacloudapi.cn;BlobEndpoint=https:\/\/chrd.blob.core.chinacloudapi.cn;AccountName=chrd;AccountKey=rScgb7xsEq44A0Ex+5NajKE2xeYg/la1bbZ0LrG8R0iC6OqLkQ6zobFgsmJdrFEWOmR1F4Z9i6KJbYwlCe6qEQ=="
+  }
+}
