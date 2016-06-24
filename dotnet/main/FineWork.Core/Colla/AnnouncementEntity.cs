@@ -14,16 +14,18 @@ namespace FineWork.Colla
 
         public DateTime EndAt { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }=DateTime.Now;
 
         public bool IsNeedAchv { get; set; }
 
         [Timestamp]
         public byte[] RowVer { get; set; }
 
+        public ReviewStatuses ReviewStatus { get; set; }
+
         public virtual TaskEntity Task { get; set; }
 
-        public virtual StaffEntity Staff { get; set; }
+        public virtual StaffEntity Staff { get; set; } 
 
         public virtual ICollection<AnncAttEntity> Atts { get; set; } = new HashSet<AnncAttEntity>();
 

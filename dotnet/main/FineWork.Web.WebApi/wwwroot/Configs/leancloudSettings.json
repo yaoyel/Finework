@@ -8,6 +8,7 @@
     },
     "Messages": {
       "Task": {
+        "ChangeTaskEndAt": " {0} 将结束时间设置为「{1}」",
         "ChangeParentTask": " {0} 将上级任务设置为「{1}」",
         "ChangeTaskGoal": " {0} 将任务目标设置为「{1}」",
         "ChangeTaskLevel": " {0} 将任务优先级设置为「{1}」",

@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppBoot.Common;
 using FineWork.Common;
 using JetBrains.Annotations;
 
 namespace FineWork.Colla
 {
-    public class PartakerKindUpdateResult:FineWorkCheckResult
+    public class AlarmOrVoteExistsResult:FineWorkCheckResult
     {
-        public PartakerKindUpdateResult(bool isSucceed, String message)
+        public AlarmOrVoteExistsResult(bool isSucceed, String message)
             : base(isSucceed, message)
         { 
         }
 
-        public static PartakerKindUpdateResult Check(PartakerEntity partaker,Guid taskId,ITaskAlarmManager taskAlarmManager)
+        public static AlarmOrVoteExistsResult Check(PartakerEntity partaker,Guid taskId,ITaskAlarmManager taskAlarmManager)
         {
             var alarmsAsCreateor =
                 taskAlarmManager.FetchTaskAlarmsByStaffId(partaker.Staff.Id).Where(p => p.Task.Id == taskId && p.ResolveStatus!=ResolveStatus.Closed);
@@ -27,23 +28,36 @@ namespace FineWork.Colla
 
             if (partaker.Staff.Votes.Any(p=>p.Task.Id==taskId && p.IsApproved==null))
                 return Check($"{partaker.Staff.Name}存在未处理的共识.");
-            return new PartakerKindUpdateResult(true, null);
+            return new AlarmOrVoteExistsResult(true, null);
         }
 
-        public static PartakerKindUpdateResult Check(IPartakerManager partakerManager,Guid staffId)
+        public static AlarmOrVoteExistsResult Check(ITaskManager taskManager, Guid taskId)
+        {
+            Args.NotNull(taskManager, nameof(taskManager));
+
+            var task = taskManager.FindTask(taskId);
+            if(task.Alarms.Any())
+                return Check("该任务存在未处理的预警.");
+            if(task.Votes.Any())
+                return Check("该任务存在未处理的共识.");
+
+            return new AlarmOrVoteExistsResult(true, null);
+        }
+
+        public static AlarmOrVoteExistsResult Check(IPartakerManager partakerManager,Guid staffId)
         {
             var partakers = partakerManager.FetchPartakersByStaff(staffId).ToList();
             if (partakers.Any(p=>p.Staff.Alarms.Any(a=> a.ResolveStatus != ResolveStatus.Closed)))
                 return Check("该员工存在未处理的预警.");
             if (partakers.Any(p=>p.Staff.Votes.Any(a=> a.IsApproved == null)))
                 return Check("该员工存在未处理的共识.");
-            return new PartakerKindUpdateResult(true, null);
+            return new AlarmOrVoteExistsResult(true, null);
         }
          
 
-        private static PartakerKindUpdateResult Check( String message)
+        private static AlarmOrVoteExistsResult Check( String message)
         { 
-            return new PartakerKindUpdateResult(false, message); 
+            return new AlarmOrVoteExistsResult(false, message); 
         }
 
     }

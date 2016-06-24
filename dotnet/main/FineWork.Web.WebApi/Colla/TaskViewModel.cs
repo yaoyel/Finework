@@ -31,6 +31,8 @@ namespace FineWork.Web.WebApi.Colla
 
         public Guid[] AvatarIds { get; set; }
 
+        public DateTime? EndAt { get; set; }
+
         public virtual void AssignFrom(TaskEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -47,6 +49,7 @@ namespace FineWork.Web.WebApi.Colla
             this.Layer = GetLayerByParentTask(entity);
             this.CreatedAt = entity.CreatedAt;
             this.AvatarIds = entity.Partakers.OrderBy(p => p.CreatedAt).Take(9).Select(p => p.Staff.Account.Id).ToArray();
+            this.EndAt = entity.EndAt;
         }
 
         protected int GetLayerByParentTask(TaskEntity entity, int layer = 1)

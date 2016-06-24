@@ -100,7 +100,7 @@ namespace FineWork.Colla.Impls
             if (files.Any())
                 files.ForEach(InternalDelete);
 
-            this.m_FileMamager.DeleteFile(GetMomentFileDirectory(moment));
+            this.m_FileMamager.DeleteBlobDirectory(GetMomentFileDirectory(moment));
         }
 
         public void DownloadMomentFile(MomentFileEntity momentFile, Stream stream)

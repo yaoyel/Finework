@@ -138,7 +138,7 @@ namespace FineWork.Web.WebApi.Colla
                 StaffExistsResult.CheckForAdmin(this.StaffManager, staff.Org.Id, this.AccountId).ThrowIfFailed();
 
                 //判断是否有预警或共识未处理 
-                PartakerKindUpdateResult.Check(this.PartakerManager,staffIds).ThrowIfFailed();
+                AlarmOrVoteExistsResult.Check(this.PartakerManager,staffIds).ThrowIfFailed();
 
                 //如果是任务的负责人，管理员无权禁用
                 var leader = PartakerManager.FetchPartakersByStaff(staffIds)
@@ -151,7 +151,7 @@ namespace FineWork.Web.WebApi.Colla
 
                 //推送消息至禁用的账号
                 var attrs = new Dictionary<string, string>();
-                attrs.Add("Path", "EnabledStaff");
+                attrs.Add("PathTo", "EnabledStaff");
                 attrs.Add("Status",newStatus?"True":"False");
                 attrs.Add("StaffId", staff.Id.ToString());
                 var pushMessage = string.Format(Config["PushMessage:ChangeStaffStatus"], staff.Org.Name,

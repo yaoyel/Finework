@@ -21,6 +21,7 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using AppBoot.Transactions;
 using FineWork.Net.Sms;
+using FineWork.Security.Passwords;
 using FineWork.Web.WebApi.Core;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -28,35 +29,39 @@ using Microsoft.Extensions.Configuration;
 namespace FineWork.Web.WebApi.Security
 {
     [Route("api/Accounts")]
-    [Authorize("Bearer")] 
+    [Authorize("Bearer")]
     public class AccountsController : FwApiController
     {
-        public AccountsController(ISessionProvider<AefSession> sessionProvider, 
+        public AccountsController(ISessionProvider<AefSession> sessionProvider,
             IAccountManager accountManager,
             IStaffManager staffManager,
             IOrgManager orgManager,
             ISmsService smsService,
-            IHostingEnvironment hostEvn
-           )
-            :base(sessionProvider)
+            IHostingEnvironment hostEvn,
+            IPasswordService passwordService
+            )
+            : base(sessionProvider)
         {
             if (staffManager == null) throw new ArgumentNullException(nameof(staffManager));
             if (orgManager == null) throw new ArgumentNullException(nameof(orgManager));
             if (accountManager == null) throw new ArgumentNullException(nameof(accountManager));
             if (hostEvn == null) throw new ArgumentNullException(nameof(hostEvn));
+            if (passwordService == null) throw new ArgumentNullException(nameof(passwordService));
 
             m_AccountManager = accountManager;
             m_StaffManager = staffManager;
             m_OrgManager = orgManager;
             m_SmsService = smsService;
             m_HostEvn = hostEvn;
+            m_PasswordService = passwordService;
         }
 
         private readonly IAccountManager m_AccountManager;
         private readonly IStaffManager m_StaffManager;
         private readonly IOrgManager m_OrgManager;
         private readonly ISmsService m_SmsService;
-        private readonly IHostingEnvironment m_HostEvn; 
+        private readonly IHostingEnvironment m_HostEvn;
+        private readonly IPasswordService m_PasswordService;
 
         //[FwHandleErrors]
         [HttpPost("CreateAccount")]
@@ -76,8 +81,8 @@ namespace FineWork.Web.WebApi.Security
 
                 var account = (AccountEntity) m_AccountManager.CreateAccount(accountModel);
 
-                result=account.ToViewModel();
-                tx.Complete(); 
+                result = account.ToViewModel();
+                tx.Complete();
             }
 
             //异步设置默认头像
@@ -85,13 +90,13 @@ namespace FineWork.Web.WebApi.Security
             Task.Factory.StartNew(() =>
             {
                 var accountId = result.Id;
-                var path=Path.Combine(m_HostEvn.WebRootPath, "Avatar", "default","account.png");
+                var path = Path.Combine(m_HostEvn.WebRootPath, "Avatar", "default", "account.png");
 
                 using (var fileStream = new FileStream(path, FileMode.Open))
                 {
                     m_AccountManager.UploadAccountAvatar(fileStream, accountId, "Image/jpeg");
                 }
-        
+
             });
 
             return result;
@@ -109,7 +114,7 @@ namespace FineWork.Web.WebApi.Security
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 m_AccountManager.UploadAccountAvatar(reader.BaseStream, accountId ?? this.AccountId, file.ContentType);
-            } 
+            }
         }
 
         [HttpPost("ChangeAccountName")]
@@ -120,7 +125,7 @@ namespace FineWork.Web.WebApi.Security
             IAccount account = null;
 
             using (var tx = TxManager.Acquire())
-            { 
+            {
                 account = AccountNotExistsResult.Check(this.m_AccountManager, newAccountName).Account;
                 if (account != null)
                 {
@@ -153,7 +158,7 @@ namespace FineWork.Web.WebApi.Security
 
         [AllowAnonymous]
         [HttpPost("VerifySmsCode")]
-        public bool VerifySmsCode(string smsCode,string phoneNumber)
+        public bool VerifySmsCode(string smsCode, string phoneNumber)
         {
             Args.NotNull(smsCode, nameof(smsCode));
             Args.NotNull(phoneNumber, nameof(phoneNumber));
@@ -162,7 +167,7 @@ namespace FineWork.Web.WebApi.Security
             {
                 m_SmsService.VerifySmsCode(phoneNumber, smsCode);
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -170,15 +175,15 @@ namespace FineWork.Web.WebApi.Security
         }
 
         [AllowAnonymous]
-        [HttpGet("RequestSmsCode")] 
+        [HttpGet("RequestSmsCode")]
         public IActionResult RequestSmsCode(string phoneNumber)
-        { 
-            m_SmsService.SendMessage(phoneNumber,"",null);
+        {
+            m_SmsService.SendMessage(phoneNumber, "", null);
             return new HttpStatusCodeResult(200);
         }
 
         /// <summary> 根据 <see cref="IAccount.Id"/> 获取用户信息. </summary>
-        [HttpGet("FindAccountById")] 
+        [HttpGet("FindAccountById")]
         public AccountViewModel FindAccountById(Guid? accountId)
         {
             var account = m_AccountManager.FindAccount(accountId == null ? this.AccountId : accountId.Value);
@@ -186,27 +191,43 @@ namespace FineWork.Web.WebApi.Security
             return ((AccountEntity) account).ToViewModel();
         }
 
-        [HttpPost("Validate")] 
+        [HttpPost("Validate")]
         public IActionResult ValidateAccount(string phoneNumber, string pwd)
         {
             if (string.IsNullOrEmpty(phoneNumber)) throw new ArgumentException(nameof(phoneNumber));
             if (string.IsNullOrEmpty(pwd)) throw new ArgumentException(nameof(pwd));
 
-            var account = m_AccountManager.FindAccountByPhoneNumber(phoneNumber);
-            if (account == null || account.Password != pwd)
+            var account = AccountExistsResult.CheckByPhoneNumber(m_AccountManager, phoneNumber).ThrowIfFailed().Account;
+
+            if (!m_PasswordService.Verify(account.PasswordFormat, pwd, account.Password, account.PasswordSalt))
                 return HttpUnauthorized();
 
             return new ObjectResult(((AccountEntity) account).ToViewModel());
         }
 
-        [Route("FetchAccountsByOrgId")] 
+        [Route("FetchAccountsByOrgId")]
         public IEnumerable<AccountViewModel> FetchAccountsByOrgId(Guid orgId)
         {
             return m_StaffManager
-                .FetchStaffsByOrg(orgId,true)
+                .FetchStaffsByOrg(orgId, true)
                 .Select(p => p.Account)
                 .Select(p => p.ToViewModel());
         }
-         
+
+        [HttpPost("ChangePassword")]
+        [AllowAnonymous]
+        public void ChangePassword(string phoneNumber, string newPwd)
+        {
+            if (string.IsNullOrEmpty(phoneNumber)) throw new ArgumentException(nameof(phoneNumber));
+            using (var tx = TxManager.Acquire())
+            {
+
+                var account =
+                    AccountExistsResult.CheckByPhoneNumber(m_AccountManager, phoneNumber).ThrowIfFailed().Account;
+
+                this.m_AccountManager.ChangePassword(account, account.Password, newPwd);
+                tx.Complete();
+            }
+        }
     }
 }

@@ -46,6 +46,8 @@ namespace FineWork.Colla
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public DateTime? EndAt { get; set; }
+
         public virtual ICollection<PartakerEntity> Partakers { get; set; } = new HashSet<PartakerEntity>();
 
         public virtual ICollection<TaskEntity> ChildTasks { get; set; } = new HashSet<TaskEntity>();
@@ -76,7 +78,7 @@ namespace FineWork.Colla
 
         public virtual ICollection<AnnouncementEntity> Announcements { get; set; } = new HashSet<AnnouncementEntity>();
 
-        //public virtual TaskReportEntity Report { get; set; }
+        public virtual TaskReportEntity Report { get; set; }
 
         public PartakerKinds PartakerKindFor(StaffEntity staff)
         {

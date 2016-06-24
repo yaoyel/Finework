@@ -63,7 +63,7 @@ namespace FineWork.Azure
         private void ConfigureCors(ServiceProperties serviceProperties)
         {
             serviceProperties.Cors.CorsRules.Clear();
-            serviceProperties.Cors = new CorsProperties(); 
+            serviceProperties.Cors = new CorsProperties();
             serviceProperties.Cors.CorsRules.Add(new CorsRule()
             {
                 AllowedHeaders = new List<string>() { "*" },
@@ -109,6 +109,18 @@ namespace FineWork.Azure
                 file.Delete();
             }
             return result;
+        }
+
+        public void DeleteBlobDirectory(string directory)
+        {
+
+            var container = GetContainer();
+
+            var blobs = container.ListBlobs(directory, true);
+            foreach (var blob in blobs)
+            {
+                container.GetBlockBlobReference(((CloudBlockBlob)blob).Name).DeleteIfExists();
+            }
         }
 
 

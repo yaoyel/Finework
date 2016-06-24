@@ -12,18 +12,31 @@ using FineWork.Colla.Models;
 
 namespace FineWork.Colla.Impls
 {
-    public class TaskReportManager :AefEntityManager<TaskReportEntity, Guid>, ITaskReportManager
+    public class TaskReportManager : AefEntityManager<TaskReportEntity, Guid>, ITaskReportManager
     {
 
         public TaskReportManager(ISessionProvider<AefSession> sessionProvider,
-            ITaskManager taskManager) : base(sessionProvider)
+            ITaskManager taskManager,
+            IPartakerManager partakerManager,
+            ITaskReportAttManager taskReportAttManager,
+            ITaskSharingManager taskSharingManager) : base(sessionProvider)
         {
 
             Args.NotNull(taskManager, nameof(taskManager));
+            Args.NotNull(partakerManager, nameof(partakerManager));
+            Args.NotNull(taskReportAttManager, nameof(taskReportAttManager));
+            Args.NotNull(taskSharingManager, nameof(taskSharingManager));
+
+            m_PartakerManager = partakerManager;
             m_TaskManager = taskManager;
+            m_TaskReportAttManager = taskReportAttManager;
+            m_TaskSharingManager = taskSharingManager;
         }
 
         private readonly ITaskManager m_TaskManager;
+        private readonly IPartakerManager m_PartakerManager;
+        private readonly ITaskReportAttManager m_TaskReportAttManager;
+        private readonly ITaskSharingManager m_TaskSharingManager;
 
         public TaskReportEntity CreateTaskReport(CreateTaskReportModel createTaskReportModel)
         {
@@ -32,11 +45,32 @@ namespace FineWork.Colla.Impls
             var taskReport = new TaskReportEntity();
 
             taskReport.Id = Guid.NewGuid();
-            taskReport.FinishedAt = createTaskReportModel.FinishedAt;
+            taskReport.EndedAt = createTaskReportModel.EndedAt;
             taskReport.Summary = createTaskReportModel.Summary;
             taskReport.EffScore = createTaskReportModel.EffScore;
             taskReport.QualityScore = createTaskReportModel.QualityScore;
             taskReport.Task = task;
+
+            //设置表现突出的战友
+            if (createTaskReportModel.Exilses.Any())
+            {
+                foreach (var exils in createTaskReportModel.Exilses)
+                {
+                    var partaker = PartakerExistsResult.Check(task, exils).ThrowIfFailed().Partaker;
+                    partaker.IsExils = true;
+                    m_PartakerManager.UpdatePartaker(partaker);
+                }
+            }
+             
+            //添加附件
+            if (createTaskReportModel.Atts.Any())
+            {
+                foreach (var attId in createTaskReportModel.Atts)
+                {
+                    var taskSharing = TaskSharingExistsResult.Check(m_TaskSharingManager,attId).ThrowIfFailed().TaskSharing;
+                    m_TaskReportAttManager.CreateReportAtt(taskReport.Id, taskSharing.Id);
+                }
+            }
             return taskReport;
         }
 
@@ -54,20 +88,48 @@ namespace FineWork.Colla.Impls
         {
             var report = TaskReportExistsResult.Check(this, updateTaskReportModel.Id).ThrowIfFailed().TaskReport;
 
-            report.FinishedAt = updateTaskReportModel.FinishedAt;
+            report.EndedAt = updateTaskReportModel.EndedAt;
             report.Summary = updateTaskReportModel.Summary;
             report.EffScore = updateTaskReportModel.EffScore;
             report.QualityScore = updateTaskReportModel.QualityScore;
 
-            if (report.TaskExilses.Select(p => p.PartakerId).ToArray() != updateTaskReportModel.Exilses)
+
+            var exilsIds = m_PartakerManager.FetchExilsesByTaskId(report.Task.Id).Select(p => p.Id).ToArray();
+
+            
+            if (exilsIds.Any() || updateTaskReportModel.Exilses.Any())
             {
-                
-            }
+                var diffExilses = exilsIds.Except(updateTaskReportModel.Exilses).ToArray();
+
+                //取消的优秀战友
+                if (diffExilses.Any())
+                    foreach (var partakerId in diffExilses)
+                    {
+                        var partaker = PartakerExistsResult.Check(report.Task, partakerId).Partaker;
+                        if (partaker != null)
+                        {
+                            partaker.IsExils = null;
+                            m_PartakerManager.UpdatePartaker(partaker);
+                        }
+                    }
+
+                //新增的优秀战友
+                diffExilses = updateTaskReportModel.Exilses.Except(exilsIds).ToArray();
+                if (diffExilses.Any())
+                    foreach (var partakerId in diffExilses)
+                    {
+                        var partaker = PartakerExistsResult.Check(report.Task, partakerId).ThrowIfFailed().Partaker;
+
+                        partaker.IsExils = true;
+                        m_PartakerManager.UpdatePartaker(partaker);
+
+                    } 
+            }  
 
             this.InternalUpdate(report);
             return report;
         }
 
-  
+
     }
 }

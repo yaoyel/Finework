@@ -56,7 +56,8 @@ namespace FineWork.Web.WebApi.Colla
         public IActionResult FetchTaskIncentivesByTaskId(Guid taskId)
         {
             var taskIncentives = this.m_TaskIncentiveManager.FetchTaskIncentiveByTaskId(taskId);
-             
+
+
             return taskIncentives != null? new ObjectResult(taskIncentives
                 .Select(p => p.ToViewModel())
                 .OrderBy(p=>p.IncentiveKind.Id))

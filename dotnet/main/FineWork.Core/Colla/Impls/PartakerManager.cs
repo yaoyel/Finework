@@ -206,7 +206,7 @@ namespace FineWork.Colla.Impls
 
 
             //判断是否有预警或共识为处理 
-            PartakerKindUpdateResult.Check(partaker,taskId,this.TaskAlarmManager).ThrowIfFailed(); 
+            AlarmOrVoteExistsResult.Check(partaker,taskId,this.TaskAlarmManager).ThrowIfFailed(); 
 
             this.InternalDelete(partaker);
 
@@ -254,6 +254,18 @@ namespace FineWork.Colla.Impls
             InternalUpdate(partaker); 
 
             return partaker; 
-        } 
+        }
+
+
+        public void UpdatePartaker(PartakerEntity partaker)
+        {
+            Args.NotNull(partaker, nameof(partaker));
+            this.InternalUpdate(partaker);
+        }
+
+        public IEnumerable<PartakerEntity> FetchExilsesByTaskId(Guid taskId)
+        {
+            return this.InternalFetch(p => p.Task.Id == taskId && p.IsExils.HasValue && p.IsExils.Value);
+        }
     }
 }

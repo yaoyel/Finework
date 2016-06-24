@@ -9,7 +9,7 @@ namespace FineWork.Colla
 {
     public class AnncIncentiveEntity:EntityBase<Guid>
     {
-        public int Amount { get; set; }
+        public decimal  Amount { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

@@ -72,8 +72,7 @@ namespace FineWork.Web.WebApi.Colla
                 var partakerReqSet = sp.DbContext.Set<PartakerReqEntity>()
                     .Where(p=>p.ReviewStatus== ReviewStatuses.Unspecified)
                     .Include(p=>p.Task.Creator)
-                    .Include(p => p.Staff.Account).AsParallel().ToList();
-                //var partakerSet = sp.DbContext.Set<PartakerEntity>().Include(p=>p.Staff.Account).AsEnumerable();
+                    .Include(p => p.Staff.Account).AsParallel().ToList(); 
 
                 var partakers = m_PartakerManager.FetchPartakersByStaff(staffId).AsParallel().ToList();
 
@@ -285,7 +284,7 @@ namespace FineWork.Web.WebApi.Colla
                     throw new FineWorkException("任务协同者不可用进行此操作。");
 
                 //判断是否有预警或共识为处理 
-                PartakerKindUpdateResult.Check(partaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
+                AlarmOrVoteExistsResult.Check(partaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
 
 
                 var leader = this.m_PartakerManager.ChangeLeader(taskId, staffId);
@@ -367,7 +366,7 @@ namespace FineWork.Web.WebApi.Colla
 
 
             //判断是否有预警或共识为处理 
-            PartakerKindUpdateResult.Check(pendingPartaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
+            AlarmOrVoteExistsResult.Check(pendingPartaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
 
             var result = this.m_PartakerManager.ChangePartakerKind(task, staff, partakerKind);
 

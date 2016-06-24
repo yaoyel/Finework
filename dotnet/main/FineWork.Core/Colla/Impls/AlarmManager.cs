@@ -85,7 +85,7 @@ namespace FineWork.Colla.Impls
 
         public IEnumerable<AlarmEntity> FetchAlarmPeriodsByTaskId(Guid taskId)
         {
-            return this.InternalFetch(p => p.Task.Id == taskId).OrderByDescending(p => p.ShortTime);
+            return this.InternalFetch(p => p.Task.Id == taskId).OrderBy(p => p.ShortTime);
         }
 
         public IEnumerable<AlarmEntity> FetchAlarmPeriodsByDate(DateTime? date)

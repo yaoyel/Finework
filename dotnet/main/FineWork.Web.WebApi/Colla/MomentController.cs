@@ -107,6 +107,7 @@ namespace FineWork.Web.WebApi.Colla
                 var staff = StaffExistsResult.Check(this.m_StaffManager, org.Id, this.AccountId).ThrowIfFailed().Staff;
                 PermissionIsAdminResult.Check(this.m_OrgManager, org.Id, staff.Id).ThrowIfFailed();
 
+
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
                     m_MomentFileManager.UploadMomentBgImage(org, file.ContentType, reader.BaseStream);

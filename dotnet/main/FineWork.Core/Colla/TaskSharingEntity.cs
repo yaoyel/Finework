@@ -24,5 +24,6 @@ namespace FineWork.Colla
         public virtual  StaffEntity Staff { get; set; }
 
         public virtual TaskEntity Task { get; set; } 
+         
     }
 }

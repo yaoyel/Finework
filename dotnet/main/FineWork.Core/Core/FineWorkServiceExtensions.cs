@@ -350,6 +350,19 @@ namespace FineWork.Core
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<IStaffManager>()));
 
+            serviceCollection.AddScoped<ITaskReportManager>(s => new TaskReportManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<ITaskManager>(),
+                s.GetRequiredService<IPartakerManager>(),
+                s.GetRequiredService<ITaskReportAttManager>(),
+                s.GetRequiredService<ITaskSharingManager>()
+                ));
+
+            serviceCollection.AddScoped<ITaskReportAttManager>(s => new TaskReportAttManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<ITaskReportManager>(),
+                s.GetRequiredService<ITaskSharingManager>()
+                ));
             return serviceCollection;
         }
     }

@@ -125,6 +125,7 @@
     <Compile Include="Colla\PartakerReqManagerTests.cs" />
     <Compile Include="Colla\TaskAlarmManagerTests.cs" />
     <Compile Include="Colla\TaskIncentiveManagerTests.cs" />
+    <Compile Include="Colla\TaskReportManagerTests.cs" />
     <Compile Include="Core\FineWorkServiceRegistrationTests.cs" />
     <Compile Include="Core\FineWorkCoreTestBase.cs" />
     <Compile Include="Core\ServiceScopedTestBase.cs" />

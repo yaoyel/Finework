@@ -52,8 +52,7 @@ namespace FineWork.Colla.Impls
 
         private string GetTaskSharingDirectory(TaskSharingEntity taskSharing)
         {
-            ////同一个人可以多次上传同一个文件，路径中加入时间的ticks区别
-            //return $"tasks/{taskSharing.Task.Id}/sharings/{taskSharing.Staff.Id}-{taskSharing.CreatedAt.Ticks}/{taskSharing.FileName}";
+            ////同一个人可以多次上传同一个文件，路径中加入时间的ticks区别 
             //用content-md5作为路径值，方便实现秒传
             return $"tasks/sharings/{taskSharing.ContentMd5}";
         }

@@ -22,6 +22,8 @@ namespace FineWork.Files
         /// <returns> 当文件被成功删除则返回 <c>true</c>， 若文件不存在则返回 <c>false</c>.</returns>
         bool DeleteFile(String pathName);
 
+        void DeleteBlobDirectory(string directory);
+
         bool FileIsExists(string pathName);
 
         void DownloadToStream(string pathName, Stream stream);

@@ -12,5 +12,8 @@ namespace FineWork.Colla
         public virtual TaskEntity Task { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        //是否表现突出的战友
+        public bool? IsExils { get; set; }
     }
 }

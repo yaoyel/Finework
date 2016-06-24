@@ -12,10 +12,10 @@ E:\FineWork\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Common.pdb
 E:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.csprojResolveAssemblyReference.cache
 E:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.dll
 E:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.pdb
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Data.dll
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Data.pdb
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Common.dll
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Common.pdb
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.csprojResolveAssemblyReference.cache
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.dll
-D:\back\FineWork_0617\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.pdb
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Data.dll
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Data.pdb
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Common.dll
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\bin\Debug\AppNext.Common.pdb
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.csprojResolveAssemblyReference.cache
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.dll
+D:\FineWork\devel\sources\dotnet\main\AppNext.Data\obj\Debug\AppNext.Data.pdb

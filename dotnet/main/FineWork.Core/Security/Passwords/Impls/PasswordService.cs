@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using AppBoot.Security.Passwords;
 
 namespace FineWork.Security.Passwords.Impls
@@ -15,8 +16,7 @@ namespace FineWork.Security.Passwords.Impls
             result.Register(PasswordFormats.ClearText, () => new ClearTextAlgorithm());
             result.Register(PasswordFormats.TripleDES, () => new TripleDESPasswordAlgorithm(GetSymmetricPasswordKey()));
             result.Register(PasswordFormats.SHA256, () => new SHA256ManagedPasswordAlgorithm());
-            result.Register(PasswordFormats.AspNetIdentity, () => new AspNetIdentityAlgorithm());
-            return result;
+            result.Register(PasswordFormats.AspNetIdentity, () => new AspNetIdentityAlgorithm());      return result;
         }
 
         public void Transform(string passwordFormat, string password, out string transformed, out string salt)

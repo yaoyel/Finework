@@ -15,7 +15,7 @@ namespace FineWork.Data.Aef
     /// </summary>
     public class FineWorkDbContext : AefSession
     {
-        private const String m_SqlDateTime2 = "datetime2"; 
+        private const String m_SqlDateTime2 = "datetime2";
 
         public FineWorkDbContext()
             : this(LogManager.Factory)
@@ -43,7 +43,7 @@ namespace FineWork.Data.Aef
         {
             if (loggerFactory == null) throw new ArgumentNullException("loggerFactory");
             this.Logger = loggerFactory.CreateLogger<FineWorkDbContext>();
-            this.Database.Log = this.Logger.LogInformation; 
+            this.Database.Log = this.Logger.LogInformation;
         }
 
 
@@ -62,7 +62,7 @@ namespace FineWork.Data.Aef
                 .ToTable("fw_Accounts")
                 .HasKey(account => account.Id);
             accountConfig.Property(x => x.CreatedAt).HasColumnType(m_SqlDateTime2);
-            accountConfig.Property(x => x.LockEndAt).HasColumnType(m_SqlDateTime2); 
+            accountConfig.Property(x => x.LockEndAt).HasColumnType(m_SqlDateTime2);
 
             //fw_Roles
             var roleConfig = modelBuilder.Entity<RoleEntity>()
@@ -94,8 +94,8 @@ namespace FineWork.Data.Aef
             var orgConfig = modelBuilder.Entity<OrgEntity>()
                 .ToTable("fw_Orgs")
                 .HasKey(org => org.Id);
-            orgConfig.HasOptional(org => org.AdminStaff) 
-                .WithOptionalDependent().Map(fk => fk.MapKey("AdminStaffId")); 
+            orgConfig.HasOptional(org => org.AdminStaff)
+                .WithOptionalDependent().Map(fk => fk.MapKey("AdminStaffId"));
 
 
             var staffConfig = modelBuilder.Entity<StaffEntity>()
@@ -145,7 +145,7 @@ namespace FineWork.Data.Aef
                 .HasKey(inv => inv.Id);
             staffInvConfig.HasRequired(req => req.Org)
                 .WithMany(org => org.StaffInvs)
-                .Map(fk => fk.MapKey("OrgId")); 
+                .Map(fk => fk.MapKey("OrgId"));
 
             staffInvConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
             staffInvConfig.Property(p => p.ReviewAt).HasColumnType(m_SqlDateTime2);
@@ -154,9 +154,9 @@ namespace FineWork.Data.Aef
                 .ToTable("fw_PartakerInvs")
                 .HasKey(inv => inv.Id);
             partakerInvConfig.HasRequired(inv => inv.Task)
-                .WithMany(task=>task.PartakerInvs).Map(fk => fk.MapKey("TaskId"));
+                .WithMany(task => task.PartakerInvs).Map(fk => fk.MapKey("TaskId"));
             partakerInvConfig.HasRequired(inv => inv.Staff)
-                .WithMany(staff=>staff.PartakerInvs).Map(fk => fk.MapKey("StaffId"));
+                .WithMany(staff => staff.PartakerInvs).Map(fk => fk.MapKey("StaffId"));
             partakerInvConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
             partakerInvConfig.Property(p => p.ReviewAt).HasColumnType(m_SqlDateTime2);
 
@@ -325,15 +325,15 @@ namespace FineWork.Data.Aef
                 .ToTable("fw_InvCodes");
 
             invCode.HasOptional(t => t.Org).WithMany()
-                .Map(fk=>fk.MapKey("OrgId"));
-             
+                .Map(fk => fk.MapKey("OrgId"));
+
             invCode.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
             invCode.Property(p => p.ExpiredAt).HasColumnType(m_SqlDateTime2);
 
 
             var mementConfig = modelBuilder.Entity<MomentEntity>()
                 .ToTable("fw_Moments")
-                .HasKey(p=>p.Id);
+                .HasKey(p => p.Id);
 
             mementConfig.HasRequired(mement => mement.Staff)
                 .WithMany(staff => staff.Moments)
@@ -345,7 +345,7 @@ namespace FineWork.Data.Aef
             var mementFileConfig = modelBuilder.Entity<MomentFileEntity>()
                 .ToTable("fw_MomentFiles")
                 .HasKey(p => p.Id);
-            
+
             mementFileConfig.HasRequired(file => file.Moment)
                 .WithMany(mement => mement.MomentFiles)
                 .Map(fk => fk.MapKey("MomentId"));
@@ -355,7 +355,7 @@ namespace FineWork.Data.Aef
 
             var mementLikeConfig = modelBuilder.Entity<MomentLikeEntity>()
                 .ToTable("fw_MomentLikes")
-                .HasKey(p=>p.Id);
+                .HasKey(p => p.Id);
 
             mementLikeConfig.HasRequired(like => like.Moment)
                 .WithMany(mement => mement.MomentLikes)
@@ -376,9 +376,9 @@ namespace FineWork.Data.Aef
                 .WithMany(staff => staff.MomentComments)
                 .Map(fk => fk.MapKey("StaffId"));
 
-            mementCommentConfig.HasRequired(comment=>comment.Moment)
-                .WithMany(mement=>mement.MomentComments)
-                .Map(fk=>fk.MapKey("MomentId"));
+            mementCommentConfig.HasRequired(comment => comment.Moment)
+                .WithMany(mement => mement.MomentComments)
+                .Map(fk => fk.MapKey("MomentId"));
 
             mementCommentConfig.HasOptional(comment => comment.TargetComment)
                 .WithOptionalDependent(comment => comment.DerivativeComment)
@@ -388,13 +388,13 @@ namespace FineWork.Data.Aef
 
             var accessTimeConfig = modelBuilder.Entity<AccessTimeEntity>()
                 .ToTable("fw_AccessTimes")
-                .HasKey(p =>new { p.Id,p.StaffId});
+                .HasKey(p => p.Id);
 
             //?
             accessTimeConfig.HasRequired(p => p.Staff)
                 .WithMany(p => p.AccessTime)
-                .HasForeignKey(fk=>fk.StaffId)
-                .WillCascadeOnDelete(); 
+                .HasForeignKey(fk => fk.StaffId)
+                .WillCascadeOnDelete();
 
             accessTimeConfig.Property(p => p.LastEnterOrgAt).HasColumnType(m_SqlDateTime2);
             accessTimeConfig.Property(p => p.LastViewCommentAt).HasColumnType(m_SqlDateTime2);
@@ -403,33 +403,35 @@ namespace FineWork.Data.Aef
 
 
             var taskAnnouncementConfig = modelBuilder.Entity<TaskAnnouncementEntity>()
-            .ToTable("fw_TaskAnnouncements")
-            .HasKey(announcement => announcement.Id);
+                .ToTable("fw_TaskAnnouncements")
+                .HasKey(announcement => announcement.Id);
             taskAnnouncementConfig.HasRequired(announcement => announcement.Task)
                 .WithMany(task => task.Promise).Map(fk => fk.MapKey("TaskId"));
             taskAnnouncementConfig.HasRequired(announcement => announcement.Staff)
                 .WithMany(staff => staff.Promise).Map(fk => fk.MapKey("StaffId"));
             taskAnnouncementConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
-            //var taskReportConfig = modelBuilder.Entity<TaskReportEntity>()
-            //    .ToTable("fw_TaskReports")
-            //    .HasKey(p => p.Id);
+            var taskReportConfig = modelBuilder.Entity<TaskReportEntity>()
+                .ToTable("fw_TaskReports")
+                .HasKey(p => p.Id);
 
-            //taskReportConfig.HasRequired(p => p.Task)
-            //    .WithRequiredDependent(task => task.Report)
-            //    .Map(fk => fk.MapKey("TaskId"));
-            //taskReportConfig.Property(p => p.FinishedAt).HasColumnType(m_SqlDateTime2);
-            //taskReportConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+            taskReportConfig.HasRequired(p => p.Task)
+                .WithOptional(task => task.Report)
+                .Map(fk => fk.MapKey("TaskId"));
+            taskReportConfig.Property(p => p.EndedAt).HasColumnType(m_SqlDateTime2);
+            taskReportConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
-            //var taskExilsesConfig = modelBuilder.Entity<TaskExilsEntity>()
-            //    .ToTable("fw_TaskExilses")
-            //    .HasKey(p => p.Id);
+            var taskReportAttConfig = modelBuilder.Entity<TaskReportAttEntity>()
+                .ToTable("fw_TaskReportAtts")
+                .HasKey(p => p.Id);
 
-            //taskExilsesConfig.HasRequired(p => p.TaskReport)
-            //    .WithMany(report => report.ExcPartakers)
-            //    .Map(fk => fk.MapKey("TaskReportId"));
+            taskReportAttConfig.HasRequired(att => att.TaskSharing)
+                .WithMany()
+                .Map(fk => fk.MapKey("TaskSharingId")).WillCascadeOnDelete();
 
-            //taskExilsesConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+            taskReportAttConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+
         }
 
     }

@@ -16,13 +16,15 @@ namespace FineWork.Colla.Models
         public Guid CreatorStaffId { get; set; }
 
         [MaxLength(128, ErrorMessage = "任务目标不能大于128个字符.")]
+
+        public DateTime? EndAt { get; set; }
         public string Goal { get; set; }
 
         public int Level { get; set; } = 3;
 
         public Guid? ParentTaskId { get; set; }
 
-        public Guid? LeaderStaffId { get; set; }
+        public Guid? LeaderStaffId { get; set; } 
 
         /// <summary> 是否允许项目成员邀请指导者. </summary>
         public bool IsMentorInvEnabled { get; set; } = false;

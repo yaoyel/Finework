@@ -10,7 +10,7 @@ namespace FineWork.Colla
 {
     public class TaskReportEntity:EntityBase<Guid>
     {
-        public DateTime FinishedAt { get; set; }
+        public DateTime EndedAt { get; set; }
 
         public string Summary { get; set; }
 
@@ -23,8 +23,8 @@ namespace FineWork.Colla
         [Timestamp]
         public byte[] RowVer { get; set; }
 
-        public virtual TaskEntity Task { get; set; }
+        public virtual TaskEntity Task { get; set; } 
 
-        public virtual ICollection<TaskExilsEntity> TaskExilses { get; set; } = new HashSet<TaskExilsEntity>();
+        public virtual ICollection<TaskReportAttEntity> Atts { get; set; } = new HashSet<TaskReportAttEntity>();
     }
 }

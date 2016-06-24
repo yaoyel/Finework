@@ -106,6 +106,7 @@ namespace FineWork.Colla.Impls
             {
                 Id = Guid.NewGuid(),
                 Name = taskModel.Name,
+                EndAt = taskModel.EndAt,
                 Creator = staff,
                 ParentTask = parentTask,
                 Goal = taskModel.Goal,

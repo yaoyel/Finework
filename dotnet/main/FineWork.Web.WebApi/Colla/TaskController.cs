@@ -223,7 +223,7 @@ namespace FineWork.Web.WebApi.Colla
                 Task.Factory.StartNew(async () =>
                 {
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id,task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id,task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"修改任务目标为{newGoal}","Goal");
                 });
@@ -254,7 +254,7 @@ namespace FineWork.Web.WebApi.Colla
                 Task.Factory.StartNew(async () =>
                 {
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"修改任务等级为{this.TransferTaskLevel(newLevel)}","Level");
                 });
@@ -299,7 +299,7 @@ namespace FineWork.Web.WebApi.Colla
                     var message = string.Format(m_Config["LeanCloud:Messages:Task:ChangeTaskName"], partaker.Staff.Name,
                         newName);
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"修改任务名称为{newName}","Name");
                 });
@@ -363,7 +363,7 @@ namespace FineWork.Web.WebApi.Colla
                         partaker.Staff.Name, transferStatus);
 
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"{transferStatus}邀请指导者", "IsMentorInvEnabled");
                 });
@@ -400,7 +400,7 @@ namespace FineWork.Web.WebApi.Colla
                         partaker.Staff.Name, transferStatus);
 
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"{transferStatus}邀请协同者", "IsCollabratorInvEnabled");
                 });
@@ -442,7 +442,7 @@ namespace FineWork.Web.WebApi.Colla
                         partaker.Staff.Name, statusText); 
 
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"{statusText}任务招募", "RecruitmentRoles");
                 });
@@ -477,7 +477,7 @@ namespace FineWork.Web.WebApi.Colla
                         partaker.Staff.Name, transferRoles);
                     ;
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
 
 
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
@@ -502,8 +502,7 @@ namespace FineWork.Web.WebApi.Colla
 
             using (var tx = TxManager.Acquire())
             {
-                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
-                AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed();
+                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task; 
 
                 var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
 
@@ -518,13 +517,36 @@ namespace FineWork.Web.WebApi.Colla
                         partaker.Staff.Name); 
 
                     await
-                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                        m_IMService.SendTextMessageByConversationAsync(task.Id,partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
                         ActionKinds.UpdateColumn, $"修改任务招募信息为{newRecuitmentDesc}", "RecruitmentDesc"); 
                 });
             }
         }
 
+        [HttpPost("ChangeTaskEndAt")]
+        public void ChangeTaskEndAt(Guid taskId, DateTime endAt)
+        {
+            using (var tx = TxManager.Acquire())
+            {
+                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
+                task.EndAt = endAt;
+                m_TaskManager.UpdateTask(task);
+                tx.Complete();
+
+                Task.Factory.StartNew(async () =>
+                {
+                    var message = string.Format(m_Config["LeanCloud:Messages:Task:ChangeTaskEndAt"],
+                        partaker.Staff.Name,endAt.ToString("YYYY/mm/dd mm:ss"));
+
+                    await
+                        m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
+                    m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
+                        ActionKinds.UpdateColumn, $"修改任务结束时间为{endAt.ToString("YYYY/mm/dd mm:ss")}", "EndAt");
+                });
+            }
+        }
 
         private string TransferTaskRecruimentRole(string roleIds)
         {

@@ -24,7 +24,7 @@
     <Endpoints></Endpoints>
     <Contents>
       <Content destination=".\">
-        <SourceDirectory path="E:\FineWork\devel\sources\dotnet\main\FineWork.CloudService\TaskAlarmService\rcf\Debug\TaskAlarmWorkerRoleContent\" />
+        <SourceDirectory path="D:\FineWork\devel\sources\dotnet\main\FineWork.CloudService\TaskAlarmService\rcf\Debug\TaskAlarmWorkerRoleContent\" />
       </Content>
     </Contents>
   </WorkerRole>

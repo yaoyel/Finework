@@ -80,7 +80,7 @@ namespace FineWork.Security.Impls
         public IAccount CreateAccount(string name, string password, string email, string phoneNumber)
         {
             if (String.IsNullOrEmpty(name)) throw new ArgumentException("name is null or empty.", nameof(name));
-            if (String.IsNullOrEmpty(email)) throw new ArgumentException("email is null or empty.", nameof(email));
+            //if (String.IsNullOrEmpty(email)) throw new ArgumentException("email is null or empty.", nameof(email));
             //if (String.IsNullOrEmpty(phoneNumber)) throw new ArgumentException("phoneNumber is null or empty.", nameof(phoneNumber));
 
             var account = AccountRepository.CreateNew();
@@ -103,10 +103,8 @@ namespace FineWork.Security.Impls
             account.Email = createAccountModel.Email;
             account.PhoneNumber = createAccountModel.PhoneNumber;
             account.IsEmailConfirmed = false;
-            account.IsPhoneNumberConfirmed = false; 
-            //TODO
-            account.Password = createAccountModel.Password;
-            //this.PasswordService.SetPassword(account, SettingManager.PasswordFormat(), password);
+            account.IsPhoneNumberConfirmed = false;   
+            this.PasswordService.SetPassword(account, SettingManager.PasswordFormat(), createAccountModel.Password);
             account.SecurityStamp = GenerateNewStamp(account);
             AccountRepository.Insert(account);
 

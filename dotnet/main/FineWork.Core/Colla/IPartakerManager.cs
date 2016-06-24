@@ -31,6 +31,10 @@ namespace FineWork.Colla
 
         IEnumerable<PartakerEntity> FetchPartakersByStaff(Guid staffId);
 
-        PartakerEntity ChangePartakerKind(TaskEntity task, StaffEntity staff, PartakerKinds partakerKind); 
+        PartakerEntity ChangePartakerKind(TaskEntity task, StaffEntity staff, PartakerKinds partakerKind);
+
+        void UpdatePartaker(PartakerEntity partaker);
+
+        IEnumerable<PartakerEntity> FetchExilsesByTaskId(Guid taskId);
     }
 }
