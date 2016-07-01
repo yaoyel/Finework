@@ -91,8 +91,6 @@ namespace FineWork.Web.WebApi.Colla
 
                 return new HttpNotFoundObjectResult(staffId);
             }
-
-          
         }
 
         [HttpGet("FetchTaskDetailInfosByorgId")]
@@ -538,16 +536,17 @@ namespace FineWork.Web.WebApi.Colla
                 Task.Factory.StartNew(async () =>
                 {
                     var message = string.Format(m_Config["LeanCloud:Messages:Task:ChangeTaskEndAt"],
-                        partaker.Staff.Name,endAt.ToString("YYYY/mm/dd mm:ss"));
+                        partaker.Staff.Name, $"{endAt.ToString("yyyy-MM-dd")}");
 
                     await
                         m_IMService.SendTextMessageByConversationAsync(task.Id, partaker.Staff.Account.Id, task.ConversationId, task.Name, message);
                     m_TaskLogManager.CreateTaskLog(task.Id, partaker.Staff.Id, task.GetType().FullName, task.Id,
-                        ActionKinds.UpdateColumn, $"修改任务结束时间为{endAt.ToString("YYYY/mm/dd mm:ss")}", "EndAt");
+                        ActionKinds.UpdateColumn, $"修改任务结束时间为{endAt.ToString("yyyy-MM-dd")}", "EndAt");
                 });
             }
         }
 
+     
         private string TransferTaskRecruimentRole(string roleIds)
         {
             var roleIdArray = roleIds.Split(',');

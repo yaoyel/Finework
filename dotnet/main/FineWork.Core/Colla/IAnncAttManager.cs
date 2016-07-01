@@ -13,6 +13,12 @@ namespace FineWork.Colla
 
         IEnumerable<AnncAttEntity> FetchAnncAttsByAnncId(Guid anncId, bool isAchv);
 
+        AnncAttEntity FindAnncAttByAnncAndSharingId(Guid anncId, Guid taskSharingId, bool isAchv);
+
         void DeleteAnncAtt(Guid annAttId);
+
+        void DeleteAnncAttByAnncId(Guid anncId);
+
+        void UpdateAnncAtts(AnnouncementEntity annc,Guid[] taskSharingIds );
     }
 }

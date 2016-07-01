@@ -171,7 +171,9 @@ namespace FineWork.Security.Impls
         public void ChangePassword(IAccount account, [CanBeNull] String oldPassword, [CanBeNull] String newPassword)
         {
             if (account == null) throw new ArgumentNullException("account");
-            PasswordMatchResult.Check(this.PasswordService, account, oldPassword).ThrowIfFailed();
+
+            if (!string.IsNullOrWhiteSpace(oldPassword))
+                PasswordMatchResult.Check(this.PasswordService, account, oldPassword).ThrowIfFailed();
 
             var passwordFormat = account.PasswordFormat;
             if (String.IsNullOrEmpty(newPassword))

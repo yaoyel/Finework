@@ -124,6 +124,7 @@
     <Compile Include="Colla\PartakerInvManagerTests.cs" />
     <Compile Include="Colla\PartakerReqManagerTests.cs" />
     <Compile Include="Colla\TaskAlarmManagerTests.cs" />
+    <Compile Include="Colla\TaskAnncManagerTests.cs" />
     <Compile Include="Colla\TaskIncentiveManagerTests.cs" />
     <Compile Include="Colla\TaskReportManagerTests.cs" />
     <Compile Include="Core\FineWorkServiceRegistrationTests.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AppBoot.Checks;
@@ -18,7 +19,7 @@ using Microsoft.AspNet.Mvc;
 namespace FineWork.Web.WebApi.Colla
 {
     [Route("api/Anncs")]
-    [Authorize]
+    [Authorize("Bearer")]
     public class AnnouncementController : FwApiController
     {
         public AnnouncementController(ISessionProvider<AefSession> sessionProvider,
@@ -48,7 +49,7 @@ namespace FineWork.Web.WebApi.Colla
         private readonly IAnncAttManager m_AnncAttManager;
 
         [HttpPost("CreateAnnc")]
-        public IActionResult CreateAnnc(CreateAnncModel anncModel)
+        public IActionResult CreateAnnc([FromBody]CreateAnncModel anncModel)
         {
             using (var tx = TxManager.Acquire())
             {
@@ -56,23 +57,38 @@ namespace FineWork.Web.WebApi.Colla
                 var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
 
                 if (partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您没有权限创建共识.");
+                    throw new FineWorkException("您没有权限创建通告.");
 
                 var annc = this.m_AnnouncementManager.CreateAnnc(anncModel);
+                var result = annc.ToViewModel();
                 tx.Complete();
-                return new ObjectResult(annc.ToViewModel());
+                return new ObjectResult(result);
             }
 
         }
 
         [HttpPost("UploadAnncAtt")]
-        public IActionResult UploadAnncAtt(Guid anncId, Guid taskSharingId, bool isAchv)
+        public IActionResult UploadAnncAtt(Guid anncId, Guid[] taskSharingIds, bool isAchv)
         {
+            if(!taskSharingIds.Any()) throw new FineWorkException("请选择上传的附件.");
             using (var tx = TxManager.Acquire())
             {
-                var anncAtt=this.m_AnncAttManager.CreateAnncAtt(anncId, taskSharingId, isAchv);
+                var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc; 
+
+                if(isAchv && annc.Staff.Account.Id!=this.AccountId)
+                    throw new FineWorkException("您没有权限上传成果");
+
+                var atts=new List<AnncAttEntity>();
+
+                foreach (var taskSharingId in taskSharingIds.Distinct())
+                {
+                    var att = this.m_AnncAttManager.CreateAnncAtt(anncId, taskSharingId, isAchv);
+                    atts.Add(att);
+                } 
+             
+                var result = atts.Select(p=>p.ToViewModel());
                 tx.Complete();
-                return new ObjectResult(anncAtt.ToViewModel());
+                return new ObjectResult(result);
             }
         }
 
@@ -107,7 +123,7 @@ namespace FineWork.Web.WebApi.Colla
                 var partaker = AccountIsPartakerResult.Check(annc.Task, this.AccountId).ThrowIfFailed().Partaker;
 
                 if (partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您没有权限验收共识.");
+                    throw new FineWorkException("您没有权限验收通告.");
                  
                 this.m_AnnouncementManager.ChangeAnncStatus(annc,status);
                 tx.Complete();
@@ -128,6 +144,50 @@ namespace FineWork.Web.WebApi.Colla
                 
                 return new HttpStatusCodeResult(200);
             }
+        }
+
+        [HttpPost("DeleteAnncByIds")]
+        public void DeleteAnncByIds(Guid[] anncIds)
+        { 
+            if (anncIds.Length == 0)
+                throw new FineWorkException("请传入要删除的通告Id");
+            using (var tx = TxManager.Acquire())
+            {
+
+                foreach (var anncId in anncIds)
+                {
+                    var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc;
+
+                    var partaker = AccountIsPartakerResult.Check(annc.Task, this.AccountId).ThrowIfFailed().Partaker;
+
+                    if (partaker.Kind != PartakerKinds.Leader)
+                        throw new FineWorkException("您没有权限删除通告.");
+
+                    this.m_AnnouncementManager.DeleteAnnc(anncId);
+                }
+                tx.Complete();
+
+            }
+        }
+
+        [HttpPost("UpdateAnnc")]
+        public void UpdateAnnc([FromBody]UpdateAnncModel updateAnncModel)
+        {
+            Args.NotNull(updateAnncModel, nameof(updateAnncModel));
+            using (var tx = TxManager.Acquire())
+            {
+                this.m_AnnouncementManager.UpdateAnnc(updateAnncModel);
+                tx.Complete();
+            }
+
+        }
+
+        [HttpGet("FindAnncById")]
+        public IActionResult FindAnncById(Guid anncId)
+        {
+            var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).Annc;
+            if(annc!=null) return new ObjectResult(annc.ToViewModel());
+            return new HttpNotFoundObjectResult(anncId); 
         }
 
     }

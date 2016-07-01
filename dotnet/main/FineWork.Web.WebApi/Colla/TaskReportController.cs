@@ -48,28 +48,31 @@ namespace FineWork.Web.WebApi.Colla
             using (var tx = TxManager.Acquire())
             {
                 var task = TaskExistsResult.Check(m_TaskManager, taskReportModel.TaskId).ThrowIfFailed().Task;
-                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker; 
+                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
 
-                if(partaker.Kind!=PartakerKinds.Leader)
+                if (partaker.Kind != PartakerKinds.Leader)
                     throw new FineWorkException("你没有权限结束任务.");
 
                 //判断是否有预警或共识未处理 
                 AlarmOrVoteExistsResult.Check(this.m_TaskManager, taskReportModel.TaskId).ThrowIfFailed();
 
                 this.m_TaskReportManager.CreateTaskReport(taskReportModel);
-      
+
+                //修改任务进度
+                task.Progress = 100;
+                m_TaskManager.UpdateTask(task);
+
                 tx.Complete();
                 return new HttpStatusCodeResult(201);
-            } 
-          
+            }
         }
 
-        [HttpPost("FindTaskReportByTaksId")]
+        [HttpGet("FindTaskReportByTaksId")]
         public IActionResult FindTaskReportByTaksId(Guid taskId)
         {
             var report = this.m_TaskReportManager.FindTaskReportByTaskId(taskId);
-            
-            if(report==null) return  new HttpNotFoundObjectResult(taskId);
+
+            if (report == null) return new HttpNotFoundObjectResult(taskId);
 
             return new ObjectResult(report.ToViewModel());
         }
@@ -82,12 +85,12 @@ namespace FineWork.Web.WebApi.Colla
                 this.m_TaskReportAttManager.DeleteTaskReportAtt(taskReportAttId);
                 tx.Complete();
             }
-           
-            return  new HttpStatusCodeResult(204); 
+
+            return new HttpStatusCodeResult(204);
         }
 
         [HttpPost("UpdateTaskReport")]
-        public IActionResult UpdateTaskReport(UpdateTaskReportModel updateTaskReportModel)
+        public IActionResult UpdateTaskReport([FromBody]UpdateTaskReportModel updateTaskReportModel)
         {
             Args.NotNull(updateTaskReportModel, nameof(updateTaskReportModel));
             using (var tx = TxManager.Acquire())
@@ -102,6 +105,6 @@ namespace FineWork.Web.WebApi.Colla
                 tx.Complete();
                 return new HttpStatusCodeResult(201);
             }
-        } 
+        }
     }
 }

@@ -225,7 +225,7 @@ namespace FineWork.Web.WebApi.Security
                 var account =
                     AccountExistsResult.CheckByPhoneNumber(m_AccountManager, phoneNumber).ThrowIfFailed().Account;
 
-                this.m_AccountManager.ChangePassword(account, account.Password, newPwd);
+                this.m_AccountManager.ChangePassword(account, string.Empty, newPwd);
                 tx.Complete();
             }
         }

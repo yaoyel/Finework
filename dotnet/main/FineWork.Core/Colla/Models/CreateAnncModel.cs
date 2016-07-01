@@ -13,18 +13,19 @@ namespace FineWork.Colla.Models
         [MaxLength(300,ErrorMessage = "公告内容长度不能大于300字符.")] 
         public string Content { get; set; }
 
-        //执行人
+        //执行人Id
         public Guid StaffId { get; set; }
 
 
         public Guid TaskId { get; set; }
 
+        //结束时间
         public DateTime EndAt { get; set; }
 
         //激励
-        public IDictionary<int,decimal> Incentives { get; set; }
+        public List<Tuple<int,decimal>> Incentives { get; set; }
 
-        //资源
+      
         public Guid[] Atts { get; set; }
 
         public  bool IsNeedAchv { get; set; } 

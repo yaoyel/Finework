@@ -14,9 +14,9 @@ namespace FineWork.Colla
 
         public string Summary { get; set; }
 
-        public float EffScore { get; set; }
+        public decimal EffScore { get; set; }
 
-        public float QualityScore { get; set; }
+        public decimal QualityScore { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

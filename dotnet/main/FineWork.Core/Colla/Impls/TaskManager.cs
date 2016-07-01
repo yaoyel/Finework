@@ -179,7 +179,7 @@ namespace FineWork.Colla.Impls
                     members.Add(inviteeStaff);
                 });
 
-            CreateConversationByTask(task, leader, clientIds).Wait(); 
+             CreateConversationByTask(task, leader, clientIds).Wait(); 
 
             if (members.Any())
             { 

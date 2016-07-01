@@ -18,9 +18,13 @@ namespace FineWork.Colla
         IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId);
 
         IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus);
-
-        void UpdateAnnc(AnnouncementEntity annc);
-
+         
         void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses status);
+
+        void DeleteAnnc(Guid anncId);
+
+        void UpdateAnnc(UpdateAnncModel updateAnncModel);
+
+
     }
 }

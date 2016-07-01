@@ -215,7 +215,9 @@ namespace FineWork.Web.WebApi.Colla
             var lastViewMomentAt = m_AccessTimeManager.FindAccessTimeByStaffId(staffId).LastViewMomentAt;
             var moments = m_MomentManager.FetchMementsByStaffId(staffId);
             if (lastViewMomentAt == null) return moments.Any();
-            return moments.Any(p => p.CreatedAt > lastViewMomentAt); 
+            if(moments.Any(p => p.CreatedAt > lastViewMomentAt)) return true;
+
+            return FetchUnReadCommentCountByStaffId(staffId).Item1 > 0;
         }
 
         [HttpGet("FetchUnReadCommentCountByStaffId")]

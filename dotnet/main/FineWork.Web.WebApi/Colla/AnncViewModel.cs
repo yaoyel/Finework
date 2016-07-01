@@ -55,7 +55,7 @@ namespace FineWork.Web.WebApi.Colla
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             AttId = source.Id;
-            TaskSharing = source.TaskSharing.ToViewModel();
+            TaskSharing = source.TaskSharing.ToViewModel(false,false);
             IsAchv = source.IsAchv;
         }
     }

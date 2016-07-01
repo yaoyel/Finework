@@ -46,22 +46,12 @@ namespace FineWork.Web.WebApi.Common
                 {
                     p.propertiy.SetValue(model, dic[p.propertiy.Name](entity));
                 });
-
               
                 return ;
             }
 
             if (!isShowLow && neceeityIsLowPros.Any())
-            {
-                neceeityIsLowPros.ForEach(p =>
-                {
-
-                    var targetType = Nullable.GetUnderlyingType(p.propertiy.PropertyType); 
-
-                    var propertyVal = Convert.ChangeType(dic[p.propertiy.Name](entity), targetType);
-
-                    p.propertiy.SetValue(model, propertyVal, null);
-                });
+            { 
                 allProperties = allProperties.Except(neceeityIsLowPros.Select(p=>p.propertiy).ToList()).ToList();
             }
 

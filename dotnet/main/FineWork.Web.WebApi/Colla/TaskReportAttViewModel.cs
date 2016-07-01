@@ -18,7 +18,7 @@ namespace FineWork.Web.WebApi.Colla
  
             this.AttId = entity.Id;
             this.CreatedAt = entity.CreatedAt;
-            this.TaskShaing = entity.TaskSharing.ToViewModel(false,false);
+            this.TaskShaing = entity.TaskSharing?.ToViewModel(false,false);
         }
     }
 

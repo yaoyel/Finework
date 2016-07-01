@@ -13,8 +13,7 @@ using FineWork.Colla.Models;
 namespace FineWork.Colla.Impls
 {
     public class TaskReportManager : AefEntityManager<TaskReportEntity, Guid>, ITaskReportManager
-    {
-
+    { 
         public TaskReportManager(ISessionProvider<AefSession> sessionProvider,
             ITaskManager taskManager,
             IPartakerManager partakerManager,
@@ -51,6 +50,7 @@ namespace FineWork.Colla.Impls
             taskReport.QualityScore = createTaskReportModel.QualityScore;
             taskReport.Task = task;
 
+            this.InternalInsert(taskReport);
             //设置表现突出的战友
             if (createTaskReportModel.Exilses.Any())
             {
@@ -63,7 +63,7 @@ namespace FineWork.Colla.Impls
             }
              
             //添加附件
-            if (createTaskReportModel.Atts.Any())
+            if (createTaskReportModel.Atts!=null && createTaskReportModel.Atts.Any())
             {
                 foreach (var attId in createTaskReportModel.Atts)
                 {
@@ -125,6 +125,8 @@ namespace FineWork.Colla.Impls
 
                     } 
             }  
+
+            this.m_TaskReportAttManager.UpdateTaskReportAtts(report,updateTaskReportModel.Atts);
 
             this.InternalUpdate(report);
             return report;

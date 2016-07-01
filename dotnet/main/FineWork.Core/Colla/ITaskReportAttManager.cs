@@ -11,5 +11,7 @@ namespace FineWork.Colla
         IEnumerable<TaskReportAttEntity> FetchAttsByReortId(Guid taskReportId); 
 
         void DeleteTaskReportAtt(Guid reportAttId);
+
+        void UpdateTaskReportAtts(TaskReportEntity taskReport, Guid[] taskSharingIds);
     }
 }

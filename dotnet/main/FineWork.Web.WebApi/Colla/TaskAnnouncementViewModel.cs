@@ -13,7 +13,7 @@ namespace FineWork.Web.WebApi.Colla
 
         public DateTime CreatedAt { get; set; }
 
-        public AccountViewModel Account { get; set; }
+        public StaffViewModel Account { get; set; }
 
         public virtual void AssignFrom(TaskAnnouncementEntity entity)
         {
@@ -21,7 +21,7 @@ namespace FineWork.Web.WebApi.Colla
 
             this.Message = entity.Message;
             this.CreatedAt = entity.CreatedAt;
-            this.Account = entity.Staff.Account.ToViewModel();
+            this.Account = entity.Staff.ToViewModel(true,false);
         }
     }
 

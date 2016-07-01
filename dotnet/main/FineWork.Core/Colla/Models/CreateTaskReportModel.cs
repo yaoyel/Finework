@@ -19,10 +19,10 @@ namespace FineWork.Colla.Models
         public string Summary { get; set; }
          
         [Range(1,5,ErrorMessage = "请对效率进行打分.")]
-        public float EffScore { get; set; }
+        public decimal EffScore { get; set; }
 
         [Range(1,5,ErrorMessage = "请对质量进行打分.")]
-        public float QualityScore { get; set; }
+        public decimal QualityScore { get; set; }
 
         //表现突出的战友
         public Guid[] Exilses { get; set; }

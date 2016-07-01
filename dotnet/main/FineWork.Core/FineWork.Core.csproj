@@ -128,6 +128,7 @@
     <Compile Include="Colla\AnnouncementEntity.cs" />
     <Compile Include="Colla\AnnouncementKinds.cs" />
     <Compile Include="Colla\Checkers\AccessTimeExistsResult.cs" />
+    <Compile Include="Colla\Checkers\AnncAttExistsResult.cs" />
     <Compile Include="Colla\Checkers\AnncExistsResult.cs" />
     <Compile Include="Colla\Checkers\AnncIncentiveExistsResult.cs" />
     <Compile Include="Colla\Checkers\MomentFileExistsResult.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Colla\ITaskReportAttManager.cs" />
     <Compile Include="Colla\Models\CreateAnncModel.cs" />
     <Compile Include="Colla\Models\CreateTaskAnnouncementModel.cs" />
+    <Compile Include="Colla\Models\UpdateAnncModel.cs" />
     <Compile Include="Colla\TaskAnnouncementEntity.cs" />
     <Compile Include="Colla\Impls\AccessTimeManager.cs" />
     <Compile Include="Colla\ActionKinds.cs" />

@@ -429,8 +429,55 @@ namespace FineWork.Data.Aef
                 .WithMany()
                 .Map(fk => fk.MapKey("TaskSharingId")).WillCascadeOnDelete();
 
+            taskReportAttConfig.HasRequired(att => att.TaskReport)
+                .WithMany(report => report.Atts)
+                .Map(fk => fk.MapKey("TaskReportId"));
+
             taskReportAttConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
+
+            var anncConfig = modelBuilder.Entity<AnnouncementEntity>()
+                .ToTable("fw_Announcements")
+                .HasKey(p => p.Id);
+
+            anncConfig.HasRequired(annc => annc.Task)
+                .WithMany(task => task.Announcements)
+                .Map(fk => fk.MapKey("TaskId"));
+
+            anncConfig.HasRequired(annc => annc.Staff)
+                .WithMany(staff => staff.Announcements)
+                .Map(fk => fk.MapKey("StaffId"));
+            anncConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+            anncConfig.Property(p => p.EndAt).HasColumnType(m_SqlDateTime2); 
+
+            var anncAttConfig = modelBuilder.Entity<AnncAttEntity>()
+                .ToTable("fw_AnncAtts")
+                .HasKey(p => p.Id);
+
+            anncAttConfig.HasRequired(p => p.Announcement)
+                .WithMany(annc => annc.Atts)
+                .Map(fk => fk.MapKey("AnncId"));
+
+            anncAttConfig.HasRequired(p=>p.TaskSharing)
+                .WithMany()
+                .Map(p=>p.MapKey("TaskSharingId"))
+                .WillCascadeOnDelete();
+
+            anncAttConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+            var anncIncentiveConfig = modelBuilder.Entity<AnncIncentiveEntity>()
+                .ToTable("fw_AnncIncentives")
+                .HasKey(p => p.Id);
+
+            anncIncentiveConfig.HasRequired(p => p.Announcement)
+                .WithMany(p => p.AnncIncentives)
+                .Map(fk => fk.MapKey("AnncId"));
+
+            anncIncentiveConfig.HasRequired(p => p.IncentiveKind)
+                .WithMany(p => p.AnncIncentives)
+                .Map(fk => fk.MapKey("IncentiveKindId"));
+
+            anncIncentiveConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
         }
 

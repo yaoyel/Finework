@@ -36,9 +36,9 @@ namespace FineWork.Colla
             Args.NotNull(taskManager, nameof(taskManager));
 
             var task = taskManager.FindTask(taskId);
-            if(task.Alarms.Any())
+            if(task.Alarms.Any(p=>p.ResolveStatus!=ResolveStatus.Closed))
                 return Check("该任务存在未处理的预警.");
-            if(task.Votes.Any())
+            if(task.Votes.Any(p=>p.IsApproved==null))
                 return Check("该任务存在未处理的共识.");
 
             return new AlarmOrVoteExistsResult(true, null);

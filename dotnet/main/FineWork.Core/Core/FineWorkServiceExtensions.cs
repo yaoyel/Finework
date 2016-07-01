@@ -360,8 +360,31 @@ namespace FineWork.Core
 
             serviceCollection.AddScoped<ITaskReportAttManager>(s => new TaskReportAttManager(
                 s.ResolveSessionProvider(),
-                s.GetRequiredService<ITaskReportManager>(),
+                 new LazyResolver<ITaskReportManager>(s),
                 s.GetRequiredService<ITaskSharingManager>()
+                ));
+
+            serviceCollection.AddScoped<IAnnouncementManager>(s => new AnnouncementManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<ITaskManager>(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IAnncIncentiveManager>(),
+                s.GetRequiredService<IAnncAttManager>(),
+                s.GetRequiredService<ITaskSharingManager>(),
+                s.GetRequiredService<IIncentiveManager>()));
+
+            serviceCollection.AddScoped<IAnncAttManager>(s => new AnncAttManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IAnnouncementManager>(s),
+                s.GetRequiredService<ITaskSharingManager>()));
+
+
+            serviceCollection.AddScoped<IAnncIncentiveManager>(s => new AnncIncentiveManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IAnnouncementManager>(s),
+                s.GetRequiredService<ITaskIncentiveManager>(),
+                s.GetRequiredService<IIncentiveKindManager>(),
+                s.GetRequiredService<IIncentiveManager>()
                 ));
             return serviceCollection;
         }

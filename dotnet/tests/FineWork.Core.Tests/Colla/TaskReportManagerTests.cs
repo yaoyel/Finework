@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppBoot.Transactions;
 using FineWork.Colla.Models;
+using FineWork.Common;
 using FineWork.Core;
 using FineWork.Security;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ using NUnit.Framework;
 namespace FineWork.Colla
 {
     [TestFixture]
-    public  class TaskReportManagerTests:FineWorkCoreTestBase
+    public class TaskReportManagerTests : FineWorkCoreTestBase
     {
         [Test]
         public void CreateTaskReport_creates_taskreport()
@@ -28,13 +29,14 @@ namespace FineWork.Colla
                     var staffManager = this.Services.GetRequiredService<IStaffManager>();
                     var taskManager = this.Services.GetRequiredService<ITaskManager>();
                     var partakerManager = this.Services.GetRequiredService<IPartakerManager>();
+                    var taskSharingManager = this.Services.GetRequiredService<ITaskSharingManager>();
 
                     var taskReportManager = this.Services.GetRequiredService<ITaskReportManager>();
                     var taskReportAttManager = this.Services.GetRequiredService<ITaskReportAttManager>();
 
                     var account = accountManger.CreateAccount("test-account-01", "123456", "", FakePhoneNumber);
                     var account2 = accountManger.CreateAccount("test-account-02", "123456", "", "13701000002");
-                    var account3= accountManger.CreateAccount("test-account-03", "123456", "", "13701000003");
+                    var account3 = accountManger.CreateAccount("test-account-03", "123456", "", "13701000003");
                     var account4 = accountManger.CreateAccount("test-account-04", "123456", "", "13701000004");
                     session.SaveChanges();
 
@@ -44,10 +46,10 @@ namespace FineWork.Colla
                     var staff = staffManager.CreateStaff(org.Id, account.Id, "test-staff-001");
                     var staff2 = staffManager.CreateStaff(org.Id, account2.Id, "test-staff-002");
                     var staff3 = staffManager.CreateStaff(org.Id, account3.Id, "test-staff-003");
-                    var staff4= staffManager.CreateStaff(org.Id, account4.Id, "test-staff-004");
+                    var staff4 = staffManager.CreateStaff(org.Id, account4.Id, "test-staff-004");
                     session.SaveChanges();
 
-                    var taskModel=new CreateTaskModel();
+                    var taskModel = new CreateTaskModel();
                     taskModel.Name = "test-task-001";
                     taskModel.EndAt = DateTime.Now.AddMonths(2);
                     taskModel.CreatorStaffId = staff.Id;
@@ -59,17 +61,50 @@ namespace FineWork.Colla
                     var partaker4 = partakerManager.CreateCollabrator(task.Id, staff4.Id);
                     session.SaveChanges();
 
-                    var taskReportModel=new CreateTaskReportModel();
-                    taskReportModel.Exilses = new[] {partaker2.Id,partaker3.Id,partaker4.Id};
+                    var taskReportModel = new CreateTaskReportModel();
+                    taskReportModel.Exilses = new[] {partaker2.Id, partaker3.Id, partaker4.Id};
                     taskReportModel.EffScore = 4;
                     taskReportModel.QualityScore = 5;
-                    taskReportModel.EndedAt=DateTime.Now;
+                    taskReportModel.EndedAt = DateTime.Now;
                     taskReportModel.Summary = "任务总结";
                     taskReportModel.TaskId = task.Id;
-                    var report=taskReportManager.CreateTaskReport(taskReportModel);
+                    var report = taskReportManager.CreateTaskReport(taskReportModel);
                     session.SaveChanges();
 
-                
+                    Assert.NotNull(report);
+                    Assert.AreEqual(report.EffScore,4);
+                    Assert.AreEqual(report.QualityScore,5);
+
+
+                    var exiles =
+                        partakerManager.FetchExilsesByTaskId(taskReportModel.TaskId).Select(p => p.Id).ToArray();
+
+                    Assert.AreEqual(exiles.Length,3);
+                    Assert.Contains(partaker2.Id, exiles);
+                    Assert.Contains(partaker3.Id, exiles);
+                    Assert.Contains(partaker4.Id, exiles);
+
+                    var tasksharingId = Guid.NewGuid();
+
+                    Assert.Throws<FineWorkException>(() =>
+                    {
+                        taskReportAttManager.CreateReportAtt(report.Id, tasksharingId);
+                    });
+
+
+                    using (var stream = File.Open("Avatar\\WangFei.1024x768.jpg", FileMode.Open))
+                    {
+                       var taskSharing= taskSharingManager.CreateTaskSharing(report.Task.Id, staff.Id, "test-reportatt1", "image",
+                            stream);
+                        session.SaveChanges();
+                        var att=taskReportAttManager.CreateReportAtt(report.Id, taskSharing.Id);
+                        session.SaveChanges();
+
+                        Assert.NotNull(att);
+                        Assert.AreEqual(att.TaskSharing.Id,taskSharing.Id);
+                    }
+                     
+                    tx.NoComplete();
                 }
 
             }

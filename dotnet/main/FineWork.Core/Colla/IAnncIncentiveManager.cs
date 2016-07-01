@@ -11,5 +11,7 @@ namespace FineWork.Colla
 
         IEnumerable<AnncIncentiveEntity> FetchAnncIncentivesByAnncId(Guid anncId);
 
+        void DeleteIncentiveByAnncId(Guid anncId);
+
     }
 }

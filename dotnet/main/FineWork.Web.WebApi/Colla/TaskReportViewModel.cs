@@ -9,6 +9,8 @@ namespace FineWork.Web.WebApi.Colla
 {
     public class TaskReportViewModel
     {
+        public Guid ReportId { get; set; }
+
         public DateTime EndedAt { get; set; }
 
         public TaskViewModel Task { get; set; }
@@ -19,9 +21,9 @@ namespace FineWork.Web.WebApi.Colla
 
         public string Summary { get; set; }
 
-        public float EffScore { get; set; }
+        public decimal EffScore { get; set; }
 
-        public float QualityScore { get; set; }
+        public decimal QualityScore { get; set; }
 
         public List<PartakerViewModel> Exilses { get; set; }
 
@@ -32,18 +34,19 @@ namespace FineWork.Web.WebApi.Colla
         public virtual void AssignFrom(TaskReportEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
+            this.ReportId = entity.Id;
             this.EndedAt = entity.EndedAt;
             this.Task = entity.Task.ToViewModel();
-            this.Partakers = entity.Task.Partakers.Select(p => p.ToViewModel(true)).ToList();
+            this.Partakers = entity.Task.Partakers?.Select(p => p.ToViewModel(true)).ToList();
             this.ParentTasks = GetParentTasks(entity.Task);
             this.Summary = entity.Summary;
             this.EffScore = entity.EffScore;
             this.QualityScore = entity.QualityScore;
             this.Exilses =
-                entity.Task.Partakers.Where(p => p.IsExils.HasValue && p.IsExils.Value)
-                    .Select(p => p.ToViewModel())
+                entity.Task.Partakers?.Where(p => p.IsExils.HasValue && p.IsExils.Value)
+                    .Select(p => p.ToViewModel(true))
                     .ToList();
-            this.Atts = entity.Atts.Select(p => p.ToViewModel()).ToList();
+            this.Atts = entity.Atts?.Select(p => p.ToViewModel()).ToList();
             this.CreatedAt = entity.CreatedAt;
         }
 

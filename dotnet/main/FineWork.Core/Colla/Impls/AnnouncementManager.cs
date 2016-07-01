@@ -58,23 +58,54 @@ namespace FineWork.Colla.Impls
             anncEntity.Content = createAnncModel.Content;
             anncEntity.IsNeedAchv = createAnncModel.IsNeedAchv;
             anncEntity.ReviewStatus=ReviewStatuses.Unspecified;
+            anncEntity.EndAt = createAnncModel.EndAt;
 
+            this.InternalInsert(anncEntity);
             //处理激励
-            if(createAnncModel.Incentives.Any())
+            if (createAnncModel.Incentives!=null && createAnncModel.Incentives.Any())
                  foreach (var incentive in createAnncModel.Incentives)
                  { 
-                     m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Key, incentive.Value);
+                     m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Item1, incentive.Item2);
                  }
 
             //处理资源
-            if(createAnncModel.Atts.Any())
+            if(createAnncModel.Atts!=null && createAnncModel.Atts.Any())
                 foreach (var att in createAnncModel.Atts)
                 {
                     m_AnncAttManager.CreateAnncAtt(anncEntity.Id, att, false);
                 }
 
-            this.InternalInsert(anncEntity);
+           
             return anncEntity;
+        }
+        public void UpdateAnnc(UpdateAnncModel updateAnncModel)
+        {
+            Args.NotNull(updateAnncModel, nameof(updateAnncModel));
+
+            var staff = StaffExistsResult.Check(m_StaffManager, updateAnncModel.StaffId).ThrowIfFailed().Staff;  
+            var annc = AnncExistsResult.Check(this, updateAnncModel.Id).ThrowIfFailed().Annc;
+
+            annc.Content = updateAnncModel.Content;
+            annc.EndAt = updateAnncModel.EndAt;
+            annc.IsNeedAchv = updateAnncModel.IsNeedAchv;
+            annc.Staff = staff;
+
+            if (updateAnncModel.Incentives != null && updateAnncModel.Incentives.Any())
+            {
+               foreach (var incentive in updateAnncModel.Incentives)
+               {
+                   this.m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(annc.Id, incentive.Item1,
+                       incentive.Item2);
+               }
+            }
+
+            if (annc.Atts != null && annc.Atts.Any())
+            {
+              this.m_AnncAttManager.UpdateAnncAtts(annc,annc.Atts.Select(p=>p.TaskSharing.Id).ToArray());
+            }
+            this.InternalUpdate(annc);
+
+
         }
 
         public AnnouncementEntity FindAnncById(Guid anncId)
@@ -95,14 +126,7 @@ namespace FineWork.Colla.Impls
         public IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus)
         {
             return this.InternalFetch(p => p.ReviewStatus == reviewStatus);
-        }
-
-        public void UpdateAnnc(AnnouncementEntity annc)
-        {
-            Args.NotNull(annc, nameof(annc));
-            this.InternalUpdate(annc);
-        }
-
+        } 
         public void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses reviewStatus)
         {
             Args.NotNull(annc, nameof(annc));
@@ -112,7 +136,7 @@ namespace FineWork.Colla.Impls
 
             annc.ReviewStatus = reviewStatus;
 
-            this.UpdateAnnc(annc);
+            this.InternalUpdate(annc);
 
             var leader = annc.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff;
             //兑现激励
@@ -123,6 +147,17 @@ namespace FineWork.Colla.Impls
                         annc.Staff.Id, incentive.Amount);
                 }
             
+        }
+
+        public void DeleteAnnc(Guid anncId)
+        {
+            var annc = AnncExistsResult.Check(this, anncId).Annc;
+            if (annc != null)
+            {
+                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId);
+                this.m_AnncIncentiveManager.DeleteIncentiveByAnncId(anncId);
+                this.InternalDelete(annc);
+            }
         }
     }
 }
