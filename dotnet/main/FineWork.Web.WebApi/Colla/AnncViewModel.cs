@@ -17,25 +17,52 @@ namespace FineWork.Web.WebApi.Colla
         public DateTime EndAt { get; set; }
 
         public bool IsNeedAchv { get; set; }
-
-        public ReviewStatuses ReviewStatus { get; set; }
-
+          
         public List<AnncIncentiveViewModel> Incentives { get; set; }
+
+        public List<AnncReviewViewModel> Reviews { get; set; }
 
         public List<AnncAttViewModel> Atts { get; set; }
 
         public StaffViewModel Staff { get; set; }
 
-        public virtual void AssignFrom(AnnouncementEntity source, bool isShowhighOnly = false, bool isShowLow = true)
-        {
+        public virtual void AssignFrom(AnnouncementEntity source, List<IncentiveKindViewModel> incentivekinds, bool isShowhighOnly = false, bool isShowLow = true)
+        { 
             if (source == null) throw new ArgumentNullException(nameof(source));
+            if (incentivekinds == null) throw new ArgumentNullException(nameof(incentivekinds));
+
+            var setIncentiveKinds = source.AnncIncentives.Select(p => p.IncentiveKind.Id).ToArray();
+            var incentiveKinds = incentivekinds.Where(p=>!setIncentiveKinds.Contains(p.Id));
+
+            var annIncentives = new List<AnncIncentiveViewModel>();
+
+            foreach (var kind in incentiveKinds)
+            {
+                annIncentives.Add(new AnncIncentiveViewModel() {Amount = 0,Kind=kind});
+            }
+
             this.AnncId = source.Id;
             this.Content = source.Content;
             this.CreatedAt = source.CreatedAt;
             this.EndAt = source.EndAt;
             this.IsNeedAchv = source.IsNeedAchv;
-            this.ReviewStatus = source.ReviewStatus;
-            this.Incentives = source.AnncIncentives.Select(p => p.ToViewModel()).ToList();
+            var anncReviews = source.Reviews.OrderByDescending(p => p.CreatedAt);
+           
+            if(!anncReviews.Any())
+                Reviews=new List<AnncReviewViewModel>()
+                {
+                    new AnncReviewViewModel()
+                    {
+                        CreatedAt = source.CreatedAt,
+                        Status =ReviewStatuses.Unspecified 
+                    }
+                };
+            else
+            {
+                Reviews = anncReviews.Select(p => p.ToViewModel()).OrderByDescending(p=>p.CreatedAt).ToList();
+            }
+
+            this.Incentives = source.AnncIncentives.Select(p => p.ToViewModel()).ToList().Union(annIncentives).ToList();
             this.Atts = source.Atts.Select(p => p.ToViewModel(false, false)).ToList();
             this.Staff = source.Staff.ToViewModel(true, false);
 
@@ -60,6 +87,20 @@ namespace FineWork.Web.WebApi.Colla
         }
     }
 
+    public class AnncReviewViewModel
+    {
+        public ReviewStatuses Status { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public virtual void AssignFrom(AnncReviewEntity source, bool isShowhighOnly = false, bool isShowLow = true)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            this.Status = source.Reviewstatus;
+            this.CreatedAt = source.CreatedAt; 
+        }
+    } 
 
     public class AnncIncentiveViewModel 
     {
@@ -67,12 +108,15 @@ namespace FineWork.Web.WebApi.Colla
 
         public decimal Amount { get; set; }
 
+        public decimal Grant { get; set; }
+
         public virtual void AssignFrom(AnncIncentiveEntity source, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             this.Kind = source.IncentiveKind.ToViewModel();
             this.Amount = source.Amount;
+            this.Grant = source.Grant ?? Amount;
         }
     }
 
@@ -102,11 +146,23 @@ namespace FineWork.Web.WebApi.Colla
 
     public static class AnncViewModelExtensions
     {
-        public static AnncViewModel ToViewModel(this AnnouncementEntity entity, bool isShowhighOnly = false,
+        public static AnncViewModel ToViewModel(this AnnouncementEntity entity,List<IncentiveKindViewModel> incentivekinds , bool isShowhighOnly = false,
             bool isShowLow = true)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             var result = new AnncViewModel();
+            result.AssignFrom(entity, incentivekinds, isShowhighOnly, isShowLow);
+            return result;
+        }
+    }
+
+    public static class AnncReviewViewModelExtensions
+    {
+        public static AnncReviewViewModel ToViewModel(this AnncReviewEntity entity, bool isShowhighOnly = false,
+            bool isShowLow = true)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            var result = new AnncReviewViewModel();
             result.AssignFrom(entity, isShowhighOnly, isShowLow);
             return result;
         }

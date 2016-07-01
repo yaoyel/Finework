@@ -12,5 +12,6 @@ namespace FineWork.Colla
             Guid receiverStaffId, decimal quantity);
 
         IEnumerable<IncentiveEntity> FetchIncentiveByTaskId(Guid taskId); 
+         
     }
 }

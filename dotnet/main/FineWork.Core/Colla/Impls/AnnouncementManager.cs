@@ -56,16 +56,17 @@ namespace FineWork.Colla.Impls
             anncEntity.Staff = staff;
             anncEntity.Task = task;
             anncEntity.Content = createAnncModel.Content;
-            anncEntity.IsNeedAchv = createAnncModel.IsNeedAchv;
-            anncEntity.ReviewStatus=ReviewStatuses.Unspecified;
+            anncEntity.IsNeedAchv = createAnncModel.IsNeedAchv; 
             anncEntity.EndAt = createAnncModel.EndAt;
 
             this.InternalInsert(anncEntity);
             //处理激励
             if (createAnncModel.Incentives!=null && createAnncModel.Incentives.Any())
                  foreach (var incentive in createAnncModel.Incentives)
-                 { 
-                     m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Item1, incentive.Item2);
+                 {
+                     if (incentive.Item2 > 0)
+                         m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Item1,
+                             incentive.Item2);
                  }
 
             //处理资源
@@ -121,33 +122,7 @@ namespace FineWork.Colla.Impls
         public IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId)
         {
             return this.InternalFetch(p => p.Staff.Id == staffId);
-        }
-
-        public IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus)
-        {
-            return this.InternalFetch(p => p.ReviewStatus == reviewStatus);
         } 
-        public void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses reviewStatus)
-        {
-            Args.NotNull(annc, nameof(annc));
-
-            if(annc.ReviewStatus==ReviewStatuses.Approved)
-                throw new FineWorkException($"Invalid ReviewStatus {reviewStatus}.");
-
-            annc.ReviewStatus = reviewStatus;
-
-            this.InternalUpdate(annc);
-
-            var leader = annc.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff;
-            //兑现激励
-            if (reviewStatus == ReviewStatuses.Approved)
-                foreach (var incentive in annc.AnncIncentives)
-                { 
-                    m_IncentiveManager.CreateIncentive(annc.Task.Id, incentive.IncentiveKind.Id, leader.Id,
-                        annc.Staff.Id, incentive.Amount);
-                }
-            
-        }
 
         public void DeleteAnnc(Guid anncId)
         {

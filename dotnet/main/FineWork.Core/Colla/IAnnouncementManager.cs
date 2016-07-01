@@ -15,11 +15,7 @@ namespace FineWork.Colla
 
         IEnumerable<AnnouncementEntity> FetchAnncsByTaskId(Guid taskId);
 
-        IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId);
-
-        IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus);
-         
-        void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses status);
+        IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId); 
 
         void DeleteAnnc(Guid anncId);
 

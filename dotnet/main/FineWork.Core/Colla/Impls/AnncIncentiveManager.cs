@@ -13,7 +13,7 @@ using FineWork.Core;
 
 namespace FineWork.Colla.Impls
 {
-    public class AnncIncentiveManager: AefEntityManager<AnncIncentiveEntity, Guid>, IAnncIncentiveManager
+    public class AnncIncentiveManager : AefEntityManager<AnncIncentiveEntity, Guid>, IAnncIncentiveManager
     {
         public AnncIncentiveManager(ISessionProvider<AefSession> sessionProvider,
             LazyResolver<IAnnouncementManager> announcementManagerResolver,
@@ -36,51 +36,55 @@ namespace FineWork.Colla.Impls
         private readonly IIncentiveKindManager m_IncentiveKindManager;
         private readonly IIncentiveManager m_IncentiveManager;
 
-        private    IAnnouncementManager AnnouncementManager {
+        private IAnnouncementManager AnnouncementManager
+        {
             get { return m_AnnouncementManagerResolver.Required; }
         }
 
-        public AnncIncentiveEntity CreateOrUpdateAnncIncentive(Guid anncId, int incentiveKindId, decimal amount)
+        public AnncIncentiveEntity CreateOrUpdateAnncIncentive(Guid anncId, int incentiveKindId, decimal amount,
+            bool isGrant)
         {
             var annc = AnncExistsResult.Check(this.AnnouncementManager, anncId).ThrowIfFailed().Annc;
             var anncIncentive =
                 AnncIncentiveExistsResult.CheckByAnncIdAndKind(this, anncId, incentiveKindId).AnncIncentiveEntity;
-            
-            //任务已经发出的激励数
-            var taskIncentiveGross = m_IncentiveManager.FetchIncentiveByTaskId(annc.Task.Id)
-                .Where(p => p.TaskIncentive.IncentiveKind.Id == incentiveKindId).Sum(p => p.Quantity);
 
-            //已经发出的预算
-            var reportIncentiveGross = this.InternalFetch(p=>p.Announcement.Task.Id==annc.Task.Id && p.IncentiveKind.Id == incentiveKindId)
-                .Sum(p => p.Amount);
 
-            //激励数不能大于任务剩余的激励值
             var taskIncentive =
-                TaskIncentiveExistsResult.Check(this.m_TaskIncentiveManager, annc.Task.Id, incentiveKindId).TaskIncentive;
+                TaskIncentiveExistsResult.Check(this.m_TaskIncentiveManager, annc.Task.Id, incentiveKindId)
+                    .TaskIncentive;
 
-            var incentiveKind = IncentiveKindExistsResult.Check(m_IncentiveKindManager, incentiveKindId).ThrowIfFailed().IncentiveKind;
+            var incentiveKind =
+                IncentiveKindExistsResult.Check(m_IncentiveKindManager, incentiveKindId).ThrowIfFailed().IncentiveKind;
 
-            if (amount>0 && (taskIncentive==null || taskIncentive.Amount == 0))
+            if (amount > 0 && (taskIncentive == null || taskIncentive.Amount == 0))
                 throw new FineWorkException($"[{annc.Task.Name}]未设置激励.");
-            if (amount>0 && amount > (taskIncentive.Amount-taskIncentiveGross-reportIncentiveGross))
-                throw new FineWorkException($"不能大于任务{taskIncentive.IncentiveKind.Name}的余额.");
+
+           var balance= IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this, this.m_IncentiveManager, annc.Task.Id,
+                incentiveKindId, anncId).ThrowIfFailed().Balance;
+            if(balance<amount)
+                throw new FineWorkException($"任务{taskIncentive.IncentiveKind.Name}余额不足.");
 
             if (anncIncentive != null)
             {
-                anncIncentive.Amount = amount;
+                if (isGrant)
+                    anncIncentive.Grant = amount;
+                else
+                    anncIncentive.Amount = amount;
                 this.InternalUpdate(anncIncentive);
                 return anncIncentive;
             }
 
             var anncIncentiveEntity = new AnncIncentiveEntity();
             anncIncentiveEntity.Id = Guid.NewGuid();
-            anncIncentiveEntity.Amount = amount;
+            if (isGrant)
+                anncIncentiveEntity.Grant = amount;
+            else
+                anncIncentiveEntity.Amount = amount;
             anncIncentiveEntity.Announcement = annc;
             anncIncentiveEntity.IncentiveKind = incentiveKind;
-            
+
             this.InternalInsert(anncIncentiveEntity);
             return anncIncentiveEntity;
-
         }
 
         public AnncIncentiveEntity FindAnncIncentiveByAnncIdAndKind(Guid anncId, int incentiveKind)
@@ -93,6 +97,11 @@ namespace FineWork.Colla.Impls
         public IEnumerable<AnncIncentiveEntity> FetchAnncIncentivesByAnncId(Guid anncId)
         {
             return this.InternalFetch(p => p.Announcement.Id == anncId);
+        }
+
+        public IEnumerable<AnncIncentiveEntity> FetchAnncIncentiveByTaskIdAndKind(Guid taskId, int incentiveKind)
+        {
+            return this.InternalFetch(p => p.Announcement.Task.Id == taskId && p.IncentiveKind.Id == incentiveKind);
         }
 
         public void DeleteIncentiveByAnncId(Guid anncId)

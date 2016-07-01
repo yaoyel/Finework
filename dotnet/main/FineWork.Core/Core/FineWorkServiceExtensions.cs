@@ -248,7 +248,8 @@ namespace FineWork.Core
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<IStaffManager>(),
                 s.GetRequiredService<ITaskIncentiveManager>(),
-                s.GetRequiredService<ITaskLogManager>()
+                s.GetRequiredService<ITaskLogManager>(),
+                new LazyResolver<IAnncIncentiveManager>(s)
                 ));
 
             serviceCollection.AddScoped<ITaskNewsManager>(s => new TaskNewsManager(
@@ -316,7 +317,8 @@ namespace FineWork.Core
                 s.GetRequiredService<IFileManager>(),
                 s.GetRequiredService<IIMService>(),
                 s.GetRequiredService<ITaskLogManager>(),
-                s.GetService<IConfiguration>()
+                s.GetService<IConfiguration>(),
+                new LazyResolver<IAnncAttManager>(s) 
                 ));
 
             serviceCollection.AddScoped<IInvCodeManager>(s => new InvCodeManager(s.ResolveSessionProvider()));
@@ -386,6 +388,12 @@ namespace FineWork.Core
                 s.GetRequiredService<IIncentiveKindManager>(),
                 s.GetRequiredService<IIncentiveManager>()
                 ));
+
+            serviceCollection.AddScoped<IAnncReviewManager>(s => new AnncReviewManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IAnnouncementManager>(s),
+                s.GetRequiredService<IAnncIncentiveManager>(),
+                s.GetRequiredService<IIncentiveManager>()));
             return serviceCollection;
         }
     }

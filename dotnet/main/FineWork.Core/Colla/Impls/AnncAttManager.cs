@@ -52,8 +52,7 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(anncAttEntity);
             return anncAttEntity;
-        }
-
+        } 
 
 
         public IEnumerable<AnncAttEntity> FetchAnncAttsByAnncId(Guid anncId, bool isAchv)
@@ -61,7 +60,10 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(p => p.Announcement.Id == anncId && p.IsAchv == isAchv);
         }
 
-
+        public IEnumerable<AnncAttEntity> FetchAnncAttsBySharingId(Guid taskSharingId)
+        {
+            return this.InternalFetch(p => p.TaskSharing.Id == taskSharingId);
+        }
 
         public void DeleteAnncAtt(Guid anncAttId)
         {

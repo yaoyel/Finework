@@ -8,6 +8,7 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using FineWork.Colla.Checkers;
 using FineWork.Common;
+using FineWork.Core;
 
 namespace FineWork.Colla.Impls
 {
@@ -15,18 +16,27 @@ namespace FineWork.Colla.Impls
     {
         public IncentiveManager(ISessionProvider<AefSession> dbContextProvider,
             IStaffManager staffManager, ITaskIncentiveManager taskIncentiveManager,
-            ITaskLogManager taskLogManager)
+            ITaskLogManager taskLogManager,
+               ILazyResolver<IAnncIncentiveManager> anncIncentiveLazyResolver
+            )
             : base(dbContextProvider)
         {
-
+            if (anncIncentiveLazyResolver == null) throw new ArgumentNullException(nameof(anncIncentiveLazyResolver));
             m_StaffManager = staffManager;
             m_TaskIncentiveManager = taskIncentiveManager;
             m_TaskLogManager = taskLogManager;
+            m_AnncIncentiveLazyResolver = anncIncentiveLazyResolver;
         }
 
         private readonly IStaffManager m_StaffManager;
         private readonly ITaskIncentiveManager m_TaskIncentiveManager;
         private readonly ITaskLogManager m_TaskLogManager;
+        private readonly ILazyResolver<IAnncIncentiveManager> m_AnncIncentiveLazyResolver;
+
+        private IAnncIncentiveManager AnncIncentiveManager
+        {
+            get { return m_AnncIncentiveLazyResolver.Required; }
+        }
 
         public IncentiveEntity CreateIncentive(Guid taskId, int incentiveKindId, Guid senderStaffId,
             Guid receiverStaffId, decimal quantity)
@@ -40,18 +50,11 @@ namespace FineWork.Colla.Impls
             if (taskIncentive == null)
                 throw new FineWorkException("请先对任务的激励进行设置。");
 
-            //判断余额
-            //对应激励种类已经发出的额度
-            var outQuantitys =
-                this.InternalFetch(
-                    p => p.TaskIncentive.Task.Id == taskId && p.TaskIncentive.IncentiveKind.Id == incentiveKindId)
-                    .Sum(p => p.Quantity);
-                  
+           var balance= IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this.AnncIncentiveManager, this, taskId,
+                incentiveKindId).ThrowIfFailed().Balance;
 
-            if (taskIncentive.Amount < (outQuantitys+quantity))
-                throw new FineWorkException("余额不足，请查看任务设置。");
-
-
+            if (balance < quantity)
+                throw new FineWorkException($"任务{taskIncentive.IncentiveKind.Name}余额不足.");
             var incentive = new IncentiveEntity()
             {
                 Id = Guid.NewGuid(),

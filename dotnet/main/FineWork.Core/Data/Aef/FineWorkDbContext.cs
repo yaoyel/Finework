@@ -479,6 +479,17 @@ namespace FineWork.Data.Aef
 
             anncIncentiveConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
+
+            var anncReviewConfig = modelBuilder.Entity<AnncReviewEntity>()
+                .ToTable("fw_AnncReviews")
+                .HasKey(p => p.Id);
+
+            anncReviewConfig.HasRequired(p => p.Annc)
+                .WithMany(annc => annc.Reviews)
+                .Map(fk => fk.MapKey("AnncId"));
+
+            anncReviewConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
         }
 
     }
