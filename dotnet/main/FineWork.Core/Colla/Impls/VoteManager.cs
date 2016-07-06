@@ -49,6 +49,7 @@ namespace FineWork.Colla.Impls
         {
             var task = TaskExistsResult.Check(this.m_TaskManager, voteModel.TaskId).ThrowIfFailed().Task;
             var staff = StaffExistsResult.Check(this.m_StaffManager, voteModel.CreatorStaffId).ThrowIfFailed().Staff;
+
             //创建共识
             var vote = new VoteEntity()
             {

@@ -136,8 +136,13 @@
     <Compile Include="Colla\Checkers\MomentFileExistsResult.cs" />
     <Compile Include="Colla\Checkers\MomentLikeExistsResult.cs" />
     <Compile Include="Colla\Checkers\TaskReportExistsResult.cs" />
-    <Compile Include="Colla\ForumSection.cs" />
-    <Compile Include="Colla\ForumTopic.cs" />
+    <Compile Include="Colla\ForumComment.cs" />
+    <Compile Include="Colla\ForumLikeEntity.cs" />
+    <Compile Include="Colla\ForumSectionEntity.cs" />
+    <Compile Include="Colla\ForumSections.cs" />
+    <Compile Include="Colla\ForumPostTypes.cs" />
+    <Compile Include="Colla\ForumTopicEntity.cs" />
+    <Compile Include="Colla\ForumVoteEntity.cs" />
     <Compile Include="Colla\IAnncAttManager.cs" />
     <Compile Include="Colla\IAnncIncentiveManager.cs" />
     <Compile Include="Colla\IAnncReviewManager.cs" />
@@ -152,6 +157,7 @@
     <Compile Include="Colla\ITaskReportAttManager.cs" />
     <Compile Include="Colla\Models\CreateAnncModel.cs" />
     <Compile Include="Colla\Models\CreateTaskAnnouncementModel.cs" />
+    <Compile Include="Colla\Models\UpdateAnncIncentiveModel.cs" />
     <Compile Include="Colla\Models\UpdateAnncModel.cs" />
     <Compile Include="Colla\TaskAnnouncementEntity.cs" />
     <Compile Include="Colla\Impls\AccessTimeManager.cs" />

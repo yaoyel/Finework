@@ -45,6 +45,7 @@ namespace FineWork.Colla.Impls
             bool isGrant)
         {
             var annc = AnncExistsResult.Check(this.AnnouncementManager, anncId).ThrowIfFailed().Annc;
+             
             var anncIncentive =
                 AnncIncentiveExistsResult.CheckByAnncIdAndKind(this, anncId, incentiveKindId).AnncIncentiveEntity;
 
@@ -57,13 +58,18 @@ namespace FineWork.Colla.Impls
                 IncentiveKindExistsResult.Check(m_IncentiveKindManager, incentiveKindId).ThrowIfFailed().IncentiveKind;
 
             if (amount > 0 && (taskIncentive == null || taskIncentive.Amount == 0))
-                throw new FineWorkException($"[{annc.Task.Name}]未设置激励.");
+                throw new FineWorkException($"[{annc.Task.Name}]未设置{incentiveKind.Name}.");
 
-           var balance= IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this, this.m_IncentiveManager, annc.Task.Id,
-                incentiveKindId, anncId).ThrowIfFailed().Balance;
-            if(balance<amount)
-                throw new FineWorkException($"任务{taskIncentive.IncentiveKind.Name}余额不足.");
-
+            if (amount > 0)
+            {
+                var balance =
+                    IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this, this.m_IncentiveManager,
+                        annc.Task.Id,
+                        incentiveKindId, anncId).ThrowIfFailed().Balance;
+                if (balance < amount)
+                    throw new FineWorkException($"任务{incentiveKind.Name}余额不足.");
+            }
+            
             if (anncIncentive != null)
             {
                 if (isGrant)

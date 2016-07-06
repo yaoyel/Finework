@@ -9,6 +9,7 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using FineWork.Colla.Checkers;
 using FineWork.Colla.Models;
+using FineWork.Net.IM;
 
 namespace FineWork.Colla.Impls
 {
@@ -18,24 +19,28 @@ namespace FineWork.Colla.Impls
             ITaskManager taskManager,
             IPartakerManager partakerManager,
             ITaskReportAttManager taskReportAttManager,
-            ITaskSharingManager taskSharingManager) : base(sessionProvider)
+            ITaskSharingManager taskSharingManager,
+            IIMService imService) : base(sessionProvider)
         {
 
             Args.NotNull(taskManager, nameof(taskManager));
             Args.NotNull(partakerManager, nameof(partakerManager));
             Args.NotNull(taskReportAttManager, nameof(taskReportAttManager));
             Args.NotNull(taskSharingManager, nameof(taskSharingManager));
+            Args.NotNull(imService, nameof(imService));
 
             m_PartakerManager = partakerManager;
             m_TaskManager = taskManager;
             m_TaskReportAttManager = taskReportAttManager;
             m_TaskSharingManager = taskSharingManager;
+            m_Imservice = imService;
         }
 
         private readonly ITaskManager m_TaskManager;
         private readonly IPartakerManager m_PartakerManager;
         private readonly ITaskReportAttManager m_TaskReportAttManager;
         private readonly ITaskSharingManager m_TaskSharingManager;
+        private readonly IIMService m_Imservice;
 
         public TaskReportEntity CreateTaskReport(CreateTaskReportModel createTaskReportModel)
         {
@@ -71,6 +76,11 @@ namespace FineWork.Colla.Impls
                     m_TaskReportAttManager.CreateReportAtt(taskReport.Id, taskSharing.Id);
                 }
             }
+
+            Task.Factory.StartNew(() =>
+            {
+                m_Imservice.ChangeConAttr(task.Creator.Id.ToString(),task.ConversationId, "IsEnd", true);
+            });
             return taskReport;
         }
 

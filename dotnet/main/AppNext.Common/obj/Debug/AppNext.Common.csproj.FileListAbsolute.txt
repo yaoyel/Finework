@@ -12,4 +12,3 @@ D:\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Debug\AppNext.Common.dl
 D:\FineWork\devel\sources\dotnet\main\AppNext.Common\bin\Debug\AppNext.Common.pdb
 D:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Debug\AppNext.Common.dll
 D:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Debug\AppNext.Common.pdb
-D:\FineWork\devel\sources\dotnet\main\AppNext.Common\obj\Debug\AppNext.Common.csprojResolveAssemblyReference.cache

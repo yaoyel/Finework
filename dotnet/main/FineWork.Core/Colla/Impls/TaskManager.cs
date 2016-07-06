@@ -321,7 +321,8 @@ namespace FineWork.Colla.Impls
                 ["Creator"] = task.Creator.Id.ToString(),
                 ["LeaderStaffId"] = task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff.Id.ToString(),
                 ["AlarmsCount"]=0,
-                ["ResolvedCount"] =0 
+                ["ResolvedCount"] =0,
+                ["IsEnd"]=false
             };
             var conversationId =
                 await this.IMService.CreateConversationAsync(staff.Id.ToString(), clientIds, task.Name, attrs);

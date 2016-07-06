@@ -17,7 +17,7 @@ namespace FineWork.Colla.Impls
         public IncentiveManager(ISessionProvider<AefSession> dbContextProvider,
             IStaffManager staffManager, ITaskIncentiveManager taskIncentiveManager,
             ITaskLogManager taskLogManager,
-               ILazyResolver<IAnncIncentiveManager> anncIncentiveLazyResolver
+            ILazyResolver<IAnncIncentiveManager> anncIncentiveLazyResolver
             )
             : base(dbContextProvider)
         {
@@ -47,14 +47,18 @@ namespace FineWork.Colla.Impls
                 TaskIncentiveExistsResult.Check(this.m_TaskIncentiveManager, taskId, incentiveKindId)
                     .TaskIncentive;
 
-            if (taskIncentive == null)
+            if (quantity>0 && taskIncentive == null)
                 throw new FineWorkException("请先对任务的激励进行设置。");
 
-           var balance= IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this.AnncIncentiveManager, this, taskId,
-                incentiveKindId).ThrowIfFailed().Balance;
+            if (quantity > 0)
+            {
+                var balance =
+                    IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this.AnncIncentiveManager, this, taskId,
+                        incentiveKindId).ThrowIfFailed().Balance;
 
-            if (balance < quantity)
-                throw new FineWorkException($"任务{taskIncentive.IncentiveKind.Name}余额不足.");
+                if (balance < quantity)
+                    throw new FineWorkException($"任务{taskIncentive.IncentiveKind.Name}余额不足.");
+            }
             var incentive = new IncentiveEntity()
             {
                 Id = Guid.NewGuid(),
@@ -69,7 +73,8 @@ namespace FineWork.Colla.Impls
 
             //记入任务日志
             var message = $"发给{receiver.Name}一个{taskIncentive.IncentiveKind.Name}";
-            m_TaskLogManager.CreateTaskLog(taskId, sender.Id, incentive.GetType().FullName, incentive.Id, ActionKinds.InsertTable,
+            m_TaskLogManager.CreateTaskLog(taskId, sender.Id, incentive.GetType().FullName, incentive.Id,
+                ActionKinds.InsertTable,
                 message);
 
             return incentive;

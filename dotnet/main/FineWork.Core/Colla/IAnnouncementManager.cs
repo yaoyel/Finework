@@ -21,6 +21,10 @@ namespace FineWork.Colla
 
         void UpdateAnnc(UpdateAnncModel updateAnncModel);
 
+        IEnumerable<AnnouncementEntity> FetchAnncByStatus(Guid staffId,ReviewStatuses status=ReviewStatuses.Unspecified);
+
+        IEnumerable<AnnouncementEntity> FetchAnncByEndTime(DateTime endAt);
+
 
     }
 }

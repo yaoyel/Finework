@@ -357,7 +357,8 @@ namespace FineWork.Core
                 s.GetRequiredService<ITaskManager>(),
                 s.GetRequiredService<IPartakerManager>(),
                 s.GetRequiredService<ITaskReportAttManager>(),
-                s.GetRequiredService<ITaskSharingManager>()
+                s.GetRequiredService<ITaskSharingManager>(),
+                s.GetRequiredService<IIMService>()
                 ));
 
             serviceCollection.AddScoped<ITaskReportAttManager>(s => new TaskReportAttManager(
@@ -373,7 +374,11 @@ namespace FineWork.Core
                 s.GetRequiredService<IAnncIncentiveManager>(),
                 s.GetRequiredService<IAnncAttManager>(),
                 s.GetRequiredService<ITaskSharingManager>(),
-                s.GetRequiredService<IIncentiveManager>()));
+                s.GetRequiredService<IIncentiveManager>(),
+                s.GetRequiredService<IPartakerManager>(),
+                s.GetRequiredService<IIMService>(),
+                s.GetRequiredService<ITaskLogManager>(),
+                s.GetRequiredService<IConfiguration>()));
 
             serviceCollection.AddScoped<IAnncAttManager>(s => new AnncAttManager(
                 s.ResolveSessionProvider(),

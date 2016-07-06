@@ -41,7 +41,7 @@ namespace FineWork.Colla.Impls
 
             var lastReviewStatus = annc.Reviews.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
             if(lastReviewStatus!=null && lastReviewStatus.Reviewstatus==  ReviewStatuses.Approved)
-                throw new FineWorkException($"该通告于{lastReviewStatus.CreatedAt.ToString("yyyy-MM-dd")}已验证通过，不可重新验证.");
+                throw new FineWorkException($"该里程碑于{lastReviewStatus.CreatedAt.ToString("yyyy-MM-dd")}已验证通过，不可重新验证.");
 
             var anncReviewEnitty=new AnncReviewEntity();
             anncReviewEnitty.Id = Guid.NewGuid();
@@ -55,10 +55,13 @@ namespace FineWork.Colla.Impls
             if (reviewStatus == ReviewStatuses.Approved)
                 foreach (var incentive in annc.AnncIncentives)
                 {
-                    m_IncentiveManager.CreateIncentive(annc.Task.Id, incentive.IncentiveKind.Id, leader.Id,
-                        annc.Staff.Id, incentive.Grant ?? incentive.Amount);
+                    if (incentive.Amount > 0)
+                    {
+                        m_IncentiveManager.CreateIncentive(annc.Task.Id, incentive.IncentiveKind.Id, leader.Id,
+                          annc.Staff.Id, incentive.Grant ?? incentive.Amount); 
+                    }
                 }
-       
+
             return anncReviewEnitty;
         }
 

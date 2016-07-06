@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppBoot.Common;
 using FineWork.Colla;
 
 namespace FineWork.Web.WebApi.Colla
@@ -120,6 +121,25 @@ namespace FineWork.Web.WebApi.Colla
         }
     }
 
+    public class AnncWithTaskViewModel
+    {
+        public Guid AnncId { get; set; }
+
+        public string Content { get; set; }
+        
+        public TaskViewModel Task { get; set; }
+
+        public virtual void AssignFrom(AnnouncementEntity source)
+        {
+            Args.NotNull(source, nameof(source));
+
+            AnncId = source.Id;
+            Content = source.Content;
+            Task = source.Task.ToViewModel();
+        }
+
+    }
+
     public static class AnncAttViewModelExtensions
     {
         public static AnncAttViewModel ToViewModel(this AnncAttEntity entity, bool isShowhighOnly = false,
@@ -142,7 +162,7 @@ namespace FineWork.Web.WebApi.Colla
             result.AssignFrom(entity, isShowhighOnly, isShowLow);
             return result;
         }
-    }
+    } 
 
     public static class AnncViewModelExtensions
     {
@@ -164,6 +184,19 @@ namespace FineWork.Web.WebApi.Colla
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             var result = new AnncReviewViewModel();
             result.AssignFrom(entity, isShowhighOnly, isShowLow);
+            return result;
+        }
+    }
+
+
+    public static class AnncWithTaskViewModelExtensions
+    {
+        public static AnncWithTaskViewModel ToViewModelWithTask(this AnnouncementEntity entity, bool isShowhighOnly = false,
+            bool isShowLow = true)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            var result = new AnncWithTaskViewModel();
+            result.AssignFrom(entity);
             return result;
         }
     }

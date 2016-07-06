@@ -19,7 +19,7 @@ namespace FineWork.Colla
          
         void DeleteAnncAtt(Guid annAttId);
 
-        void DeleteAnncAttByAnncId(Guid anncId);
+        void DeleteAnncAttByAnncId(Guid anncId,bool isAchv);
 
         void UpdateAnncAtts(AnnouncementEntity annc,Guid[] taskSharingIds );
     }

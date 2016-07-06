@@ -60,5 +60,7 @@ namespace FineWork.Web.WebApi.Colla
             return m_TaskAnnouncementManager.FetchTaskAnnouncementByStaffId(staffId, true)
                 .Select(p => p.ToViewModel()).ToList();
         }
+
+
     }
 }

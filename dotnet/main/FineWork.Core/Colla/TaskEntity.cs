@@ -59,13 +59,14 @@ namespace FineWork.Colla
         public virtual ICollection<TaskAnnouncementEntity> Promise { get; set; } = new HashSet<TaskAnnouncementEntity>();
 
         public virtual ICollection<TaskAlarmEntity> Alarms { get; set; } = new HashSet<TaskAlarmEntity>();
+
         public virtual ICollection<TaskLogEntity> Logs { get; set; } = new HashSet<TaskLogEntity>();
 
         public virtual ICollection<AlarmEntity> AlarmPeriods { get; set; } = new HashSet<AlarmEntity>();
 
         public virtual ICollection<TaskIncentiveEntity> Incentives { get; set; } = new HashSet<TaskIncentiveEntity>();
 
-        public virtual ICollection<VoteEntity> Votes { get; set; } = new HashSet<VoteEntity>();
+        public virtual ICollection<TaskVoteEntity> TaskVotes { get; set; } = new HashSet<TaskVoteEntity>();
 
         public virtual ICollection<TaskTransferEntity> AttachedTaskTransfers { get; set; } =
             new HashSet<TaskTransferEntity>();
@@ -74,6 +75,7 @@ namespace FineWork.Colla
             new HashSet<TaskTransferEntity>();
 
         public virtual ICollection<TaskSharingEntity> TaskSharings { get; set; } = new HashSet<TaskSharingEntity>();
+
         public virtual ICollection<PartakerInvEntity> PartakerInvs { get; set; } = new HashSet<PartakerInvEntity>();
 
         public virtual ICollection<AnnouncementEntity> Announcements { get; set; } = new HashSet<AnnouncementEntity>();
