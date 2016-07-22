@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FineWork.Colla.Models;
 
 namespace FineWork.Colla
 {
     public interface IAlarmManager
     {
-        AlarmEntity CreateAlarmPeriod(TaskEntity task, int date, string shortTime,string bell,bool isEnabled=true);
+        AlarmEntity CreateAlarmPeriod(CreateAlarmPeriodModel createAlarmPeriodModel);
 
-        AlarmEntity UpdateAlarmPeriodTime(Guid alarmPeriodId, int date, string shortTime,string bell);
+        AlarmEntity UpdateAlarmPeriodTime(UpdateAlarmPeriodModel updateAlarmPeriodModel);
 
         AlarmEntity UpdateAlarmPeriodEnabled(Guid alarmPeriodId, bool isEnabled);
          

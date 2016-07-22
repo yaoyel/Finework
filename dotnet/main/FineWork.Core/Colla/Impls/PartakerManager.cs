@@ -267,5 +267,6 @@ namespace FineWork.Colla.Impls
         {
             return this.InternalFetch(p => p.Task.Id == taskId && p.IsExils.HasValue && p.IsExils.Value);
         }
+         
     }
 }

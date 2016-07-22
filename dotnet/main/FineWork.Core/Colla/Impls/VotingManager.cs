@@ -16,15 +16,18 @@ namespace FineWork.Colla.Impls
     {
         public VotingManager(ISessionProvider<AefSession> sessionProvider,
             IStaffManager staffManager,
-            IVoteOptionManager voteOptionManager)
+            IVoteOptionManager voteOptionManager,
+            ITaskVoteManager taskVoteManager)
             : base(sessionProvider)
         {
             m_StaffManager = staffManager;
-            m_VoteOptionManager = voteOptionManager; 
+            m_VoteOptionManager = voteOptionManager;
+            m_TaskVoteManager = taskVoteManager;
         }
 
         private readonly IStaffManager m_StaffManager;
-        private readonly IVoteOptionManager m_VoteOptionManager;  
+        private readonly IVoteOptionManager m_VoteOptionManager;
+        private readonly ITaskVoteManager m_TaskVoteManager;
 
 
         public IEnumerable<VotingEntity> CreateVoting(CreateVotingModel votingModel)
@@ -57,8 +60,11 @@ namespace FineWork.Colla.Impls
 
         public IEnumerable<VotingEntity> FetchVotingByTaskIdAndStaffId(Guid taskId, Guid staffId)
         {
-            return this.InternalFetch(q => q.Where(x => x.Staff.Id == staffId && x.Option.Vote.Task.Id == taskId)
-                .Include(x => x.Option).Include(x => x.Option.Vote));
+            var votings = m_TaskVoteManager.FetchVoteByTaskId(taskId).Select(p => p.Vote)
+                .SelectMany(p => p.VoteOptions)
+                .SelectMany(p => p.Votings).Where(p => p.Staff.Id == staffId);
+
+            return votings;
         }
 
         private VotingEntity InternalCreateVoting(StaffEntity staff, Guid voteOptionId, string reason)

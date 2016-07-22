@@ -19,6 +19,7 @@ using AppBoot.Transactions;
 using FineWork.Common;
 using FineWork.Web.WebApi.Core;
 using Microsoft.AspNet.Hosting;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -56,7 +57,7 @@ namespace FineWork.Web.WebApi.Colla
         private readonly IInvCodeManager m_InvCodeManager;
 
         private readonly IHostingEnvironment m_HostEvn;
-
+        
         /// <summary>
         /// 获取所有组织机构信息
         /// </summary>
@@ -219,7 +220,9 @@ namespace FineWork.Web.WebApi.Colla
 
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
+
                 m_OrgManager.UploadOrgAvatar(reader.BaseStream, orgId, file.ContentType);
+
             }
         }
 

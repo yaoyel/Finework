@@ -52,7 +52,8 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(momentLike);
 
-           //SendMessageWhenLikeAsync(staff, moment);
+            if(moment.Staff!=staff)
+           m_MomentManager.SendMomentMessageAsync(moment.Staff, moment);
 
             return momentLike;
         }
@@ -85,16 +86,6 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(p => p.Moment.Staff.Id == staffId && p.Staff.Id!=staffId);
         }
 
-        private async void SendMessageWhenLikeAsync(StaffEntity staff,MomentEntity moment)
-        {
-
-            string message = string.Format(m_Config["PushMessage:Moment:Like"], staff.Name, moment.Content);
-
-            var extra = new Dictionary<string, string>();
-            extra.Add("PathTo", "moment");
-            extra.Add("OrgId", moment.Staff.Org.Id.ToString());
-
-            await m_NotificationManager.SendByAliasAsync("", message, extra, moment.Staff.Account.PhoneNumber);
-        }
+ 
     }
 }

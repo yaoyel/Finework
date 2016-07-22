@@ -16,7 +16,7 @@ namespace FineWork.Colla
 
         public int Order { get; set; }
 
-        public ICollection<VotingEntity> Votings { get; set; } = new HashSet<VotingEntity>(); 
+        public virtual ICollection<VotingEntity> Votings { get; set; } = new HashSet<VotingEntity>(); 
 
         public VoteEntity Vote { get; set; }
 

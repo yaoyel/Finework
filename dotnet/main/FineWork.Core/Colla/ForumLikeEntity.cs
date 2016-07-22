@@ -13,11 +13,22 @@ namespace FineWork.Colla
         public DateTime CreatedAt { get; set; }=DateTime.Now;
 
         [Timestamp]
-        public byte[] RowVer { get; set; }
+        public byte[] RowVer { get; set; } 
 
-        //点赞的目标，可能是sectionId或者topicId
-        public Guid TargerId { get; set; }
+        public ForumTopicEntity ForumTopic { get; set; }
 
         public virtual StaffEntity Staff { get; set; } 
+    }
+
+    public class ForumCommentLikeEntity : EntityBase<Guid>
+    {
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [Timestamp]
+        public byte[] RowVer { get; set; }
+
+        public virtual ForumCommentEntity ForumComment { get; set; }
+
+        public virtual StaffEntity Staff { get; set; }
     }
 }

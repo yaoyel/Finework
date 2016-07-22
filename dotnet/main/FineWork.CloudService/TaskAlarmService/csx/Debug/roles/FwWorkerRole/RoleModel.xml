@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RoleModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="FwWorkerRole" version="2.9.6499.4" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
+  <Startup>
+    <Task commandLine="RemoteAccessAgent.exe" executionContext="elevated" taskType="background" relativePath="plugins\RemoteAccess">
+      <Environment>
+        <Variable name="RdModuleName" value="RemoteAccess" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+    <Task commandLine="RemoteAccessAgent.exe /blockStartup" executionContext="elevated" relativePath="plugins\RemoteAccess">
+      <Environment>
+        <Variable name="RdModuleName" value="RemoteAccess" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+    <Task commandLine="install.cmd" executionContext="elevated" relativePath="plugins\RemoteForwarder">
+      <Environment>
+        <Variable name="IsEmulated">
+          <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+        </Variable>
+        <Variable name="RdModuleName" value="RemoteForwarder" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+    <Task commandLine="WindowsAzureDiagnosticsStartup.exe" executionContext="elevated" relativePath="plugins\IntelliTrace">
+      <Environment>
+        <Variable name="RdModuleName" value="IntelliTrace" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+    <Task commandLine="WindowsAzureDiagnosticsAgent.exe" executionContext="elevated" taskType="foreground" relativePath="plugins\IntelliTrace">
+      <Environment>
+        <Variable name="COR_LOGGER_PATH" value="IntelliTraceSC.exe" />
+        <Variable name="RdModuleName" value="IntelliTrace" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+    <Task commandLine="Connector\Microsoft.VisualStudio.WindowsAzure.RemoteDebugger.Connector.exe" executionContext="elevated" taskType="background" relativePath="plugins\RemoteDebuggerConnector">
+      <Environment>
+        <Variable name="RdModuleName" value="RemoteDebuggerConnector" />
+        <Variable name="WaRoleType" value="WorkerRole" />
+      </Environment>
+    </Task>
+  </Startup>
+  <Runtime>
+    <Environment>
+      <Variable name="_AZURE_INTELLITRACE_ENABLED_" value="1" />
+      <Variable name="COR_ENABLE_PROFILING" value="1" />
+      <Variable name="COR_PROFILER" value="{AAAAAA70-DFED-4CB4-A1D6-920F51E9674A}" />
+      <Variable name="VSLOGGER_CPLAN" value="%TMP%\IntelliTrace\collectionplan.xml" />
+      <Variable name="__VSLOGGER_CPLAN" value="%TMP%\IntelliTrace\collectionplan.xml" />
+      <Variable name="COR_PROFILER_PATH" value="%RdRoleRoot%\plugins\IntelliTrace\Runtime\x64\Microsoft.IntelliTrace.Profiler.14.0.0.SC.dll" />
+      <Variable name="VSTS_PROFILER_NOT_CLEAR_ENVVARS" value="1" />
+    </Environment>
+    <EntryPoint>
+      <NetFxEntryPoint assemblyName="TaskAlarmWorkerRole.dll" targetFrameworkVersion="v4.0" />
+    </EntryPoint>
+  </Runtime>
+  <ConfigurationSettings>
+    <Setting name="IntelliTraceConnectionString" nameSpace="IntelliTrace" />
+    <Setting name="Enabled" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteAccess" />
+    <Setting name="AccountUsername" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteAccess" />
+    <Setting name="AccountEncryptedPassword" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteAccess" />
+    <Setting name="AccountExpiration" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteAccess" />
+    <Setting name="Enabled" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteForwarder" />
+    <Setting name="Connector.Enabled" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteDebugger" />
+    <Setting name="Connector.Version" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteDebugger" />
+    <Setting name="ClientThumbprint" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteDebugger" />
+    <Setting name="ServerThumbprint" nameSpace="Microsoft.WindowsAzure.Plugins.RemoteDebugger" />
+  </ConfigurationSettings>
+  <Properties>
+    <Property name="TargetFrameworkVersion" value="v4.5.1" />
+    <Property name="RoleType" value="Worker" />
+    <Property name="RoleName" value="FwWorkerRole" />
+    <Property name="ProjectName" value="FwWorkerRole" />
+    <Property name="Configuration" value="Debug" />
+    <Property name="Platform" value="AnyCPU" />
+    <Property name="RoleTargetFramework" value="v4.5.1" />
+    <Property name="OutputDir" value="D:\FineWork\devel\sources\dotnet\main\FineWork.CloudService\TaskAlarmService\obj\Debug\FwWorkerRole\" />
+    <Property name="EntryPoint" value="TaskAlarmWorkerRole.dll" />
+    <Property name="SourceDir" value="" />
+    <Property name="SitePhysicalPath" value="" />
+    <Property name="RolePlugins" value="D:\FineWork\devel\sources\dotnet\main\FineWork.CloudService\TaskAlarmService\obj\\Debug\IntelliTrace" />
+    <Property name="TargetRuntimeVersion" value="v4.0" />
+  </Properties>
+</RoleModel>

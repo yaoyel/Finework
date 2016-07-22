@@ -70,7 +70,7 @@ namespace FineWork.Web.WebApi.Colla
 
             using (var tx = TxManager.Acquire())
             {
-                var moment = m_MomentManager.CreateMement(momentModel);
+                var moment = m_MomentManager.CreateMoment(momentModel);
                 var result = moment.ToViewModel();
                 tx.Complete(); 
                 return new ObjectResult(result);
@@ -130,7 +130,7 @@ namespace FineWork.Web.WebApi.Colla
 
                 m_MomentFileManager.DeleteMementFileByMementId(momentId);
                
-                m_MomentManager.DeleteMement(momentId);
+                m_MomentManager.DeleteMoment(momentId);
                 tx.Complete();
 
                 return new HttpStatusCodeResult((int)HttpStatusCode.OK);
@@ -140,7 +140,7 @@ namespace FineWork.Web.WebApi.Colla
         [HttpGet("FetchMomentsByOrgId")]
         public IActionResult FetchMomentsByOrgId(Guid orgId,int? page,int? pageSize)
         {
-            var moments = m_MomentManager.FetchMementsByOrgId(orgId).AsQueryable().ToPagedList(page,pageSize); 
+            var moments = m_MomentManager.FetchMomentsByOrgId(orgId).AsQueryable().ToPagedList(page,pageSize); 
 
             var staff = StaffExistsResult.Check(m_StaffManager, orgId, this.AccountId).Staff;
 
@@ -156,7 +156,7 @@ namespace FineWork.Web.WebApi.Colla
         [HttpGet("FetchMomentByStaffId")]
         public IActionResult FetchMomentByStaffId(Guid staffId, int? page, int? pageSize)
         {
-            var moments = this.m_MomentManager.FetchMementsByStaffId(staffId).AsQueryable()
+            var moments = this.m_MomentManager.FetchMomentsByStaffId(staffId).AsQueryable()
                 .ToPagedList(page, pageSize);
             if (moments.Any())
                 return new ObjectResult(moments.Select(p => p.ToViewModel()).ToList());
@@ -213,7 +213,7 @@ namespace FineWork.Web.WebApi.Colla
         public bool HasUnReadMoment(Guid staffId)
         {
             var lastViewMomentAt = m_AccessTimeManager.FindAccessTimeByStaffId(staffId).LastViewMomentAt;
-            var moments = m_MomentManager.FetchMementsByStaffId(staffId);
+            var moments = m_MomentManager.FetchMomentsByStaffId(staffId);
             if (lastViewMomentAt == null) return moments.Any();
             if(moments.Any(p => p.CreatedAt > lastViewMomentAt)) return true;
 

@@ -7,7 +7,7 @@ namespace FineWork.Colla
 {
     public class ForumSectionEntity:EntityBase<Guid>
     {
-        public ForumSections SectionId { get; set; }
+        public ForumSections Section { get; set; }
 
         public string Content { get; set; }
 

@@ -65,7 +65,8 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(comment);
 
-            //SendMessageWhenCommentAsync(staff, moment);
+            if (moment.Staff != staff)
+                m_MomentManager.SendMomentMessageAsync(moment.Staff, moment);
 
             return comment;
         }
@@ -98,19 +99,7 @@ namespace FineWork.Colla.Impls
             var momentComments = this.InternalFetch(p => p.Moment.Id == momentId);
             momentComments.ToList().ForEach(InternalDelete);
         }
-
-
-        private async void SendMessageWhenCommentAsync(StaffEntity staff, MomentEntity moment)
-        {
-
-            string message = string.Format(m_Config["PushMessage:Moment:Comment"], staff.Name, moment.Content);
-
-            var extra = new Dictionary<string, string>();
-            extra.Add("PathTo", "moment");
-            extra.Add("OrgId", moment.Staff.Org.Id.ToString());
-
-            await m_NotificationManager.SendByAliasAsync("", message, extra, moment.Staff.Account.PhoneNumber);
-        }
+         
     }
     
 }

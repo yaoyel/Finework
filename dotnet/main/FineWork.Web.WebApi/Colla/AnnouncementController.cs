@@ -72,8 +72,7 @@ namespace FineWork.Web.WebApi.Colla
                 var result = annc.ToViewModel(incentiveKinds);
                 tx.Complete();
                 return new ObjectResult(result);
-            }
-
+            } 
         }
 
         [HttpPost("UploadAnncAtt")]

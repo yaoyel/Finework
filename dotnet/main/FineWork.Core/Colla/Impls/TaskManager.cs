@@ -148,7 +148,8 @@ namespace FineWork.Colla.Impls
             if (taskModel.Alarms != null)
                 taskModel.Alarms.ForEach(p =>
                 {
-                AlarmManager.CreateAlarmPeriod(task, p.Weekdays, p.ShortTime, p.Bell,p.IsEnabled);
+                    p.TaskId = task.Id;
+                    AlarmManager.CreateAlarmPeriod(p);
                 }); 
 
             //添加任务成员
@@ -217,7 +218,7 @@ namespace FineWork.Colla.Impls
         { 
             var context = this.Session.DbContext;
             var set = context.Set<PartakerEntity>().AsNoTracking();  
-            var tasks = set.Where(p => p.Staff.Id==staffId) 
+            var tasks = set.Where(p => p.Staff.Id==staffId && p.Task.Report==null) 
                 .Select(p=>p.Task)
                 .Include(p => p.Creator.Account)
                 .Include(p => p.Creator.Org)
@@ -238,7 +239,7 @@ namespace FineWork.Colla.Impls
         public IEnumerable<TaskEntity> FetchTasksByOrgId(Guid orgId)
         { 
             var set = this.Session.DbContext.Set<TaskEntity>().AsNoTracking();
-            var tasks = set.Where(p => p.Creator.Org.Id == orgId)
+            var tasks = set.Where(p => p.Creator.Org.Id == orgId && p.Report==null)
                 .Include(p => p.Creator.Account)
                 .Include(p => p.Creator.Org)
                 .Include(p => p.Partakers.Select(s => s.Staff.Org))

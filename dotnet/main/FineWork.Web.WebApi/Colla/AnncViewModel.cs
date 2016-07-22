@@ -50,14 +50,18 @@ namespace FineWork.Web.WebApi.Colla
             var anncReviews = source.Reviews.OrderByDescending(p => p.CreatedAt);
            
             if(!anncReviews.Any())
-                Reviews=new List<AnncReviewViewModel>()
-                {
-                    new AnncReviewViewModel()
+            {
+                if (source.EndAt <= DateTime.Now)
+                    Reviews = new List<AnncReviewViewModel>()
                     {
-                        CreatedAt = source.CreatedAt,
-                        Status =ReviewStatuses.Unspecified 
-                    }
-                };
+                        new AnncReviewViewModel()
+                        {
+                            CreatedAt = source.CreatedAt,
+                            Status = ReviewStatuses.Unspecified
+                        }
+                    };
+            }
+             
             else
             {
                 Reviews = anncReviews.Select(p => p.ToViewModel()).OrderByDescending(p=>p.CreatedAt).ToList();

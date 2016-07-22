@@ -97,7 +97,7 @@ namespace FineWork.Colla.Impls
             var message=String.Format(m_Config["LeanCloud:Messages:Task:Annc"],leader.Staff.Name,staff.Name)  ;
             m_ImService.SendTextMessageByConversationAsync(task.Id, staff.Account.Id, task.ConversationId, task.Name,message);
 
-            m_TaskLogManager.CreateTaskLog(task.Id, staff.Id, anncEntity.GetType().FullName, anncEntity.Id,
+            m_TaskLogManager.CreateTaskLog(task.Id, leader.Staff.Id, anncEntity.GetType().FullName, anncEntity.Id,
                 ActionKinds.InsertTable, "创建了一个里程碑");
            
             return anncEntity;

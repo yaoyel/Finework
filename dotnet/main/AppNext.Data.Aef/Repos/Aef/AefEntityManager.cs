@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
@@ -61,12 +63,17 @@ namespace AppBoot.Repos.Aef
             {
                 this.Session.HandleRepositoryChanged(this);
             }
+            catch (OptimisticConcurrencyException)
+            {
+                ((IObjectContextAdapter)Session.DbContext).ObjectContext.Refresh(RefreshMode.ClientWins, data);
+                this.Session.HandleRepositoryChanged(this);
+            }
             catch
             {
                 this.Table.Remove(data);
                 throw;
             }
-          
+
         }
 
         protected virtual Task OnRepositoryChangedAsync(RepositoryChanges change, T data)
@@ -131,6 +138,7 @@ namespace AppBoot.Repos.Aef
             var entry = EnsureAttached(entity);
 
             //Put the entity into Modified state to ensure EntityFramework issues an UPDATE statement.
+             
             if (entry.State == EntityState.Unchanged)
             {
                 entry.State = EntityState.Modified;

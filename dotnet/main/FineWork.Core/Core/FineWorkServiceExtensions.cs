@@ -274,7 +274,8 @@ namespace FineWork.Core
                 ));
 
             serviceCollection.AddScoped<IVoteOptionManager>(s => new VoteOptioinManager(
-                s.ResolveSessionProvider()
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<ITaskVoteManager>()
                 ));
 
             serviceCollection.AddScoped<IVoteManager>(s => new VoteManager(
@@ -284,13 +285,25 @@ namespace FineWork.Core
                 s.GetRequiredService<IVoteOptionManager>(),
                 s.GetRequiredService<ITaskLogManager>(),
                 s.GetRequiredService<IIMService>(),
-                s.GetService<IConfiguration>()
+                s.GetService<IConfiguration>(),
+                s.GetRequiredService<ITaskVoteManager>()
+                ));
+
+            serviceCollection.AddScoped<ITaskVoteManager>(s => new TaskVoteManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<ITaskManager>(),
+                new LazyResolver<IVoteManager>(s),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<ITaskLogManager>(),
+                s.GetRequiredService<IIMService>(),
+                s.GetRequiredService<IConfiguration>()
                 ));
 
             serviceCollection.AddScoped<IVotingManager>(s => new VotingManager(
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<IStaffManager>(),
-                s.GetRequiredService<IVoteOptionManager>()
+                s.GetRequiredService<IVoteOptionManager>(),
+                s.GetRequiredService<ITaskVoteManager>()
                 ));
 
             serviceCollection.AddScoped<ITaskAlarmManager>(s => new TaskAlarmManager(
@@ -307,7 +320,8 @@ namespace FineWork.Core
             serviceCollection.AddScoped<IAlarmManager>(s => new AlarmManager(
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<ITaskManager>(),
-                s.GetRequiredService<ITaskAlarmManager>()
+                s.GetRequiredService<ITaskAlarmManager>(),
+                s.GetRequiredService<IPartakerManager>()
                 )); 
 
             serviceCollection.AddScoped<ITaskSharingManager>(s => new TaskSharingManager(
@@ -325,7 +339,9 @@ namespace FineWork.Core
 
             serviceCollection.AddScoped<IMomentManager>(s => new MomentManager(
                 s.ResolveSessionProvider(),
-                s.GetRequiredService<IStaffManager>()
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IConfiguration>(),
+                s.GetRequiredService<INotificationManager>()
                 ));
 
             serviceCollection.AddScoped<IMomentFileManager>(s => new MomentFileManager(
@@ -358,7 +374,8 @@ namespace FineWork.Core
                 s.GetRequiredService<IPartakerManager>(),
                 s.GetRequiredService<ITaskReportAttManager>(),
                 s.GetRequiredService<ITaskSharingManager>(),
-                s.GetRequiredService<IIMService>()
+                s.GetRequiredService<IIMService>(),
+                s.GetRequiredService<IConfiguration>()
                 ));
 
             serviceCollection.AddScoped<ITaskReportAttManager>(s => new TaskReportAttManager(
@@ -399,6 +416,36 @@ namespace FineWork.Core
                 new LazyResolver<IAnnouncementManager>(s),
                 s.GetRequiredService<IAnncIncentiveManager>(),
                 s.GetRequiredService<IIncentiveManager>()));
+
+            serviceCollection.AddScoped<IForumSectionManager>(s => new ForumSectionManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IStaffManager>()));
+
+            serviceCollection.AddScoped<IForumTopicManager>(s => new ForumTopicManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IForumSectionManager>(),
+                s.GetRequiredService<IStaffManager>()));
+
+            serviceCollection.AddScoped<IForumLikeManager>(s => new ForumLikeManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IForumTopicManager>(),
+                s.GetRequiredService<IStaffManager>()));
+
+            serviceCollection.AddScoped<IForumCommentManager>(s => new ForumCommentManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IForumTopicManager>(),
+                s.GetRequiredService<IStaffManager>()));
+
+            serviceCollection.AddScoped<IForumVoteManager>(s => new ForumVoteManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IForumTopicManager>(),
+                s.GetRequiredService<IVoteManager>()
+                ));
+
+            serviceCollection.AddScoped<IForumCommentLikeManager>(s => new ForumCommentLikeManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IForumCommentManager>(),
+                s.GetRequiredService<IStaffManager>()));
             return serviceCollection;
         }
     }

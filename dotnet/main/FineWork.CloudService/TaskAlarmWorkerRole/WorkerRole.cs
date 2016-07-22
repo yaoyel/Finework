@@ -109,8 +109,23 @@ namespace TaskAlarmWorkerRole
                             alarmPeriod.ForEach(p =>
                             {
                                 var task = p.Task;
-                                var partakers = task.Partakers;
-                                if (partakers.Count() == 1) return;
+                                var partakers = task.Partakers.ToList();
+
+                                if (!string.IsNullOrEmpty(p.ReceiverStaffIds))
+                                {
+                                    var receiveStaffs = Array.ConvertAll(p.ReceiverStaffIds.Split(','), Guid.Parse);
+
+                                    partakers = partakers.Where(w => receiveStaffs.Contains(w.Staff.Id)).ToList();
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(p.ReceiverKinds))
+                                    {
+                                        var receiveKinds = Array.ConvertAll(p.ReceiverKinds.Split(','), int.Parse);
+
+                                        partakers = partakers.Where(w => receiveKinds.Contains((int)w.Kind)).ToList();
+                                    }
+                                }
 
                                 partakers.ToList().ForEach(s =>
                                 {
@@ -138,8 +153,8 @@ namespace TaskAlarmWorkerRole
                         await Task.Factory.StartNew(() =>
                         {
                             anncs.ForEach(p =>
-                            { 
-                                var receiver = p.Task.Partakers.First(f => f.Kind == PartakerKinds.Leader).Staff; 
+                            {
+                                var receiver = p.Task.Partakers.First(f => f.Kind == PartakerKinds.Leader).Staff;
 
                                 var customizedValue = new Dictionary<string, string>()
                                 {

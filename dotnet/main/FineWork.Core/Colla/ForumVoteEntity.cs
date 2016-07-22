@@ -7,9 +7,6 @@ namespace FineWork.Colla
     {
         public virtual ForumTopicEntity ForumTopic { get; set; }
 
-        public virtual VoteEntity Vote { get; set; }
-
-
-
+        public virtual VoteEntity Vote { get; set; } 
     }
 }

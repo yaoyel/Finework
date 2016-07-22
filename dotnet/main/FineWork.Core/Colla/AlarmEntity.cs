@@ -21,6 +21,10 @@ namespace FineWork.Colla
         public virtual TaskEntity Task { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-         
+
+        public string ReceiverKinds { get; set; }
+
+        public  string ReceiverStaffIds { get; set; }
+
     }
 }

@@ -1,7 +1,6 @@
 {
   "webroot": "wwwroot",
   "version": "1.0.0-rc1-final",
-  "runtime": "clr",
   "architecture": "x64",
   "dependencies": {
     "FineWork.Web.WebApi": "1.0.0-rc1-final"

@@ -52,20 +52,7 @@ namespace FineWork.Colla.Models
 
         //协同者
         public List<Guid> Collaborators { get; set; }
-    } 
- 
-    public class CreateAlarmPeriodModel
-    {
-        public Guid? TaskId { get; set; }
-
-        public int Weekdays { get; set; }
-
-        public string ShortTime { get; set; }
-
-        public string Bell { get; set; }
-
-        public bool IsEnabled { get; set; } = true; 
-    }
+    }  
 
     public class CreateIncentiveModel
     {

@@ -8,8 +8,10 @@ namespace FineWork.Colla
     {
         ForumSectionEntity CreateForumSetcion(CreateForumSectionModel forumSectionModel);
 
-        IEnumerable<ForumSectionEntity> FetchForumSectionByStaffId(Guid staffId, int sectionId);
+        IEnumerable<ForumSectionEntity> FetchForumSectionByOrgId(Guid orgId, ForumSections section);
 
-        
+        ForumSectionEntity FetchForumSectionByStaffId(Guid orgId, ForumSections section,string version);
+
+        ForumSectionEntity FindById(Guid forumSectionId);
     } 
 }

@@ -80,6 +80,8 @@ namespace FineWork.Colla
             new HashSet<MomentCommentEntity>();
 
         public virtual ICollection<ForumSectionEntity> ForumSections { get; set; }=new HashSet<ForumSectionEntity>();
+
+        public virtual ICollection<ForumTopicEntity> ForumTopics { get; set; }=new HashSet<ForumTopicEntity>();
          
     }
 }

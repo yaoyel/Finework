@@ -56,15 +56,15 @@ namespace FineWork.Web.WebApi.Colla
 
         [HttpPost("CreateAlarmPeriod")]
         //[DataScoped(true)]
-        public AlarmViewModel CreateAlarmPeriod(Guid taskId, int weekdays, string shortTime, string bell)
+        public AlarmViewModel CreateAlarmPeriod([FromBody]CreateAlarmPeriodModel createAlarmPeriodModel)
         {
-            if (string.IsNullOrEmpty(shortTime)) throw new ArgumentException(nameof(shortTime));
+            if (string.IsNullOrEmpty(createAlarmPeriodModel.ShortTime)) throw new ArgumentException(nameof(createAlarmPeriodModel.ShortTime));
 
             using (var tx = TxManager.Acquire())
             {
-                var task = TaskExistsResult.Check(m_TaskManager, taskId).ThrowIfFailed().Task;
+                var task = TaskExistsResult.Check(m_TaskManager, createAlarmPeriodModel.TaskId.Value).ThrowIfFailed().Task;
                 var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
-                var alarmPeriod = this.m_AlarmPeriodManager.CreateAlarmPeriod(task, weekdays, shortTime, bell);
+                var alarmPeriod = this.m_AlarmPeriodManager.CreateAlarmPeriod(createAlarmPeriodModel);
 
                 //发送群消息  
                 var message = string.Format(m_Config["LeanCloud:Messages:Task:Alarm:Create"], partaker.Staff.Name);
@@ -93,18 +93,16 @@ namespace FineWork.Web.WebApi.Colla
             }
         }
 
-        [HttpPost("UpdateAlarmPeriodTime")]
+        [HttpPost("UpdateAlarmPeriod")]
         //[DataScoped(true)]
-        public AlarmViewModel UpdateAlarmPeriodTime(Guid alarmPeriodId, bool isEnabled, int weekdays,
-            string shortTime,string bell)
+        public AlarmViewModel UpdateAlarmPeriod([FromBody]UpdateAlarmPeriodModel updateAlarmPeriodModel)
         {
 
-            if (string.IsNullOrEmpty(shortTime)) throw new ArgumentException(nameof(shortTime));
-            if (weekdays <= 0) throw new ArgumentException(nameof(weekdays));
+            if (string.IsNullOrEmpty(updateAlarmPeriodModel.ShortTime)) throw new ArgumentException(nameof(updateAlarmPeriodModel.ShortTime));
+            if (updateAlarmPeriodModel.Weekdays <= 0) throw new ArgumentException(nameof(updateAlarmPeriodModel.Weekdays));
             using (var tx = TxManager.Acquire())
             {
-                var alarmPeriod = this.m_AlarmPeriodManager.UpdateAlarmPeriodTime(alarmPeriodId, weekdays, shortTime,
-                    bell);
+                var alarmPeriod = this.m_AlarmPeriodManager.UpdateAlarmPeriodTime(updateAlarmPeriodModel);
 
                 var partaker = AccountIsPartakerResult.Check(alarmPeriod.Task, this.AccountId).ThrowIfFailed().Partaker;
 
@@ -338,28 +336,27 @@ namespace FineWork.Web.WebApi.Colla
                 .Select(p => p.Staff.Id).ToArray();
 
             var alarmsInCommunication = new List<TaskAlarmEntity>();
+            var allAlarms = this.m_TaskAlarmManager.FetchTaskAlarmsByTaskId(taskId)
+                .ToList();
 
-            //获取当前tong会议室正在处理的预警
-            var alarmInTong = this.m_TaskAlarmManager.FetchAlarmsByChatRoomKind(taskId, ChatRoomKinds.Tong, staffId).ToList();
+            //获取当前tong会议室正在处理的预警7
+            var alarmInTong = allAlarms.Where(p => p.ResolveStatus == ResolveStatus.UnResolved && p.Receivers.Split(',').Count() == 4)
+                .OrderBy(p=>p.CreatedAt).ToList();
 
             //获取shine会议室正在处理的预警
-            var alarmsInShine = this.m_TaskAlarmManager.FetchTaskAlarmsByTaskId(taskId)
-                .Where(p => p.ResolveStatus == ResolveStatus.UnResolved)
+            var alarmsInShine = allAlarms.Where(p => p.ResolveStatus == ResolveStatus.UnResolved && p.Receivers.Split(',').Count() < 4)
                 .OrderBy(p => p.CreatedAt).ToList();
 
-            alarmsInShine = alarmsInShine.Where(p => otherPartakers.Contains(p.Staff.Id))
-                .Where(p => p.TaskAlarmKind.GetGroupName() != TaskAlarmFactor.Project)
-                .GroupBy(p => p.Staff).Select(p => p.FirstOrDefault()).ToList()
-                .Union(
-                    alarmsInShine.Where(p => mentors.Contains(p.Staff.Id))
-                        .GroupBy(p => p.Staff).Select(p => p.FirstOrDefault()).ToList()
-                ).ToList();
+
+            alarmsInShine = alarmsInShine.GroupBy(p => p.ConversationId)
+                .Select(p => p.FirstOrDefault()).ToList();
 
             if (alarmInTong.Any())
                 alarmsInCommunication.Add(alarmInTong.FirstOrDefault());
 
             if (alarmsInShine.Any())
                 alarmsInCommunication.AddRange(alarmsInShine);
+
             var alarmIds = alarmsInCommunication.Select(p => p.Id).ToArray();
 
             if (!alarmsInCommunication.Any())
@@ -367,7 +364,6 @@ namespace FineWork.Web.WebApi.Colla
 
             if (staffAlarms.Receiveds.Any())
             {
-
                 for (int i = 0; i < staffAlarms.Receiveds.Count(); i++)
                 {
                     if (alarmIds.Contains(staffAlarms.Receiveds.ElementAt(i).Id))
