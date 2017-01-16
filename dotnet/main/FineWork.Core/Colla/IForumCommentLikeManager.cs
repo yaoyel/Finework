@@ -10,5 +10,7 @@ namespace FineWork.Colla
         void DeleteForumCommentLike(Guid staffId, Guid commentId);
 
         IEnumerable<ForumCommentLikeEntity> FetchCommentLikesByCommentId(Guid topicId);
+
+        IEnumerable<ForumCommentLikeEntity> FetchCommentLikesByCreator(Guid staffId);
     }
 }

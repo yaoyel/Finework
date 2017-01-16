@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AppBoot.Checks;
 using AppBoot.Common;
 using AppBoot.Repos;
@@ -48,13 +49,17 @@ namespace FineWork.Web.WebApi.Colla
             using (var tx = TxManager.Acquire())
             {
                 var task = TaskExistsResult.Check(m_TaskManager, taskReportModel.TaskId).ThrowIfFailed().Task;
+
+                if(task.Report!=null) throw new FineWorkException("该任务已经生成报告,请返回查看.");
                 var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
 
-                if (partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("你没有权限结束任务.");
+                var firstUndoneTask = task.ChildTasks.FirstOrDefault(p => p.Report == null);
 
-                ////判断是否有预警或共识未处理 
-                //AlarmOrVoteExistsResult.Check(this.m_TaskManager, taskReportModel.TaskId).ThrowIfFailed();
+                if (firstUndoneTask!=null)
+                    throw new FineWorkException($"请先完成子任务{firstUndoneTask.Name}.");
+
+                if (partaker.Kind != PartakerKinds.Leader)
+                    throw new FineWorkException("你没有权限结束任务."); 
 
                 this.m_TaskReportManager.CreateTaskReport(taskReportModel);
 
@@ -62,9 +67,9 @@ namespace FineWork.Web.WebApi.Colla
                 task.Progress = 100;
                 m_TaskManager.UpdateTask(task);
 
-                tx.Complete();
-                return new HttpStatusCodeResult(201);
+                tx.Complete(); 
             }
+            return new HttpStatusCodeResult(201);
         }
 
         [HttpGet("FindTaskReportByTaksId")]

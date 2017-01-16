@@ -90,7 +90,7 @@ namespace AppBoot.Repos.Aef
             if (entity == null) throw new ArgumentNullException("entity");
 
             this.Table.Add(entity);
-            OnRepositoryChanged(RepositoryChanges.Insert, entity); 
+            OnRepositoryChanged(RepositoryChanges.Insert, entity);
         }
 
         protected virtual async Task InternalInsertAsync(T entity)

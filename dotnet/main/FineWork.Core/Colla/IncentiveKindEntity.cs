@@ -13,9 +13,6 @@ namespace FineWork.Colla
 
         public string Unit { get; set; }
 
-        public virtual ICollection<TaskIncentiveEntity> TaskIncentives { get; set; } = new HashSet<TaskIncentiveEntity>();
-
-        public virtual ICollection<AnncIncentiveEntity> AnncIncentives { get; set; } =
-            new HashSet<AnncIncentiveEntity>();
+        public virtual ICollection<TaskIncentiveEntity> TaskIncentives { get; set; } = new HashSet<TaskIncentiveEntity>(); 
     }
 }

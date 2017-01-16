@@ -15,5 +15,10 @@ namespace FineWork.Colla
         void IncreaseForumTopicViews(Guid topicId);
 
         ForumTopicEntity UpdateForumTopic(UpdateForumTopicModel updateForumTopicModel);
+
+        IEnumerable<ForumTopicEntity> FetchForumTopicByOrgId(Guid orgId);
+
+        IEnumerable<ForumTopicEntity> FetchForumTopicByContent(Guid orgId,string content); 
+
     }
 }

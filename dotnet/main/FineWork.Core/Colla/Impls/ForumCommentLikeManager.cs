@@ -52,5 +52,10 @@ namespace FineWork.Colla.Impls
         {
             return this.InternalFetch(p => p.ForumComment.Id == commentId);
         }
+
+        public IEnumerable<ForumCommentLikeEntity> FetchCommentLikesByCreator(Guid staffId)
+        {
+            return this.InternalFetch(p => p.ForumComment.Staff.Id == staffId);
+        }
     }
 }

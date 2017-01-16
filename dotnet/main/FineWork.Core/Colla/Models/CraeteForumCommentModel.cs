@@ -10,7 +10,7 @@ namespace FineWork.Colla.Models
         public  Guid TopicId { get; set; }
 
         [Required]
-        [MaxLength(200, ErrorMessage = "评论的内容不能大于200字")]
+        //[MaxLength(200, ErrorMessage = "评论的内容不能大于200字")]
         public string Comment { get; set; }
 
         public Guid TargetCommentId { get; set; }

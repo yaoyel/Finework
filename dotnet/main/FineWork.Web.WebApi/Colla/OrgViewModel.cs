@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FineWork.Colla;
 
 namespace FineWork.Web.WebApi.Colla
@@ -15,6 +16,10 @@ namespace FineWork.Web.WebApi.Colla
 
         public string SecurityStamp { get; set; }
 
+        public Guid[] ReqAccIds { get; set; }
+
+        public Guid[] DisabledAccIds { get; set; }
+
         public virtual void AssignFrom(OrgEntity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -24,6 +29,9 @@ namespace FineWork.Web.WebApi.Colla
             this.AdminStaff = entity.AdminStaff?.ToViewModel();
             this.IsInvEnabled = entity.IsInvEnabled;
             this.SecurityStamp = entity.SecurityStamp;
+            this.ReqAccIds = entity.StaffReqs.Where(p=>p.ReviewStatus==ReviewStatuses.Unspecified)
+                .Select(p => p.Account.Id).ToArray();
+            this.DisabledAccIds = entity.Staffs.Where(p => !p.IsEnabled).Select(p => p.Account.Id).ToArray();
         }
     }
 

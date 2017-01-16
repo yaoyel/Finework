@@ -22,23 +22,18 @@ namespace FineWork.Colla
 
         public DateTime? ClosedAt { get; set; }
 
-        public string Comment { get; set; }
+        public string Comment { get; set; } 
 
-        public string ConversationId { get; set; }
-
-        public string AlarmDesc { get; set; }  
-
-        [NotMapped]
-        public   int[] ReceiversArray {
-            get { return !string.IsNullOrEmpty(this.Receivers)?Array.ConvertAll(this.Receivers.Split(','), int.Parse):null; }
-            set { this.Receivers = string.Join(",", value); } 
-        }
-
-        public string Receivers { get; set; }
+        public string AlarmDesc { get; set; }    
 
         public virtual TaskEntity Task { get; set; }
 
-        public virtual StaffEntity Staff { get; set; }
+        public virtual StaffEntity Staff { get; set; } 
 
+       public virtual ConversationEntity Conversation { get; set; }
+
+       public string Receivers { get; set; }
+
+        public Guid? AlarmId { get; set; } 
     }
 }

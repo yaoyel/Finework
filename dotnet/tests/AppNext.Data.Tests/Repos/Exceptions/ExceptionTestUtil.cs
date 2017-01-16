@@ -12,7 +12,8 @@ namespace AppBoot.Repos.Exceptions
 
         /// <summary>
         /// Checks the exception type matches the guidelines in
-        /// http://msdn.microsoft.com/en-us/library/vstudio/ms229064(v=vs.100).aspx
+        /// http://msdn.microsoft.com/en-us/library/vstudio/ms229064(v=vs.100
+        /// ).aspx
         /// </summary>
         /// <typeparam name="T"> The exception type. </typeparam>
         public static void CheckGuidelines<T>()

@@ -22,9 +22,8 @@ namespace FineWork.Colla
         ICollection<OrgEntity> FetchOrgs();
 
         /// <summary> Finds a list of <see cref="OrgEntity"/> objects associated to an <see cref="IAccount"/>. </summary>
-        IEnumerable<OrgEntity> FetchOrgsByAccount(Guid accountId);
-
-        IEnumerable<OrgEntity> FetchOrgsByStaff(Guid staffId);
+        IEnumerable<OrgEntity> FetchOrgsByAccount(Guid accountId, bool includeDisabled = false);
+         
         void UploadOrgAvatar(Stream stream, Guid orgId, string contentType); 
 
     }

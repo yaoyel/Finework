@@ -52,6 +52,10 @@ namespace FineWork.Colla.Impls
             return this.InternalFind(staffId);
         }
 
+        public IEnumerable<StaffEntity> FetchStaffsByName(Guid orgId,string name)
+        {
+            return this.InternalFetch(p =>p.Org.Id==orgId &&  p.Name.Contains(name));
+        }
 
         public IList<StaffEntity> FetchStaffsByIds(params Guid[] staffIds)
         {
@@ -72,7 +76,7 @@ namespace FineWork.Colla.Impls
         {
            var staffs= this.InternalFetch(x =>x.Org.Id == orgId).ToList();
             if (isEnabled != null)
-                staffs = staffs.Where(p => p.IsEnabled == isEnabled.Value).ToList() ;
+                staffs = staffs.Where(p => p.IsEnabled == isEnabled.Value).ToList();
             return staffs; 
         }
 

@@ -49,7 +49,7 @@ namespace FineWork.Web.WebApi.Colla
 
         public string TaskAlarmKindName { get; set; }
 
-        public IList<TaskAlarmViewModel> TaskAlarms { get; set; }
+        public IList<Guid> TaskAlarms { get; set; }
 
         public virtual IList<StaffAlarmsGroupByKindViewModel> AssignFrom(IEnumerable<TaskAlarmEntity> alarms)
         {
@@ -61,7 +61,7 @@ namespace FineWork.Web.WebApi.Colla
                 {
                     TaskAlarmKindId = p.Key,
                     TaskAlarmKindName = p.Key.GetLabel(),
-                    TaskAlarms = p.Where(w=>w.Staff.IsEnabled).Select(s => s.ToViewModel()).ToList()
+                    TaskAlarms = p.Where(w=>w.Staff.IsEnabled).Select(s=>s.Id).ToList()
                 });
 
             return alarmsGroupByKind.Where(p=>p.TaskAlarms.Any()).ToList();
@@ -76,8 +76,7 @@ namespace FineWork.Web.WebApi.Colla
             var result = new StaffAlarmsGroupByKindViewModel();
 
             return result.AssignFrom(model);
-        }
-
+        } 
     }
 
     #endregion
@@ -89,7 +88,7 @@ namespace FineWork.Web.WebApi.Colla
 
         public IList<StaffViewModel> PartakerStaffs { get; set; }
 
-        public IList<TaskAlarmViewModel> TaskAlarms { get; set; }
+        public IList<Guid> TaskAlarms { get; set; }
 
         public virtual IList<TaskAlarmsGroupByTaskViewModel> AssignFrom(IList<TaskAlarmEntity> alarms)
         {
@@ -99,12 +98,12 @@ namespace FineWork.Web.WebApi.Colla
                 .OrderByDescending(p => p.Count())
                 .Select(p => new TaskAlarmsGroupByTaskViewModel()
                 {
-                    Task = p.Key.ToViewModel(),
+                    Task = p.Key.ToViewModel(true),
                     PartakerStaffs = p.Key.Partakers.Where(w => w.Staff.Alarms.Any(a => a.ResolveStatus!=ResolveStatus.Closed 
-                     &&a.Task.Id==p.Key.Id && a.TaskAlarmKind!=TaskAlarmKinds.GreenLight) && w.Staff.IsEnabled)
-                    .GroupBy(g => g.Staff).Select(s => s.Key.ToViewModel()).ToList(),
+                    && a.TaskAlarmKind!=TaskAlarmKinds.GreenLight && a.Task.Id==p.Key.Id) && w.Staff.IsEnabled)
+                    .GroupBy(g => g.Staff).Select(s => s.Key.ToViewModel(true)).ToList(),
 
-                    TaskAlarms =alarms.Where(s=>s.Task==p.Key && s.Staff.IsEnabled).Select(s=>s.ToViewModel()).ToList()
+                    TaskAlarms =alarms.Where(s=>s.Task==p.Key && s.Staff.IsEnabled).Select(s=>s.Id).ToList()
                 });
 
             return alarmsGroupByKind.ToList();

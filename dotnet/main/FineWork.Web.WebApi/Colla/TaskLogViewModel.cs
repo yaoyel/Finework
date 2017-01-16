@@ -27,6 +27,31 @@ namespace FineWork.Web.WebApi.Colla
         }
     }
 
+    public class TaskSummaryViewModel
+    {
+        public string Message { get; set; } 
+        
+        public Guid TargetId { get; set; }
+
+        //note纪要 annc 里程碑 childtask 子任务
+        public string Type { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+
+        //里程碑状态 0 未处理 1 已达成 2 未达成
+        public int? AnncStatus { get; set; }
+
+        public DateTime? EndAt { get; set; }
+
+        //annc的开始时间
+        public DateTime? StartAt { get; set; }
+
+        //计划是否和我有关系
+        public bool RelatedToMe { get; set; }
+        
+        public bool IsDraft { get; set; }
+    }
+
     public static class TaskLogViewModelExtensions
     {
         public static TaskLogViewModel ToViewModel(this TaskLogEntity entity)

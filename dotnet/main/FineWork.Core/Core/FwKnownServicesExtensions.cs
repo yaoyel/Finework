@@ -10,6 +10,7 @@ using FineWork.Colla;
 using FineWork.Message;
 using FineWork.Net.IM;
 using FineWork.Security;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection; 
 
 namespace FineWork.Core
@@ -122,6 +123,46 @@ namespace FineWork.Core
         public static IAnnouncementManager AnnouncementManager(this FwWrappedServices services)
         {
             return services.GetRequiredService<IAnnouncementManager>();
+        }
+
+        public static IAnncAlarmManager AnncAlarmManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IAnncAlarmManager>();
+        }
+
+        public static IPlanAlarmManager PlanAlarmManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IPlanAlarmManager>();
+        }
+
+        public static IConfiguration ConfigurationManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IConfiguration>();
+        }
+
+        public static IIMService ImService(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IIMService>();
+        }
+
+        public static IMemberManager MemberManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IMemberManager>(); 
+        }
+
+        public static IConversationManager ConversationManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IConversationManager>();
+        }
+
+        public static IPushLogManager PushLogManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IPushLogManager>();
+        }
+
+        public static ITaskVoteManager TaskVoteManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<ITaskVoteManager>();
         }
     }
 }

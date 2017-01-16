@@ -15,6 +15,21 @@ namespace FineWork.Colla
         Rejected
     }
 
+    public enum AnncStatus
+    {
+        [Display(Name = "未处理")] 
+        Unspecified,
+
+        [Display(Name = "已达成")]
+        Approved,
+
+        [Display(Name = "延期")]
+        Delay,
+
+        [Display(Name = "放弃")]
+        Abandon, 
+    }
+
     public static class ReviewStatusesExtensions
     {
         public static string GetLabel(this ReviewStatuses kind)

@@ -14,11 +14,18 @@ namespace FineWork.Colla
        MomentEntity FindMomentById(Guid momentId);
 
        IEnumerable<MomentEntity> FetchMomentsByOrgId(Guid orgId);
+       IEnumerable<MomentEntity> FetchMomentsByContent(Guid orgId, string content);
 
-       IEnumerable<MomentEntity> FetchMomentsByStaffId(Guid staffId);
+        IEnumerable<MomentEntity> FetchMomentsByStaffId(Guid staffId);
 
        void DeleteMoment(Guid momentId);
 
-      Task SendMomentMessageAsync(StaffEntity staff, MomentEntity moment);
+      Task SendMomentMessageAsync(MomentEntity moment,string from,params string[] phoneNumbers);
+
+       bool HasUnReadMoment(Guid staffId);
+
+       Tuple<int, Guid?> FetchUnReadCommentCountByStaffId(Guid staffId);
+
+
    }
 }

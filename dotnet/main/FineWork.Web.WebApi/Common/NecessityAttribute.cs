@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace FineWork.Web.WebApi.Common
 {
-    [AttributeUsage(AttributeTargets.Property)] 
+    [AttributeUsage(AttributeTargets.Property,AllowMultiple = true)] 
     public class NecessityAttribute:Attribute
     {
         public NecessityLevel Level; 

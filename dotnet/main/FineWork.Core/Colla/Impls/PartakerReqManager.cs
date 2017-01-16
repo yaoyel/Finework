@@ -42,6 +42,9 @@ namespace FineWork.Colla.Impls
             if (task == null) throw new ArgumentNullException(nameof(task));
             if (requestorStaff == null) throw new ArgumentNullException(nameof(requestorStaff));
 
+            if (task.IsDeserted.HasValue && task.IsDeserted.Value)
+                throw new FineWorkException("该任务已经被放弃,不可进行此操作.");
+
             //任务必须开放相应 kind 的申请
             PartakerReqIsEnabledResult.Check(task, kind).ThrowIfFailed();
 
@@ -95,7 +98,7 @@ namespace FineWork.Colla.Impls
 
                 //加入任务对应的群组
                 var leader = partakerReq.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
-                IMService.AddMemberAsync(leader.Staff.Id.ToString(), partakerReq.Task.ConversationId,
+                IMService.AddMemberAsync(leader.Staff.Id.ToString(), partakerReq.Task.Conversation.Id,
                     partakerReq.Staff.Id.ToString());
 
                 this.PartakerManager.CreatePartaker(partakerReq.Task.Id, partakerReq.Staff.Id, partakerReq.PartakerKind);

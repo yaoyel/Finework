@@ -87,28 +87,27 @@ namespace FineWork.Web.WebApi.Colla
         //[DataScoped(true)]
         public IActionResult ChangeReviewStatus(Guid staffReqId, short newStatus)
         {
+
+            var staffReq = m_StaffReqManager.FindStaffReqById(staffReqId);
+
+            //判断当前用户是否有管理员权限
+            PermissionIsAdminResult.Check(m_StaffManager, staffReq.Org.Id, this.AccountId)
+                .ThrowIfFailed();
             using (var tx = TxManager.Acquire())
-            {
-                var staffReq = m_StaffReqManager.FindStaffReqById(staffReqId);
-
-                //判断当前用户是否有管理员权限
-                PermissionIsAdminResult.Check(m_StaffManager, staffReq.Org.Id, this.AccountId)
-                    .ThrowIfFailed();
-                m_StaffReqManager.ChangeReviewStatus(staffReq, (ReviewStatuses) newStatus);
-
-
-                var extra = new Dictionary<string, string>();
-                extra.Add("PathTo", "reviewStaffReq");
-                extra.Add("status", newStatus.ToString());
-
-                //推送消息给申请人员
-                var message = string.Format(m_Configuration["PushMessage:StaffReq:review"],
-                    staffReq.Org.Name, newStatus == (short) ReviewStatuses.Approved ? "同意" : "拒绝");
-
-                m_NotificationManager.SendByAliasAsync(null, message, extra, staffReq.Account.PhoneNumber).Wait();
-                tx.Complete();
-                return new HttpStatusCodeResult(200);
+            { 
+                m_StaffReqManager.ChangeReviewStatus(staffReq, (ReviewStatuses) newStatus); 
+                tx.Complete(); 
             }
+            var extra = new Dictionary<string, string>();
+            extra.Add("PathTo", "reviewStaffReq");
+            extra.Add("status", newStatus.ToString());
+            extra.Add("OrgId",staffReq.Org.Id.ToString());
+            //推送消息给申请人员
+            var message =newStatus==1? string.Format(m_Configuration["PushMessage:StaffReq:agree"],staffReq.Org.Name):
+                 string.Format(m_Configuration["PushMessage:StaffReq:refuse"], staffReq.Org.Name);
+
+            m_NotificationManager.SendByAliasAsync(null, message, newStatus == 1 ? extra:null, staffReq.Account.PhoneNumber);
+            return new HttpStatusCodeResult(200);
         }
 
         [HttpGet("FetchStaffReqsByOrg")]

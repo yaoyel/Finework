@@ -11,5 +11,8 @@ namespace FineWork.Colla
 
         IEnumerable<TaskVoteEntity> FetchVoteByTaskId(Guid taskId);
 
+        IEnumerable<TaskVoteEntity> FetchAllVotes();
+
+        IEnumerable<TaskVoteEntity> FetchVotesByTime(DateTime time);
     }
 }

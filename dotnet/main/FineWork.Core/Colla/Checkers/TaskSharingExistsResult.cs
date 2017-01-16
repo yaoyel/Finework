@@ -25,6 +25,13 @@ namespace FineWork.Colla.Checkers
             return Check(taskSharing, "不存在对应的任务共享信息.");
         }
 
+        public static TaskSharingExistsResult Check(ITaskSharingManager taskSharingManager,Guid taskId, Guid taskSharingId)
+        {
+            var taskSharing = taskSharingManager.FindTaskSharingWithTask(taskId,taskSharingId);
+
+            return Check(taskSharing, "不存在对应的任务共享信息.");
+        }
+
         public static TaskSharingExistsResult Check(ITaskSharingManager taskSharingManager, string  contentMd5)
         {
             var taskSharing = taskSharingManager.FetchTaskSharingByContentMd5(contentMd5).FirstOrDefault();

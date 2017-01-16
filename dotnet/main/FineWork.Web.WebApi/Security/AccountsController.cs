@@ -214,6 +214,13 @@ namespace FineWork.Web.WebApi.Security
                 .Select(p => p.ToViewModel());
         }
 
+        [HttpGet("IsUpdateVersion")]
+        [AllowAnonymous]
+        public bool IsUpdateVersion(string version)
+        { 
+            return false;
+        }
+
         [HttpPost("ChangePassword")]
         [AllowAnonymous]
         public void ChangePassword(string phoneNumber, string newPwd)

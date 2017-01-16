@@ -17,6 +17,7 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using AppBoot.Transactions;
 using Microsoft.AspNet.Authorization;
+using Microsoft.Net.Http.Headers;
 
 namespace FineWork.Web.WebApi.Colla
 {
@@ -45,8 +46,11 @@ namespace FineWork.Web.WebApi.Colla
                     using (var tx = TxManager.Acquire())
                     {
                         reader.BaseStream.Position = 0;
-                        var fileName = p.ContentDisposition.Split(';')[2].Split('=')[1].Replace("\"", "");
-                        var taskSharing = m_TaskSharingManager.CreateTaskSharing(taskId, staffId, fileName,
+                        var filename = ContentDispositionHeaderValue
+                            .Parse(p.ContentDisposition)
+                            .FileName
+                            .Trim('"');
+                        var taskSharing = m_TaskSharingManager.CreateTaskSharing(taskId, staffId, filename,
                             p.ContentType, reader.BaseStream);
                         taskSharings.Add(taskSharing.ToViewModel());
                         tx.Complete();
@@ -61,7 +65,7 @@ namespace FineWork.Web.WebApi.Colla
         {
             var taskSharings = this.m_TaskSharingManager.FetchTaskSharingsByTask(taskId).ToList();
             if (taskSharings.Any())
-                return new ObjectResult( taskSharings.Select(p => p.ToViewModel()));
+                return new ObjectResult( taskSharings.Select(p => p.ToViewModel(isShowLow:false)));
             
             return new HttpNotFoundObjectResult(taskId); 
         }

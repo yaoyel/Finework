@@ -22,7 +22,16 @@ namespace FineWork.Colla.Checkers
             var staffInv = staffInvManager.FindStaffInvByOrgAccount(orgId, accountId);
             return Check(staffInv, "不存在对应的组织成员邀请信息.");
         }
-   
+
+
+        public static StaffInvExistsResult CheckByPhoneNumber(IStaffInvManager staffInvManager, Guid orgId,string phoneNumber)
+        {
+            if (staffInvManager == null) throw new ArgumentNullException(nameof(staffInvManager));
+            var staffInv = staffInvManager.FindStaffInvByOrgWithPhoneNumber(orgId, phoneNumber);
+            return Check(staffInv, "不存在对应的组织成员邀请信息.");
+        }
+
+
         private static StaffInvExistsResult Check(StaffInvEntity staff, string message)
         {
             if (staff == null)

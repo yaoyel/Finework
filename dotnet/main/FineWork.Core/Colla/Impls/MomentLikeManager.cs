@@ -52,8 +52,13 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(momentLike);
 
-            if(moment.Staff!=staff)
-           m_MomentManager.SendMomentMessageAsync(moment.Staff, moment);
+            if (moment.Staff != staff)
+            {
+                var phoneNumber = moment.Staff.Account.PhoneNumber;
+          
+                  m_MomentManager.SendMomentMessageAsync(moment, "momentlike", phoneNumber); 
+            }
+
 
             return momentLike;
         }

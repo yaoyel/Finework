@@ -24,6 +24,9 @@ namespace FineWork.Logging
         {
             if (type == null) throw new ArgumentNullException("type");
             return Factory.CreateLogger(type.FullName);
-        }
+        } 
     }
+      
 }
+
+

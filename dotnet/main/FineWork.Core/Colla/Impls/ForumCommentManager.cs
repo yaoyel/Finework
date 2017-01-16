@@ -53,11 +53,16 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(forumComment);
             return forumComment;
-        }
+        } 
 
         public IEnumerable<ForumCommentEntity> FetchForumCommentsByTopicId(Guid topicId)
         {
             return this.InternalFetch(p => p.ForumTopic.Id == topicId);
+        }
+
+        public IEnumerable<ForumCommentEntity> FetchCommentsByTopicOrCommentCreator(Guid staffId)
+        {
+            return this.InternalFetch(p => p.ForumTopic.Staff.Id == staffId || p.TargetComment.Staff.Id == staffId);
         }
 
         public ForumCommentEntity FindById(Guid forumCommentId)
@@ -69,7 +74,7 @@ namespace FineWork.Colla.Impls
         {
             var comment = ForumCommentExistsResult.Check(this, commentId).ForumComment;
 
-            if(comment!=null) this.InternalDelete(comment);
+            if (comment != null) this.InternalDelete(comment);
 
         }
 
@@ -77,18 +82,19 @@ namespace FineWork.Colla.Impls
         {
             Args.NotNull(updateForumCommentModel, nameof(updateForumCommentModel));
 
-            var comment = ForumCommentExistsResult.Check(this, updateForumCommentModel.CommentId).ThrowIfFailed().ForumComment;
+            var comment =
+                ForumCommentExistsResult.Check(this, updateForumCommentModel.CommentId).ThrowIfFailed().ForumComment;
 
             var staff =
                 StaffExistsResult.Check(this.m_StaffManager, updateForumCommentModel.StaffId).ThrowIfFailed().Staff;
 
-            if(comment.Staff!=staff) throw new FineWorkException("你没有权限修改此评论");
+            if (comment.Staff != staff) throw new FineWorkException("你没有权限修改此评论");
 
             comment.Content = updateForumCommentModel.Comment;
-            comment.LastUpdatedAt=DateTime.Now; 
-            
+            comment.LastUpdatedAt = DateTime.Now;
+
             this.InternalUpdate(comment);
-            return comment; 
+            return comment;
         }
     }
 }

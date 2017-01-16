@@ -20,7 +20,7 @@ namespace FineWork.Colla.Checkers
         public static AnncExistsResult Check(IAnnouncementManager anncManager, Guid anncId)
         {
             var annc = anncManager.FindAnncById(anncId);
-            return Check(annc, "里程碑不存在.");
+            return Check(annc, "计划不存在.");
         }
          
 

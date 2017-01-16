@@ -18,10 +18,11 @@ namespace FineWork.Colla
 
         public virtual ICollection<VotingEntity> Votings { get; set; } = new HashSet<VotingEntity>(); 
 
-        public VoteEntity Vote { get; set; }
+        public virtual VoteEntity Vote { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+       
         [Timestamp]
         public byte[] RowVer { get; set; }
     }

@@ -1,7 +1,8 @@
 ﻿{
   "JPush": {
     "AppKey": "229d1cb589bb0ccd4bd1ec77",
-    "MasterSecret": "b79a9e1fea89e45813e6ccfb"
+    "MasterSecret": "b79a9e1fea89e45813e6ccfb",
+    "apns_production": "true" 
   },
 
   "PushMessage": {
@@ -11,18 +12,24 @@
     },
     "StaffReq": {
       "req": "[组织申请] {0} 申请加「{1}」,Ta看起来很着急，抓紧审核一下吧!",
-      "review": " {0}「{1}」您加入."
+      "agree": " 您已成功加入组织「{0}」！",
+      "refuse": "您已被组织拒绝「{0}」！"
     },
     "PartakerInv": {
       "inv": "[任务邀请] {0} 邀请你加入「{1}」,成为战友，将携手并肩，勇往直前!",
       "review": " {0} 同意加入「{1}」。"
     },
-
     "PartakerReq": {
-      "req": "[任务申请] {0} 申请加入「{1}」，您的队伍或许又添一位得力战将！"
+      "req": "[任务申请] {0} 申请加入「{1}」，您的队伍或许又添一位得力战将!",
+      "refuse": "您已被拒绝加入「{0}」！" 
     },
-
+    "Task": {
+      "remove": "您已被移出「{0}」!"
+    }, 
     "ChangeStaffStatus": "[组织通知]您已被「{0}」的管理员「{1}」",
-    "Moment": "共享圈有新消息"
+    "Moment": "共享圈有新消息",
+    "Forum": "基本法有新消息",
+    "AbandonTask": "{0}放弃了任务「{1}」",
+    "Plan": "{0}创建了计划，并@了你" 
   }
 }

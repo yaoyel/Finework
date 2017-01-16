@@ -16,5 +16,9 @@ namespace FineWork.Colla
         IEnumerable<VotingEntity> FetchVotingByVoteOptionId(Guid voteOptionId);
 
         IEnumerable<VotingEntity> FetchVotingByTaskIdAndStaffId(Guid taskId, Guid staffId);
+
+        VotingEntity FindByOptionIdWithStaffId(Guid optionId, Guid staffId);
+
+        void DeleteVotingByVoteId(VoteEntity vote, Guid staffId);
     }
 }

@@ -9,12 +9,16 @@ namespace FineWork.Web.WebApi.Colla
 {
     public class MomentViewModel
     {
+        [Necessity]
         public Guid MomentId { get; set; }
 
+        [Necessity]
         public string Content { get; set; }
 
+        [Necessity]
         public MomentType Type { get; set; }
 
+        [Necessity]
         public StaffViewModel Staff { get; set; }
          
         public List<MomentLikeViewModel>  Likes { get; set; }
@@ -27,22 +31,43 @@ namespace FineWork.Web.WebApi.Colla
 
         public List<MomentCommentViewModel> Comments { get; set; }
 
+        [Necessity()]
         public DateTime CreatedAt { get; set; }
 
-        public virtual void  AssignFrom(MomentEntity moment)
+        public virtual void  AssignFrom(MomentEntity moment,bool isShowhighOnly=false, bool isShowLow=true)
         {
-            this.MomentId = moment.Id;
-            this.Content = moment.Content;
-            this.Type = moment.Type;
-            if (moment.Type == MomentType.Attachment && moment.MomentFiles.Any())
-                this.AttachmentName = moment.MomentFiles.First().Name;
-            if (moment.Type != MomentType.Word)
-                this.MomentFileIds = moment.MomentFiles.OrderBy(p=>p.CreatedAt).Select(p => p.Id).ToArray();
 
-            this.Staff = moment.Staff.ToViewModel(true);
-            this.CreatedAt = moment.CreatedAt;
-            this.Likes = moment.MomentLikes.Select(p => p.ToViewModel()).ToList();
-            this.Comments = moment.MomentComments.Select(p => p.ToViewModel(true)).ToList();
+            var propertiesDic = new Dictionary<string, Func<MomentEntity, dynamic>>
+            {
+                ["MomentId"] = (t) => t.Id,
+                ["Type"] = (t) => t.Type,
+                ["Content"] = (t) => t.Content,
+                ["AttachmentName"] = (t) =>
+                {
+                    if (t.Type == MomentType.Attachment && t.MomentFiles.Any())
+                        return t.MomentFiles.First().Name;
+
+                    return string.Empty;
+                },
+
+                ["MomentFileIds"] = (t) =>
+                {
+                    if (t.Type != MomentType.Word)
+                        return t.MomentFiles.OrderBy(p => p.CreatedAt).Select(p => p.Id).ToArray();
+                    else
+                        return null;
+                }, 
+                ["Staff"] = (t) => t.Staff.ToViewModel(true),
+                ["CreatedAt"] = (t) => t.CreatedAt,
+                ["Comments"] = (t) => t.MomentComments.Select(p=>p.ToViewModel(true,false)).ToList(),
+                ["Likes"] = (t) => t.MomentLikes.Select(p => p.ToViewModel()).ToList(),
+            };
+
+            NecessityAttributeUitl<MomentViewModel, MomentEntity>.SetVuleByNecssityAttribute(this, moment,
+                propertiesDic, isShowhighOnly,
+                isShowLow);
+          
+         
         }
     }
 
@@ -81,6 +106,9 @@ namespace FineWork.Web.WebApi.Colla
         public Guid? TargetCommentId { get; set; }
 
         [Necessity]
+        public StaffViewModel ToStaff { get; set; }
+
+        [Necessity]
         public string Comment { get; set; }
 
         [Necessity]
@@ -90,38 +118,39 @@ namespace FineWork.Web.WebApi.Colla
         public StaffViewModel Staff { get; set; }
 
         public bool IsLike { get; set; }
-
         public virtual void AssignFrom(MomentCommentEntity source, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-
-            var propertiesDic = new Dictionary<string, Func<MomentCommentEntity, dynamic>>
-            {
-                ["MomentId"] = (t) => t.Moment.Id,
-                ["Type"] = (t) => t.Moment.Type,
-                ["Content"] = (t) => t.Moment.Content,
-                ["AttachmentName"] = (t) =>
+            Dictionary<string, Func<MomentCommentEntity, dynamic>> propertiesDic;
+                propertiesDic = new Dictionary<string, Func<MomentCommentEntity, dynamic>>
                 {
-                    if (t.Moment.Type == MomentType.Attachment && t.Moment.MomentFiles.Any())
-                        return t.Moment.MomentFiles.First().Name;
+                    ["MomentId"] = (t) => t.Moment.Id,
+                    ["Type"] = (t) => t.Moment.Type,
+                    ["Content"] = (t) => t.Moment.Content,
 
-                    return string.Empty;
-                },
+                    ["AttachmentName"] = (t) =>
+                    {
+                        if (t.Moment.Type == MomentType.Attachment && t.Moment.MomentFiles.Any())
+                            return t.Moment.MomentFiles.First().Name;
 
-                ["MomentFileIds"] = (t) =>
-                {
-                    if (t.Moment.Type != MomentType.Word)
-                        return t.Moment.MomentFiles.OrderBy(p => p.CreatedAt).Select(p => p.Id).ToArray();
-                    else
-                        return null;
-                },
-                ["CommentId"] = (t) => t.Id,
-                ["Staff"] = (t) => t.Staff.ToViewModel(true),
-                ["CreatedAt"] = (t) => t.CreatedAt,
-                ["Comment"] = (t) => t.Comment,
-                ["TargetCommentId"] = (t) => t.TargetComment?.Id,
-                ["IsLike"]=(t)=>false
-            };
+                        return string.Empty;
+                    },
+
+                    ["MomentFileIds"] = (t) =>
+                    {
+                        if (t.Moment.Type != MomentType.Word)
+                            return t.Moment.MomentFiles.OrderBy(p => p.CreatedAt).Select(p => p.Id).ToArray();
+                        else
+                            return null;
+                    },
+                    ["CommentId"] = (t) => t.Id,
+                    ["Staff"] = (t) => t.Staff.ToViewModel(true),
+                    ["CreatedAt"] = (t) => t.CreatedAt,
+                    ["Comment"] = (t) => t.Comment,
+                    ["TargetCommentId"] = (t) => t.TargetComment?.Id,
+                    ["ToStaff"] = (t) => t.ToStaff?.ToViewModel(true, false),
+                    ["IsLike"] = (t) => false 
+                };
 
             NecessityAttributeUitl<MomentCommentViewModel, MomentCommentEntity>.SetVuleByNecssityAttribute(this, source,
                 propertiesDic, isShowhighOnly,
@@ -168,11 +197,11 @@ namespace FineWork.Web.WebApi.Colla
 
     public static class MomentViewModelExtensions
     {
-        public static MomentViewModel ToViewModel(this MomentEntity entity)
+        public static MomentViewModel ToViewModel(this MomentEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             var result = new MomentViewModel();
-            result.AssignFrom(entity);
+            result.AssignFrom(entity,isShowhighOnly,isShowLow);
             return result;
         }
     }
@@ -194,7 +223,7 @@ namespace FineWork.Web.WebApi.Colla
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             var result = new MomentCommentViewModel();
-            result.AssignFrom(entity);
+            result.AssignFrom(entity,isShowhighOnly,isShowLow);
             return result;
         }
 

@@ -145,8 +145,8 @@ namespace FineWork.Web.WebApi.Colla
         {
             using (var tx = TxManager.Acquire())
             {
-                var vote = VoteExistsResult.Check(this.m_VoteManager, voteId).ThrowIfFailed().Vote;
-               
+                var vote = VoteExistsResult.Check(this.m_VoteManager, voteId).ThrowIfFailed().Vote; 
+                
                 this.m_VoteManager.UpdateVoteApprovedStatus(vote, newStatus);
                 tx.Complete();
             }

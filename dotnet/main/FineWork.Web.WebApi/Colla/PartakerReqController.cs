@@ -143,6 +143,28 @@ namespace FineWork.Web.WebApi.Colla
 
                 var result= req.ToViewModel();
                 tx.Complete();
+
+                if (reviewStatus == ReviewStatuses.Rejected)
+                {
+                    //推送消息给申请人员
+                    var pushMessage = string.Format(m_Configuration["PushMessage:PartakerReq:refuse"], req.Task.Name);
+
+                    m_NotificationManager.SendByAliasAsync(null, pushMessage, null, req.Staff.Account.PhoneNumber);
+                }
+                else if(reviewStatus==ReviewStatuses.Approved)
+                {
+                    //推送消息给申请人员
+                    var pushMessage = string.Format(m_Configuration["PushMessage:PartakerReq:argee"], req.Task.Name);
+
+                    var customizedValue = new Dictionary<string, string>()
+                    {   
+                        ["PathTo"] = "Org", 
+                        ["StaffId"] = req.Staff.Id.ToString(),
+                        ["OrgId"] = req.Staff.Org.Id.ToString()
+                    };
+
+                    m_NotificationManager.SendByAliasAsync(null, pushMessage, customizedValue, req.Staff.Account.PhoneNumber);
+                }
                 return result;
             }
 

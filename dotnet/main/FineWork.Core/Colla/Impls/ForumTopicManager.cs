@@ -11,7 +11,7 @@ using FineWork.Common;
 
 namespace FineWork.Colla.Impls
 {
-    public class ForumTopicManager:AefEntityManager<ForumTopicEntity, Guid>,IForumTopicManager 
+    public class ForumTopicManager : AefEntityManager<ForumTopicEntity, Guid>, IForumTopicManager
     {
         public ForumTopicManager(ISessionProvider<AefSession> sessionProvider,
             IForumSectionManager forumSectionManager,
@@ -37,7 +37,7 @@ namespace FineWork.Colla.Impls
                     .ForumSection;
 
             var staff = StaffExistsResult.Check(this.m_StaffManager, forumTopicModel.StaffId).ThrowIfFailed().Staff;
-            var forumTopicEntity=new ForumTopicEntity();
+            var forumTopicEntity = new ForumTopicEntity();
             forumTopicEntity.Id = Guid.NewGuid();
             forumTopicEntity.Content = forumTopicModel.Content;
             forumTopicEntity.ForumSection = forumSection;
@@ -75,14 +75,29 @@ namespace FineWork.Colla.Impls
             var staff =
                 StaffExistsResult.Check(this.m_StaffManager, updateForumTopicModel.StaffId).ThrowIfFailed().Staff;
 
-            if(topic.Staff!=staff) throw new FineWorkException("你不可修改此讨论内容.");
+            if (topic.Staff != staff) throw new FineWorkException("你不可修改此讨论内容.");
 
             topic.Content = updateForumTopicModel.Content;
             topic.Title = updateForumTopicModel.Title;
-            topic.LastUpdatedAt=DateTime.Now;
-            
+            topic.LastUpdatedAt = DateTime.Now;
+
             this.InternalUpdate(topic);
-            return topic; 
+            return topic;
         }
+
+        public IEnumerable<ForumTopicEntity> FetchForumTopicByOrgId(Guid orgId)
+        {
+            return this.InternalFetch(p => p.Staff.Org.Id == orgId);
+        }
+
+        public IEnumerable<ForumTopicEntity> FetchForumTopicByContent(Guid orgId,string content)
+        {
+            if (string.IsNullOrEmpty(content))
+                return this.InternalFetch(p => p.Staff.Org.Id == orgId);
+
+            return this.InternalFetch(p =>p.Staff.Org.Id==orgId && (p.Title==""?p.Content.Substring(0,content.Length>20?20:content.Length).Contains(content):p.Title.Contains(content)
+            || p.ForumVote.Vote.Subject.Contains(content) ));
+        }
+ 
     }
 }

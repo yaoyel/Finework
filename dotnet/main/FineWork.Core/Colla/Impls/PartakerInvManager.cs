@@ -22,19 +22,16 @@ namespace FineWork.Colla.Impls
             ILazyResolver<IPartakerManager> partakerManagerResolver, 
             ILazyResolver<IPartakerReqManager> reqManagerResolver,
             IIMService imService,
-            INotificationManager notificationManager,
             IConfiguration config)
             : base(dbContextProvider)
         {
             if (partakerManagerResolver == null) throw new ArgumentNullException(nameof(partakerManagerResolver));
             if (reqManagerResolver == null) throw new ArgumentNullException(nameof(reqManagerResolver));
-            if (imService == null) throw new ArgumentNullException(nameof(imService));
-            if (notificationManager == null) throw new ArgumentNullException(nameof(notificationManager));
+            if (imService == null) throw new ArgumentNullException(nameof(imService)); 
 
             this.PartakerManagerResolver = partakerManagerResolver;
             this.ReqManagerResolver = reqManagerResolver;
-            IMService = imService;
-            NotificationManager = notificationManager;
+            IMService = imService; 
             Config = config;
         }
 
@@ -43,8 +40,7 @@ namespace FineWork.Colla.Impls
         private IIMService IMService { get; }
 
         private IConfiguration Config { get; }
-
-        private INotificationManager NotificationManager { get; }
+         
 
         internal IPartakerManager PartakerManager
         {
@@ -67,6 +63,9 @@ namespace FineWork.Colla.Impls
 
             PartakerEntity partakerTaskLeader = null;
 
+            if (task.IsDeserted.HasValue && task.IsDeserted.Value)
+                throw new FineWorkException("该任务已经被放弃,不可进行此操作.");
+          
             if (task.ParentTask != null && task.ParentTask.Partakers.Any())
                 partakerTaskLeader = task.ParentTask.Partakers.FirstOrDefault(p => p.Kind == PartakerKinds.Leader);
 
@@ -162,7 +161,7 @@ namespace FineWork.Colla.Impls
 
                 //加入群组聊天室
                 var leader = partakerInvEntity.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
-                IMService.AddMemberAsync(leader.Staff.Id.ToString(), partakerInvEntity.Task.ConversationId,
+                IMService.AddMemberAsync(leader.Staff.Id.ToString(), partakerInvEntity.Task.Conversation.Id,
                     partakerInvEntity.Staff.Id.ToString());
             }
             partakerInvEntity.ReviewStatus = newRevStatus;

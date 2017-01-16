@@ -90,10 +90,11 @@ namespace FineWork.Web.WebApi.Colla
         }
 
         [HttpGet("FetchOrgsByStaffId")]
-        public IEnumerable<OrgViewModel> FetchOrgsByStaffId(Guid staffId)
+        public IActionResult FetchOrgsByStaffId(Guid staffId)
         {
-            return m_OrgManager.FetchOrgsByStaff(staffId)
-                .Select(s => s.ToViewModel());
+            var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).Staff;
+            if (staff != null) return new ObjectResult( staff.Org.ToViewModel());
+            return new HttpNotFoundObjectResult(staffId);
         }
 
         [HttpGet("FetchOrgsByName")]
@@ -115,7 +116,7 @@ namespace FineWork.Web.WebApi.Colla
         //[DataScoped(true)]
         public IActionResult CreateOrg(string name,string invCode)
         {
-            var orgViewModel = new OrgViewModel();
+            OrgViewModel orgViewModel;
             using (var tx = TxManager.Acquire())
             {
                 if (string.IsNullOrEmpty(name)) return new BadRequestObjectResult("组织名称不可以为空。");
@@ -233,5 +234,6 @@ namespace FineWork.Web.WebApi.Colla
             var codes = m_InvCodeManager.CreateInvCodes(len,count);
             return codes.Select(p => p.Id).ToList();
         }
+         
     }
 }

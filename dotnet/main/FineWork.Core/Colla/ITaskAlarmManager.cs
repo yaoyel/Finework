@@ -16,24 +16,19 @@ namespace FineWork.Colla
         IEnumerable<TaskAlarmEntity> FetchTaskAlarmsByTaskId(Guid taskId);
 
         TaskAlarmEntity FindTaskAlarm(Guid taskAlarmId);
-
-        TaskAlarmEntity FindTaskAlarmByReceiverKinds(Guid taskId, Guid staffId, int[] receivers);
-
+         
         TaskAlarmEntity ChangeResolvedStatus(Guid taskAlarmId, Guid accountId, ResolveStatus newStatus,string comment);
 
-        IEnumerable<TaskAlarmEntity> FetchTaskAlarmsByStaffId(Guid staffId,bool includeGreenLight=false, bool includeAllTask = false);
+        IEnumerable<TaskAlarmEntity> FetchTaskAlarmsByCreatorId(Guid staffId,bool includeGreenLight=false, bool includeAllTask = false);
 
         IEnumerable<TaskAlarmEntity> FetchAlarmsWithPartakerByStaffAndKind(Guid staffId, TaskAlarmKinds? alarmKind);
 
         void UpdateTaskAlarm(TaskAlarmEntity taskAlarm);
+         
+        IEnumerable<TaskAlarmEntity> FetchAlarmsByConversationId(string conversationId);  
 
-        IEnumerable<TaskAlarmEntity> FetchAlarmsByChatRoomKind(Guid taskId, ChatRoomKinds roomKind,Guid creatorStaffId);
+        IEnumerable<TaskAlarmEntity> FetchTaskAlarmsByStaffIdWithTaskId( Guid staffId, Guid? taskId);
 
-        IEnumerable<TaskAlarmEntity> FetchAlarmsByConversationId(string conversationId);
-
-        IEnumerable<TaskAlarmEntity> FetchAlarmsByPartakerKind(Guid taskId, PartakerKinds partakerKind);
-
-        void UpdateRemoteServer();
-
+         
     }
 }

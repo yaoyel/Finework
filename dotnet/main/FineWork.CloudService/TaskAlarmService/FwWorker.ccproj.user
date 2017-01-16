@@ -6,5 +6,6 @@
     <PackageSolutionConfiguration>Debug</PackageSolutionConfiguration>
     <PackageEnableRemoteDesktop>True</PackageEnableRemoteDesktop>
     <RemoteDesktopMoreOptions>False</RemoteDesktopMoreOptions>
+    <LocalProfile>Local</LocalProfile>
   </PropertyGroup>
 </Project>

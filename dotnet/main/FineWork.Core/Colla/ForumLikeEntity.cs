@@ -15,7 +15,7 @@ namespace FineWork.Colla
         [Timestamp]
         public byte[] RowVer { get; set; } 
 
-        public ForumTopicEntity ForumTopic { get; set; }
+        public virtual ForumTopicEntity ForumTopic { get; set; }
 
         public virtual StaffEntity Staff { get; set; } 
     }

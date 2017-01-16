@@ -61,12 +61,17 @@ namespace FineWork.Colla.Impls
                         .ThrowIfFailed()
                         .MomentComment;
                 comment.TargetComment = targetComment;
+                comment.ToStaff = targetComment.Staff;
             }
 
             this.InternalInsert(comment);
 
             if (moment.Staff != staff)
-                m_MomentManager.SendMomentMessageAsync(moment.Staff, moment);
+            {
+                var phonenumber = moment.Staff.Account.PhoneNumber;
+
+                m_MomentManager.SendMomentMessageAsync(moment, "momentcomment", phonenumber);
+            }
 
             return comment;
         }
@@ -74,6 +79,13 @@ namespace FineWork.Colla.Impls
         public void DeleteMomentCommentById(Guid commentId)
         {
             var comment = MomentCommentExistsResult.Check(this, commentId).MomentComment;
+            var derivativeComments = comment.DerivativeComments;
+            if (derivativeComments.Any())
+            {
+                comment.TargetComment = null;
+                this.InternalUpdate(comment);
+            }
+        
             this.InternalDelete(comment);
         }
 

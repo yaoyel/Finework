@@ -21,7 +21,9 @@ namespace FineWork.Colla
 
         IEnumerable<StaffEntity> FetchAllStaff();
 
-        void UpdateStaff(StaffEntity staff);  
+        void UpdateStaff(StaffEntity staff);
+
+        IEnumerable<StaffEntity> FetchStaffsByName(Guid orgId,string name);
 
     }
 }

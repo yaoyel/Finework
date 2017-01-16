@@ -10,21 +10,23 @@ using AppBoot.Repos.Aef;
 using cn.jpush.api;
 using cn.jpush.api.push;
 using cn.jpush.api.push.mode;
+using FineWork.Logging;
 using FineWork.Message.Checkers;
 using FineWork.Net.Push;
 using FineWork.Security;
 using FineWork.Security.Checkers;
 using FineWork.Security.Repos.Aef;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace FineWork.Message
 {
     public class NotificationManager : AefEntityManager<DeviceRegistrationEntity, Guid>, INotificationManager
     {
-
         public NotificationManager(ISessionProvider<AefSession> dbContextProvider
             , JPushClient jPushClient,
-            IAccountManager accountManager)
+            IAccountManager accountManager,IConfiguration config)
             : base(dbContextProvider)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
@@ -32,12 +34,15 @@ namespace FineWork.Message
             if (accountManager == null) throw new ArgumentNullException(nameof(accountManager));
             m_JPushClient = jPushClient;
             m_AccountManager = accountManager;
+            m_Configuration = config;
         }
 
         private readonly JPushClient m_JPushClient;
 
         private readonly IAccountManager m_AccountManager;
 
+        private readonly IConfiguration m_Configuration;
+          
         public async Task CreateDeviceRegistrationAsync(DeviceRegistration deviceRegistration)
         {
             if (deviceRegistration == null)
@@ -144,32 +149,34 @@ namespace FineWork.Message
             await Task.Factory.StartNew(() => m_JPushClient.updateDeviceTagAlias(registrationId, newAlias, null, null));
         }
 
-        public async Task<PushResult> SendByAliasAsync(string title, [NotNull] string message,
+        public Task<PushResult> SendByAliasAsync(string title, [NotNull] string message,
             IDictionary<string, string> customizedValue,
             [NotNull] params string[] aliases)
         {
-            var existAliases = new List<string>();
-            //删除不存在的aliases
-            aliases.ToList().ForEach(p =>
+            return Task<PushResult>.Factory.StartNew(() =>
             {
-                var aliasDeviceList = m_JPushClient.getAliasDeviceList(p, null);
-                if (aliasDeviceList.registration_ids.Any())
-                    existAliases.Add(p);
-            });
-            if (!existAliases.Any())
-            {
-                var pushResult = new PushResult()
+                var existAliases = new List<string>();
+                //删除不存在的aliases
+                aliases.ToList().ForEach(p =>
                 {
-                    IsSuccess = false,
-                    ErrorInfo = "不存在对应的alias"
-                };
-                return await Task.FromResult(pushResult);
-            }
+                    var aliasDeviceList = m_JPushClient.getAliasDeviceList(p, null);
+                    if (aliasDeviceList.registration_ids.Any())
+                        existAliases.Add(p);
+                });
+                if (!existAliases.Any())
+                {
+                    var pushResult = new PushResult()
+                    {
+                        IsSuccess = false,
+                        ErrorInfo = "不存在对应的alias"
+                    };
+                    return pushResult;
+                }
 
-            var audience = Audience.s_alias(existAliases.ToArray()); 
-            Func<PushResult> sendPush =
-                () => m_JPushClient.SendPush(CreatePushPayload(title, message, customizedValue, audience)).ToResult();
-            return await Task.Factory.StartNew(sendPush);
+                var audience = Audience.s_alias(existAliases.ToArray());
+
+                return m_JPushClient.SendPush(CreatePushPayload(title, message, customizedValue, audience)).ToResult();
+            });
         }
 
 
@@ -228,9 +235,12 @@ namespace FineWork.Message
             notification.IosNotification.incrBadge(-1);
             var pushPayload = new PushPayload();
             pushPayload.platform = Platform.all();
+
+            if (m_Configuration["JPush:apns_production"] ==null || m_Configuration["JPush:apns_production"] == "true")
+                pushPayload.options.apns_production = true;
             pushPayload.audience = audience;
             pushPayload.notification = notification;
-            
+
 
             return pushPayload;
         }

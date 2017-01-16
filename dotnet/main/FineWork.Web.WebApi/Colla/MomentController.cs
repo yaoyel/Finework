@@ -18,6 +18,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using AppBoot.Checks;
 using FineWork.Web.WebApi.Common;
+using Microsoft.Net.Http.Headers;
 
 namespace FineWork.Web.WebApi.Colla
 {
@@ -81,20 +82,23 @@ namespace FineWork.Web.WebApi.Colla
         public void UploadMomentFile(Guid momentId, IFormFile file,int count=1)
         {
 
-            var fileName = file.ContentDisposition.Split(';')[2].Split('=')[1].Replace("\"", "");
+            var filename = ContentDispositionHeaderValue
+                .Parse(file.ContentDisposition)
+                .FileName
+                .Trim('"');
             try
             { 
                 var moment = MomentExistsResult.Check(this.m_MomentManager, momentId).ThrowIfFailed().Moment;
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
-                    m_MomentFileManager.CreateMementFile(moment.Id, file.ContentType, reader.BaseStream,fileName);  
+                    m_MomentFileManager.CreateMementFile(moment.Id, file.ContentType, reader.BaseStream, filename);  
                 }
             }
             catch
             {
                 this.DeleteMoment(momentId);
                
-                throw new FineWorkException($"{fileName}上传失败.");
+                throw new FineWorkException($"{filename}上传失败.");
             }
         }
 
@@ -139,8 +143,8 @@ namespace FineWork.Web.WebApi.Colla
 
         [HttpGet("FetchMomentsByOrgId")]
         public IActionResult FetchMomentsByOrgId(Guid orgId,int? page,int? pageSize)
-        {
-            var moments = m_MomentManager.FetchMomentsByOrgId(orgId).AsQueryable().ToPagedList(page,pageSize); 
+        { 
+            var moments = m_MomentManager.FetchMomentsByOrgId(orgId).OrderByDescending(p => p.CreatedAt).AsQueryable().ToPagedList(page,pageSize).Data.ToList(); 
 
             var staff = StaffExistsResult.Check(m_StaffManager, orgId, this.AccountId).Staff;
 
@@ -153,11 +157,24 @@ namespace FineWork.Web.WebApi.Colla
             return new ObjectResult(result); 
         }
 
+        [HttpGet("FetchMomentsByContent")]
+        public IActionResult FetchMomentsByContent(Guid orgId, string content,int?page,int?pageSize)
+        {
+            var moments = m_MomentManager.FetchMomentsByContent(orgId, content).OrderByDescending(p => p.CreatedAt)
+                .Select(p => p.ToViewModel()).AsQueryable().ToPagedList(page, pageSize);
+
+            if (page == null && pageSize == null)
+                return new ObjectResult(moments.Data);
+            
+            if (moments.Data.Any()) return  new ObjectResult(moments);
+            return  new HttpNotFoundObjectResult(content);
+        }
+
         [HttpGet("FetchMomentByStaffId")]
         public IActionResult FetchMomentByStaffId(Guid staffId, int? page, int? pageSize)
         {
             var moments = this.m_MomentManager.FetchMomentsByStaffId(staffId).AsQueryable()
-                .ToPagedList(page, pageSize);
+                .ToPagedList(page, pageSize).Data.ToList();
             if (moments.Any())
                 return new ObjectResult(moments.Select(p => p.ToViewModel()).ToList());
 
@@ -212,10 +229,7 @@ namespace FineWork.Web.WebApi.Colla
         [HttpGet("HasUnReadMoment")]
         public bool HasUnReadMoment(Guid staffId)
         {
-            var lastViewMomentAt = m_AccessTimeManager.FindAccessTimeByStaffId(staffId).LastViewMomentAt;
-            var moments = m_MomentManager.FetchMomentsByStaffId(staffId);
-            if (lastViewMomentAt == null) return moments.Any();
-            if(moments.Any(p => p.CreatedAt > lastViewMomentAt)) return true;
+            if (m_MomentManager.HasUnReadMoment(staffId)) return true;
 
             return FetchUnReadCommentCountByStaffId(staffId).Item1 > 0;
         }
@@ -223,25 +237,7 @@ namespace FineWork.Web.WebApi.Colla
         [HttpGet("FetchUnReadCommentCountByStaffId")]
         public Tuple<int,Guid?> FetchUnReadCommentCountByStaffId(Guid staffId)
         {
-            var lastViewCommentAt = AccessTimeExistsResult.CheckByStaff(this.m_AccessTimeManager, staffId).AccessTime; 
-            var comments = m_MomentCommentManager.FetchCommentByStaffId(staffId).ToList();
-            //赞
-            var likes = m_MomentLikeManager.FetchMomentLikeByStaffId(staffId).ToList();
-
-            var unReadCount = 0;
-
-            unReadCount = lastViewCommentAt?.LastViewCommentAt == null
-                ? (comments.Count() + likes.Count())
-                : (comments.Count(p => p.CreatedAt > lastViewCommentAt.LastViewCommentAt) +
-                   likes.Count(p => p.CreatedAt > lastViewCommentAt.LastViewCommentAt));
-
-            var lastComment = comments.Any()?comments.OrderByDescending(p => p.CreatedAt).FirstOrDefault():null;
-            var lastLike = likes.Any()?likes.OrderByDescending(p => p.CreatedAt).FirstOrDefault():null;
-            var lastCommentTime = lastComment?.CreatedAt ?? default(DateTime);
-            var lastLikeTime = lastLike?.CreatedAt ?? default(DateTime);
-
-            var lastStaff = lastCommentTime > lastLikeTime ? lastComment?.Staff.Account.Id : lastLike?.Staff.Account.Id;
-            return new Tuple<int, Guid?>(unReadCount,unReadCount==0?null: lastStaff); 
+            return m_MomentManager.FetchUnReadCommentCountByStaffId(staffId);
         }
 
         [HttpGet("FetchUnReadCommentByStaffId")]
@@ -273,8 +269,7 @@ namespace FineWork.Web.WebApi.Colla
             m_AccessTimeManager.UpdateLastViewCommentTime(staffId, DateTime.Now);
 
             return unReadComments.Union(unReadLikes).ToList();
-        }
-
+        } 
 
         [HttpGet("DownloadMomentFile")]
         [AllowAnonymous]

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ServiceConfiguration serviceName="taskalarmworker" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
   <Role name="FwWorkerRole">
-    <Instances count="1" />
+    <Instances count="1" /> 
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <!--<Setting name="ConnectionString" value="Server=192.168.1.200\CHINAHRD;User Id=sa;Password=chrdwvr450G;Initial Catalog=FineWork;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;" />-->
+     <!--<Setting name="ConnectionString" value="Server=192.168.1.200\CHINAHRD;User Id=sa;Password=chrdwvr450G;Initial Catalog=FineWork;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;" />-->
       <Setting name="ConnectionString" value="Server=d6hy05nod6.database.chinacloudapi.cn;Database=FineWork_release0.9;User ID=chinahrd_nj;Password=chrdwvr450G;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;MultipleActiveResultSets=true" />
       <Setting name="PushKey" value="229d1cb589bb0ccd4bd1ec77" />
       <Setting name="PushSecret" value="b79a9e1fea89e45813e6ccfb" />
+      <Setting name="LcKey" value="sNNwopkOHMJTY92p3BLqsnAQ"/>
+      <Setting name="LcMaster" value="RQ7PjAraufSyilX4jQNb9gJk"/>
+      <Setting name="apns_production" value="true"/>
+      <Setting name="LcId" value="aTYSaCsREYpfvHLyYha2cwJ3-gzGzoHsz"/>
       <Setting name="StorageConnectionString" value="TableEndpoint=https://chrd.table.core.chinacloudapi.cn;BlobEndpoint=https://chrd.blob.core.chinacloudapi.cn;AccountName=chrd;AccountKey=rScgb7xsEq44A0Ex+5NajKE2xeYg/la1bbZ0LrG8R0iC6OqLkQ6zobFgsmJdrFEWOmR1F4Z9i6KJbYwlCe6qEQ==" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="chinahrd" />

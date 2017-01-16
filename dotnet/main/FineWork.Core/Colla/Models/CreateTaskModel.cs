@@ -44,6 +44,8 @@ namespace FineWork.Colla.Models
 
         //定时预警
         public List<CreateAlarmPeriodModel> Alarms { get; set; }
+
+        public  List<Guid> AlarmTempIds { get; set; }
         //接受者
         public List<Guid> Recipients { get; set; }
         
@@ -52,6 +54,9 @@ namespace FineWork.Colla.Models
 
         //协同者
         public List<Guid> Collaborators { get; set; }
+
+        //任务模板
+        public Guid? CopyFrom { get; set; }
     }  
 
     public class CreateIncentiveModel
@@ -59,5 +64,18 @@ namespace FineWork.Colla.Models
         public Guid? TaskId { get; set; }
         public int IncentiveKindId { get; set; }
         public decimal Amount { get; set; }
+    }
+
+    public class CreateAnncOnSharedModel
+    {
+        public Guid CreatorStaffId { get; set; } 
+
+        public Guid SharedTaskId { get; set; }
+
+        public string Name { get; set; }
+
+        public Guid? ParentTaskId { get; set; } 
+
+        public List<CreateAnncModel>  Anncs { get; set; }
     }
 }

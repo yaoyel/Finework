@@ -1,44 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using FineWork.Colla;
+using FineWork.Colla.Checkers;
 using FineWork.Web.WebApi.Common;
 
 namespace FineWork.Web.WebApi.Colla
 {
-    public class TaskViewModel
+    public class SimpleTaskViewModel
     {
         public Guid Id { get; set; }
 
-        public String Name { get; set; }
+        public string Name { get; set; }
 
+        public List<PartakerViewModel> Partakers { get; set; }
+
+        public string ConvId { get; set; }
+
+        public virtual void AssignFrom(TaskEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            Id = entity.Id;
+            Name = entity.Name;
+            Partakers = entity.Partakers.Select(p => p.ToViewModel(true)).ToList(); 
+            ConvId = entity.ConversationId;
+        }
+    }
+
+    public class TaskViewModel
+    { 
+        public Guid Id { get; set; } 
+
+        public String Name { get; set; }
+         
         public string ConversationId { get; set; }
 
         public string Goal { get; set; }
 
         public int Level { get; set; }
 
-        public int Progress { get; set; }
+        public int Progress { get; set; } 
 
         public StaffViewModel Creator { get; set; }
 
-        public Guid? ParentTaskId { get; set; }
-
+        public Guid? ParentTaskId { get; set; } 
+    
         //任务的层级，从父任务中迭代出来
         public int Layer { get; set; } 
 
         public DateTime CreatedAt { get; set; }
-
+         
         public Guid[] AvatarIds { get; set; }
 
         public DateTime? EndAt { get; set; }
 
         public bool IsEnded { get; set; }
-        public virtual void AssignFrom(TaskEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
+
+        public DateTime? SharedAt { get; set; }
+
+        public StaffViewModel SharedBy { get; set; } 
+
+    public virtual void AssignFrom(TaskEntity entity,  bool isShowhighOnly = false, bool isShowLow = true, bool includeSharedAt = false)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-
+            if (entity == null) throw new ArgumentNullException(nameof(entity)); 
+            
             this.Id = entity.Id;
             this.Name = entity.Name;
             this.ConversationId = entity.ConversationId;
@@ -52,6 +78,17 @@ namespace FineWork.Web.WebApi.Colla
             this.AvatarIds = entity.Partakers.OrderBy(p => p.CreatedAt).Take(9).Select(p => p.Staff.Account.Id).ToArray();
             this.EndAt = entity.EndAt;
             this.IsEnded = entity.Report != null;
+            if (includeSharedAt)
+            {
+                var taskTempManager =
+                    (ITaskTempManager) HttpUtil.HttpContext.RequestServices.GetService(typeof(ITaskTempManager));
+                var temp = TaskTempExistsResult.CheckForTask(taskTempManager, entity.Id).TaskTemp;
+                if (temp != null)
+                { 
+                    SharedAt = temp.LastUpdatedAt ?? temp.CreatedAt;
+                    SharedBy = temp.Staff.ToViewModel(true);
+                }
+            }
         }
 
         protected int GetLayerByParentTask(TaskEntity entity, int layer = 1)
@@ -90,9 +127,9 @@ namespace FineWork.Web.WebApi.Colla
         public IList<TaskAlarmViewModel> TaskAlarms { get; set; }
 
 
-        public override void AssignFrom(TaskEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
+        public override void AssignFrom(TaskEntity entity,bool isShowhighOnly = false, bool isShowLow = true, bool includeSharedAt = false)
         {
-            base.AssignFrom(entity, isShowhighOnly, isShowLow);
+            base.AssignFrom(entity,isShowhighOnly, isShowLow, includeSharedAt);
 
             this.IsMentorInvEnabled = entity.IsMentorInvEnabled;
             this.IsCollabratorInvEnabled = entity.IsCollabratorInvEnabled;
@@ -143,14 +180,41 @@ namespace FineWork.Web.WebApi.Colla
         } 
 
         public static TaskDetailViewModel ToDetailViewModel(this TaskEntity entity, bool isShowhighOnly = false,
-            bool isShowLow = true)
+            bool isShowLow = true, bool includeSharedAt = false)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             var result = new TaskDetailViewModel();
+            result.AssignFrom(entity, isShowhighOnly, isShowLow,includeSharedAt);
+            return result;
+        }
+        public static SimpleTaskViewModel ToSimpleViewModel(this TaskEntity entity, bool isShowhighOnly = false,
+       bool isShowLow = true)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            var result = new SimpleTaskViewModel();
             result.AssignFrom(entity, isShowhighOnly, isShowLow);
             return result;
         }
 
-    }
+    } 
 
+    public class TaskNoticeViewModel
+    {
+        public  Guid TaskId { get; set; }
+
+        public string TaskName { get; set; }
+
+     
+        //发出通知的项目 vote 共识，annc 里程碑
+        public string NoticeFr { get; set; }
+
+        //共识或里程碑的id
+        public Guid TargetId { get; set; }
+
+        //共识或里程碑的内容
+        public  string  Content { get; set; }
+
+       public DateTime CreatedAt { get; set; }
+         
+    }
 }

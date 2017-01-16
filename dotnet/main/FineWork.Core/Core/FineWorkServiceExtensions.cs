@@ -25,6 +25,7 @@ using FineWork.Files;
 using FineWork.Message;
 using FineWork.Net.IM;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 
 namespace FineWork.Core
@@ -76,6 +77,13 @@ namespace FineWork.Core
             return serviceCollention;
         }
 
+        public static IServiceCollection AddImClient(this IServiceCollection serviceCollention, string id,string key,string master)
+        {
+            Args.NotNull(serviceCollention, nameof(serviceCollention));
+            serviceCollention.AddScoped<IIMService>(services => new LCIMService(id,key,master));
+            return serviceCollention;
+        }
+
         public static IServiceCollection AddSmsService(this IServiceCollection serviceCollention, string appId,
             string appKey)
         {
@@ -83,8 +91,7 @@ namespace FineWork.Core
             serviceCollention.AddScoped<ISmsService>(services => new LCSmsService(appId, appKey));
             return serviceCollention;
         }
-
-
+         
         public static IServiceCollection AddFileManager(this IServiceCollection serviceCollection,
             String connectionString)
         {
@@ -180,7 +187,18 @@ namespace FineWork.Core
                     new LazyResolver<IAlarmManager>(s),
                     new LazyResolver<IPartakerManager>(s),
                     new LazyResolver<IPartakerInvManager>(s),
-                    s.GetService<IConfiguration>()));
+                    new LazyResolver<IAnnouncementManager>(s),
+                    new LazyResolver<ITaskTempManager>(s), 
+                    s.GetService<IConfiguration>(),
+                    s.GetRequiredService<IConversationManager>(),
+                    s.GetRequiredService<IMemberManager>()));
+
+            serviceCollection.AddScoped<ITaskTempManager>(
+                s=>new TaskTempManager(
+                     s.ResolveSessionProvider(),
+                     s.GetRequiredService<ITaskManager>(),
+                     s.GetRequiredService<IStaffManager>())
+                );
 
             serviceCollection.AddScoped<IPartakerManager>(
                 s => new PartakerManager(
@@ -190,7 +208,8 @@ namespace FineWork.Core
                     new LazyResolver<ITaskAlarmManager>(s),
                     s.GetRequiredService<IIMService>(),
                     s.GetRequiredService<INotificationManager>(),
-                    s.GetRequiredService<IConfiguration>()
+                    s.GetRequiredService<IConfiguration>(),
+                    s.GetRequiredService<IMemberManager>()
                     ));
 
             serviceCollection.AddScoped<IStaffReqManager>(
@@ -220,15 +239,15 @@ namespace FineWork.Core
                 s => new PartakerInvManager(s.ResolveSessionProvider(),
                     new LazyResolver<IPartakerManager>(s),
                     new LazyResolver<IPartakerReqManager>(s),
-                    s.GetRequiredService<IIMService>(),
-                    s.GetRequiredService<INotificationManager>(),
+                    s.GetRequiredService<IIMService>(), 
                     s.GetService<IConfiguration>())
                 );
 
             serviceCollection.AddScoped<INotificationManager>(
                 s => new NotificationManager(s.ResolveSessionProvider(),
                     s.GetRequiredService<JPushClient>(),
-                    s.GetRequiredService<IAccountManager>()));
+                    s.GetRequiredService<IAccountManager>(),
+                    s.GetRequiredService<IConfiguration>()));
 
             serviceCollection.AddScoped<ITaskLogManager>(
                 s => new TaskLogManager(s.ResolveSessionProvider(),
@@ -249,7 +268,7 @@ namespace FineWork.Core
                 s.GetRequiredService<IStaffManager>(),
                 s.GetRequiredService<ITaskIncentiveManager>(),
                 s.GetRequiredService<ITaskLogManager>(),
-                new LazyResolver<IAnncIncentiveManager>(s)
+                s.GetRequiredService<ITaskManager>() 
                 ));
 
             serviceCollection.AddScoped<ITaskNewsManager>(s => new TaskNewsManager(
@@ -264,7 +283,7 @@ namespace FineWork.Core
                 ));
 
 
-            serviceCollection.AddScoped<ITaskAnnouncementManager>(s => new TaskAnnouncementManager(
+            serviceCollection.AddScoped<ITaskNoteManager>(s => new TaskNoteManager(
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<ITaskManager>(),
                 s.GetRequiredService<IPartakerManager>(),
@@ -296,7 +315,9 @@ namespace FineWork.Core
                 s.GetRequiredService<IStaffManager>(),
                 s.GetRequiredService<ITaskLogManager>(),
                 s.GetRequiredService<IIMService>(),
-                s.GetRequiredService<IConfiguration>()
+                s.GetRequiredService<IConfiguration>(),
+                s.GetRequiredService<IPushLogManager>(),
+                s.GetRequiredService<INotificationManager>()
                 ));
 
             serviceCollection.AddScoped<IVotingManager>(s => new VotingManager(
@@ -314,15 +335,34 @@ namespace FineWork.Core
                 s.GetRequiredService<ITaskLogManager>(),
                 s.GetRequiredService<IIMService>(),
                 s.GetRequiredService<INotificationManager>(),
-                s.GetService<IConfiguration>()));
+                s.GetService<IConfiguration>(),
+                s.GetRequiredService<IConversationManager>(),
+                s.GetRequiredService<IMemberManager>()));
 
+            serviceCollection.AddScoped<IMemberManager>(s => new MemberManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IConversationManager>() 
+                ));
+
+            serviceCollection.AddScoped<IConversationManager>(s => new ConversationManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<ITaskManager>(s),
+                new LazyResolver<ITaskAlarmManager>(s)));
 
             serviceCollection.AddScoped<IAlarmManager>(s => new AlarmManager(
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<ITaskManager>(),
                 s.GetRequiredService<ITaskAlarmManager>(),
-                s.GetRequiredService<IPartakerManager>()
-                )); 
+                s.GetRequiredService<IPartakerManager>(),
+                s.GetRequiredService<IAlarmTempManager>(),
+                new LazyResolver<IPushLogManager>(s)
+                ));
+
+            serviceCollection.AddScoped<IAlarmTempManager>(s => new AlarmTempManagerr(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IFileManager>()
+                ));
 
             serviceCollection.AddScoped<ITaskSharingManager>(s => new TaskSharingManager(
                 s.ResolveSessionProvider(),
@@ -341,7 +381,10 @@ namespace FineWork.Core
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<IStaffManager>(),
                 s.GetRequiredService<IConfiguration>(),
-                s.GetRequiredService<INotificationManager>()
+                s.GetRequiredService<INotificationManager>(),
+                s.GetRequiredService<IAccessTimeManager>(),
+                new LazyResolver<IMomentCommentManager>(s),
+                new LazyResolver<IMomentLikeManager>(s)
                 ));
 
             serviceCollection.AddScoped<IMomentFileManager>(s => new MomentFileManager(
@@ -387,39 +430,57 @@ namespace FineWork.Core
             serviceCollection.AddScoped<IAnnouncementManager>(s => new AnnouncementManager(
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<ITaskManager>(),
-                s.GetRequiredService<IStaffManager>(),
-                s.GetRequiredService<IAnncIncentiveManager>(),
-                s.GetRequiredService<IAnncAttManager>(),
-                s.GetRequiredService<ITaskSharingManager>(),
-                s.GetRequiredService<IIncentiveManager>(),
+                s.GetRequiredService<IStaffManager>(), 
+                s.GetRequiredService<IAnncAttManager>(), 
                 s.GetRequiredService<IPartakerManager>(),
                 s.GetRequiredService<IIMService>(),
                 s.GetRequiredService<ITaskLogManager>(),
-                s.GetRequiredService<IConfiguration>()));
+                s.GetRequiredService<IConfiguration>(),
+                s.GetRequiredService<IAnncAlarmManager>(),
+                s.GetRequiredService<IAnncAlarmRecManager>(),
+                new LazyResolver<IAnncExecutorManager>(s),
+                new LazyResolver<IAnncUpdateManager>(s),
+                new LazyResolver<ITaskSharingManager>(s),
+                new LazyResolver<IPushLogManager>(s)));
+
+            serviceCollection.AddScoped<IAnncExecutorManager>(s => new AnncExecutorManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IAnnouncementManager>(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IPartakerManager>()
+                ));
 
             serviceCollection.AddScoped<IAnncAttManager>(s => new AnncAttManager(
                 s.ResolveSessionProvider(),
                 new LazyResolver<IAnnouncementManager>(s),
-                s.GetRequiredService<ITaskSharingManager>()));
-
-
-            serviceCollection.AddScoped<IAnncIncentiveManager>(s => new AnncIncentiveManager(
-                s.ResolveSessionProvider(),
-                new LazyResolver<IAnnouncementManager>(s),
-                s.GetRequiredService<ITaskIncentiveManager>(),
-                s.GetRequiredService<IIncentiveKindManager>(),
-                s.GetRequiredService<IIncentiveManager>()
-                ));
+                s.GetRequiredService<ITaskSharingManager>())); 
 
             serviceCollection.AddScoped<IAnncReviewManager>(s => new AnncReviewManager(
                 s.ResolveSessionProvider(),
-                new LazyResolver<IAnnouncementManager>(s),
-                s.GetRequiredService<IAnncIncentiveManager>(),
+                new LazyResolver<IAnnouncementManager>(s), 
                 s.GetRequiredService<IIncentiveManager>()));
+
+            serviceCollection.AddScoped<IAnncAlarmManager>(s => new AnncAlarmManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IAnnouncementManager>(s),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IAnncAlarmRecManager>() 
+                ));
+
+            serviceCollection.AddScoped<IAnncAlarmRecManager>(s => new AnncAlarmRecManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IAnncAlarmManager>(s),
+                s.GetRequiredService<IStaffManager>()
+                ));
 
             serviceCollection.AddScoped<IForumSectionManager>(s => new ForumSectionManager(
                 s.ResolveSessionProvider(),
-                s.GetRequiredService<IStaffManager>()));
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IAccessTimeManager>(),
+                new LazyResolver<IForumTopicManager>(s),
+                new LazyResolver<IForumCommentLikeManager>(s),
+                new LazyResolver<IForumLikeManager>(s),
+                new LazyResolver<IForumCommentManager>(s)));
 
             serviceCollection.AddScoped<IForumTopicManager>(s => new ForumTopicManager(
                 s.ResolveSessionProvider(),
@@ -446,6 +507,54 @@ namespace FineWork.Core
                 s.ResolveSessionProvider(),
                 s.GetRequiredService<IForumCommentManager>(),
                 s.GetRequiredService<IStaffManager>()));
+
+            serviceCollection.AddScoped<IForumSectionViewTimeManager>(s => new ForumSectionViewTimeManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IForumSectionManager>()));
+
+            serviceCollection.AddScoped<IPlanManager>(s => new PlanManager(
+                s.ResolveSessionProvider(),
+                new LazyResolver<IPlanAlarmManager>(s),
+                new LazyResolver<IPlanExecutorManager>(s),
+                new LazyResolver<IPlanAtManager>(s), 
+                new LazyResolver<IPushLogManager>(s), 
+                s.GetRequiredService<IStaffManager>()
+                ));
+
+            serviceCollection.AddScoped<IPlanAlarmManager>(s => new PlanAlarmManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IPlanManager>()));
+
+            serviceCollection.AddScoped<IPlanAtManager>(s => new PlanAtManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IPlanManager>(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<INotificationManager>(),
+                s.GetRequiredService<IConfiguration>()
+               ));
+
+            serviceCollection.AddScoped<IPlanExecutorManager>(s => new PlanExecutorManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IPlanManager>(),
+                s.GetRequiredService<IStaffManager>()
+                ));
+
+            serviceCollection.AddScoped<IAnncUpdateManager>(s => new AnncUpdateManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IStaffManager>(),
+                s.GetRequiredService<IAnnouncementManager>()
+                )); 
+
+            serviceCollection.AddScoped<IPushLogManager>(s => new PushLogManager(
+                s.ResolveSessionProvider(),
+                s.GetRequiredService<IAnnouncementManager>(),
+                s.GetRequiredService<IPlanManager>(),
+                s.GetRequiredService<IAlarmManager>(),
+                s.GetRequiredService<ITaskManager>(),
+                s.GetRequiredService<IStaffManager>()
+                ));
+
             return serviceCollection;
         }
     }

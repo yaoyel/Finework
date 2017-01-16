@@ -64,7 +64,7 @@ namespace FineWork.Web.WebApi
                     .First();
 
                 jsonOutput.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
-                jsonOutput.SerializerSettings.ContractResolver = new SkipInvalidPropertyValuesContractResolver();
+                jsonOutput.SerializerSettings.ContractResolver = new SkipDefaultPropertyValuesContractResolver();
             });
 
             var cs = Configuration["ConnectionStrings:FineWork"];
@@ -80,8 +80,7 @@ namespace FineWork.Web.WebApi
                 .AddFineWorkCoreServices()
                 .AddJPushClient(jPushKey, jPushSecret)
                 .AddImClient(Configuration)
-                .AddSmsService(lcAppId, lcAppKey);
-              
+                .AddSmsService(lcAppId, lcAppKey);  
 
             SigningCredentials sc = new SigningCredentials(m_Key, SecurityAlgorithms.RsaSha256Signature);
             services.AddInstance(sc);
@@ -116,8 +115,8 @@ namespace FineWork.Web.WebApi
             provider.Mappings.Add(".apk", "application/x-msdownload"); 
             app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 
-            app.UseIISPlatformHandler(); 
-
+            app.UseIISPlatformHandler();
+      
             app.Use(next => async context =>
             {
                 try

@@ -7,7 +7,7 @@ using FineWork.Common;
 
 namespace FineWork.Colla
 {
-    public class AccessTimeEntity: EntityBase<Guid>
+    public class AccessTimeEntity : EntityBase<Guid>
     {
         public DateTime? LastEnterOrgAt { get; set; }
 
@@ -17,6 +17,20 @@ namespace FineWork.Colla
 
         public DateTime? LastViewNewsAt { get; set; }
 
+        public DateTime? LastViewForumAt { get; set; }
+
+        public DateTime? LastViewForumCommentAt { get; set; }
+
+        public DateTime? LastViewMissinAt { get; set; }
+
+        public DateTime? LastViewVisionAt { get; set; }
+
+        public DateTime? LastViewValuesAt { get; set; }
+
+        public DateTime? LastViewStrategyAt { get; set; }
+
+        public DateTime? LastViewOrgGovernanceAt { get; set; }
+ 
         public Guid StaffId { get; set; }
 
         public StaffEntity Staff { get; set; }

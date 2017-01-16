@@ -37,8 +37,8 @@ namespace FineWork.Web.WebApi.Colla
                 ["FileName"] = (t) => t.FileName,
                 ["ContentType"] = (t) => t.ContentType,
                 ["Size"] = (t) => t.Size,
-                ["Staff"] = (t) => t.Staff.ToViewModel(isShowhighOnly, isShowLow),
-                ["Task"] = (t) => t.Task.ToViewModel(isShowhighOnly, isShowLow)
+                ["Staff"] = (t) => t.Staff.ToViewModel(true, isShowLow),
+                ["Task"] = (t) => t.Task.ToViewModel(true, isShowLow)
             };
 
             NecessityAttributeUitl<TaskSharingViewModel, TaskSharingEntity>.SetVuleByNecssityAttribute(this, entity,

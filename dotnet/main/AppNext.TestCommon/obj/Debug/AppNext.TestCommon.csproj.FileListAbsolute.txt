@@ -24,4 +24,3 @@ D:\FineWork\devel\sources\dotnet\main\AppNext.TestCommon\bin\Debug\Moq.xml
 D:\FineWork\devel\sources\dotnet\main\AppNext.TestCommon\bin\Debug\nunit.framework.xml
 D:\FineWork\devel\sources\dotnet\main\AppNext.TestCommon\obj\Debug\AppNext.TestCommon.dll
 D:\FineWork\devel\sources\dotnet\main\AppNext.TestCommon\obj\Debug\AppNext.TestCommon.pdb
-D:\FineWork\devel\sources\dotnet\main\AppNext.TestCommon\obj\Debug\AppNext.TestCommon.csprojResolveAssemblyReference.cache

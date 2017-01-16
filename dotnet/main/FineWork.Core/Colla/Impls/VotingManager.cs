@@ -8,6 +8,7 @@ using FineWork.Colla.Checkers;
 using FineWork.Colla.Models;
 using System.Data.Entity;
 using FineWork.Common;
+using FineWork.Core;
 using FineWork.Net.IM;
 
 namespace FineWork.Colla.Impls
@@ -28,6 +29,21 @@ namespace FineWork.Colla.Impls
         private readonly IStaffManager m_StaffManager;
         private readonly IVoteOptionManager m_VoteOptionManager;
         private readonly ITaskVoteManager m_TaskVoteManager;
+         
+         
+
+        public void DeleteVotingByVoteId(VoteEntity vote,Guid staffId)
+        { 
+            if (vote != null)
+            {
+                var votings = FetchVotingByVoteId(vote.Id).Where(p => p.Staff.Id == staffId).ToList();
+                if(votings.Any())
+                    foreach (var voting in votings)
+                    {
+                        this.InternalDelete(voting);
+                    } 
+            }
+        }
 
 
         public IEnumerable<VotingEntity> CreateVoting(CreateVotingModel votingModel)
@@ -37,12 +53,20 @@ namespace FineWork.Colla.Impls
             if (!votingModel.Votings.Any())
                 throw new FineWorkException("请至少选择一个共识项！");
 
+            var voteOption =
+                VoteOptionExistsResult.Check(m_VoteOptionManager, votingModel.Votings.First().VoteOptionId)
+                    .ThrowIfFailed()
+                    .VoteOption;
+
+            //删除原来的选项
+            DeleteVotingByVoteId(voteOption.Vote, votingModel.StaffId);
+
             var votings = new List<VotingEntity>();
             votingModel.Votings.ToList().ForEach(p =>
             {
-                var voting=this.InternalCreateVoting(staff, p.VoteOptionId, p.Reason);
+                var voting = this.InternalCreateVoting(staff, p.VoteOptionId, p.Reason);
                 votings.Add(voting);
-            }); 
+            });
             return votings;
         }
 
@@ -67,22 +91,25 @@ namespace FineWork.Colla.Impls
             return votings;
         }
 
+        public VotingEntity FindByOptionIdWithStaffId(Guid optionId, Guid staffId)
+        {
+            return this.InternalFetch(p => p.Option.Id == optionId && p.Staff.Id == staffId).FirstOrDefault();
+        }
+
         private VotingEntity InternalCreateVoting(StaffEntity staff, Guid voteOptionId, string reason)
         {
 
             var voteOption =
                 VoteOptionExistsResult.Check(m_VoteOptionManager, voteOptionId).ThrowIfFailed().VoteOption;
+            var voting = new VotingEntity();
 
-            var voting = new VotingEntity()
-            {
-                Id = Guid.NewGuid(),
-                Reason = reason,
-                Staff = staff,
-                Option = voteOption
-            };
 
+            voting.Id = Guid.NewGuid();
+            voting.Reason = reason;
+            voting.Staff = staff;
+            voting.Option = voteOption;
             this.InternalInsert(voting);
-             
+
             return voting;
         }
     }

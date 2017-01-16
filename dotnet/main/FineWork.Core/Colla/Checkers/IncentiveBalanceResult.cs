@@ -16,8 +16,7 @@ namespace FineWork.Colla.Checkers
 
         public decimal Balance { get; set; }
 
-        public static IncentiveBalanceResult Check(ITaskIncentiveManager taskIncentiveManager,
-            IAnncIncentiveManager anncIncentiveManager, IIncentiveManager incentiveManager, Guid taskId,
+        public static IncentiveBalanceResult Check(ITaskIncentiveManager taskIncentiveManager,  IIncentiveManager incentiveManager, Guid taskId,
             int incentiveKind,Guid? anncId=null)
         {
             var kind = taskIncentiveManager.FindTaskIncentiveByTaskIdAndKindId(taskId, incentiveKind);
@@ -29,17 +28,9 @@ namespace FineWork.Colla.Checkers
             var hg =
                 incentiveManager.FetchIncentiveByTaskId(taskId)
                     .Where(p => p.TaskIncentive.IncentiveKind.Id == incentiveKind)
-                    .Sum(p => p.Quantity);
+                    .Sum(p => p.Quantity); 
 
-            //未验证的通告预先定义的激励数
-            var anncIncentives =
-                anncIncentiveManager.FetchAnncIncentiveByTaskIdAndKind(taskId, incentiveKind)
-                    .Where(p => p.Announcement.Reviews.All(a => a.Reviewstatus != ReviewStatuses.Approved));
-            if (anncId.HasValue)
-                anncIncentives = anncIncentives.Where(p => p.Announcement.Id != anncId.Value);
-
-
-            var balance = gross - hg - anncIncentives.Sum(p=>p.Amount);
+            var balance = gross - hg;
             
 
             return Check(balance, $"任务{kind.IncentiveKind.Name}余额不足.");

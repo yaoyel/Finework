@@ -14,7 +14,7 @@ namespace FineWork.Web.WebApi.Colla
 
         public bool IsNeedReason { get; set; }
 
-        public ICollection<VotingViewModel> Votings { get; set; }
+        public ICollection<VotingViewModel> Votings { get; set; } 
 
         /// <summary>
         /// 匿名情况下，不允许查看选票详情，只显示投票数
@@ -28,9 +28,9 @@ namespace FineWork.Web.WebApi.Colla
             this.Content = entity.Content;
             this.IsNeedReason = entity.IsNeedReason;
 
-            this.Votings = entity.Votings.Select(p => p.ToViewModel()).ToList();
-
+            this.Votings = entity.Votings.Select(p => p.ToViewModel()).ToList(); 
             VotingNumber = entity.Votings.Count();
+             
         }
     }
 
@@ -63,13 +63,13 @@ namespace FineWork.Web.WebApi.Colla
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             this.Id = entity.Id;
             this.Subject = entity.Subject;
-            this.Createor = entity.Creator.ToViewModel();
+            this.Createor = entity.Creator.ToViewModel(true);
             this.StartAt = entity.StartAt;
             this.EndAt = entity.EndAt;
             this.CreatedAt = entity.CreatedAt;
             this.IsAnonEnabled = entity.IsAnonEnabled;
             this.IsMultiEnabled = entity.IsMultiEnabled;
-            this.VoteOptions = entity.VoteOptions.Select(p => p.ToViewModel(accountId));
+            this.VoteOptions = entity.VoteOptions.OrderBy(p=>p.Order).Select(p => p.ToViewModel(accountId));
             this.IsExpired = entity.EndAt < DateTime.Now;
             this.IsVoted = entity.VoteOptions.SelectMany(p => p.Votings).Any(p => p.Staff.Account.Id == accountId);
         }
@@ -94,7 +94,12 @@ namespace FineWork.Web.WebApi.Colla
             this.Id = entity.Id;
             this.Reason = entity.Reason;
             this.VoteOptionId = entity.Option.Id;
-            this.Staff = entity.Staff.ToViewModel(true);
+
+            if (entity.Option.Vote.IsAnonEnabled)
+                Staff = null;
+            else
+                this.Staff = entity.Staff.ToViewModel(true);
+
             this.CreatedAt = entity.CreatedAt;
         }
     }

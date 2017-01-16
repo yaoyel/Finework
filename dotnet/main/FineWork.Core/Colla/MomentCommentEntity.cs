@@ -16,15 +16,16 @@ namespace FineWork.Colla
 
         public virtual MomentCommentEntity TargetComment { get; set; }
 
-        public virtual MomentCommentEntity DerivativeComment { get; set; }
+        public virtual List<MomentCommentEntity> DerivativeComments { get; set; }
 
         [Timestamp]
         public byte[] RowVer { get; set; } 
 
         public virtual StaffEntity Staff { get; set; }
 
-        public virtual MomentEntity Moment { get; set; }
 
-       
+        public virtual StaffEntity ToStaff { get; set; }
+
+        public virtual MomentEntity Moment { get; set; }  
     }
 }

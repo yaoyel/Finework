@@ -55,27 +55,26 @@ namespace FineWork.Web.WebApi.Colla
         //[DataScoped(true)]
         public IActionResult CreateStuffInv([FromBody] CreateStaffInvModel invStaffs)
         {
+            if (invStaffs == null)
+                throw new ArgumentException(nameof(invStaffs));
+            var org = m_OrgManager.FindOrg(invStaffs.OrgId);
             using (var tx = TxManager.Acquire())
             {
-                if (invStaffs == null)
-                    throw new ArgumentException(nameof(invStaffs));
-
                 invStaffs.InviterName = this.AccountName;
-                var org = m_OrgManager.FindOrg(invStaffs.OrgId);
+
                 m_StaffInvManager.BulkCreateStuffInv(invStaffs);
-
-                var extra = new Dictionary<string, string>();
-                extra.Add("PathTo", "staffInv");
-                extra.Add("OrgId", invStaffs.OrgId.ToString());
-
-                m_NotificationManager.SendByAliasAsync(null,
-                    string.Format(m_Configuration["PushMessage:StaffInv:inv"], this.AccountName, org.Name),
-                    extra, invStaffs.Invitees.Select(p => p.Item2).ToArray());
-
                 tx.Complete();
-                return new HttpStatusCodeResult((int) HttpStatusCode.Created);
+
             }
-        } 
+            var extra = new Dictionary<string, string>();
+            extra.Add("PathTo", "staffInv");
+            extra.Add("OrgId", invStaffs.OrgId.ToString());
+
+            m_NotificationManager.SendByAliasAsync(null,
+                string.Format(m_Configuration["PushMessage:StaffInv:inv"], this.AccountName, org.Name),
+                extra, invStaffs.Invitees.Select(p => p.Item2).ToArray());
+            return new HttpStatusCodeResult((int) HttpStatusCode.Created);
+        }
 
         [HttpGet("FetchStaffInvsWithStaffsByAccount")] 
         public IList<StaffInvViewModel> FetchStaffInvsWithStaffsByAccount()

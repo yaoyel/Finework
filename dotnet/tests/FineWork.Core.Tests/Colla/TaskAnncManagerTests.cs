@@ -28,8 +28,7 @@ namespace FineWork.Colla
 
                     var incentiveKindManager = this.Services.GetRequiredService<IIncentiveKindManager>();
                     var anncManager = this.Services.GetRequiredService<IAnnouncementManager>();
-                    var anncAttManager = this.Services.GetRequiredService<IAnncAttManager>();
-                    var anncIncentiveManager = this.Services.GetRequiredService<IAnncIncentiveManager>();
+                    var anncAttManager = this.Services.GetRequiredService<IAnncAttManager>(); 
 
                     var account = accountManger.CreateAccount("test-account-001", "123456", "", FakePhoneNumber);
                     var account2 = accountManger.CreateAccount("test-account-002", "123456", "", "13709090909");
@@ -54,7 +53,7 @@ namespace FineWork.Colla
                     createAnncModel.Content = "AnncContent";
                     createAnncModel.EndAt=DateTime.Now;
                     createAnncModel.IsNeedAchv = true;
-                    createAnncModel.StaffId = staff2.Id;
+                    createAnncModel.CreatorId = staff2.Id;
                     createAnncModel.TaskId = task.Id;
                     var annc=anncManager.CreateAnnc(createAnncModel);
 
@@ -62,7 +61,7 @@ namespace FineWork.Colla
                     Assert.AreEqual(annc.Content,"AnncContent");
                     Assert.True(annc.IsNeedAchv);
                     Assert.AreEqual(annc.Task.Id,task.Id);
-                    Assert.AreEqual(annc.Staff.Id,staff2.Id);
+                    Assert.AreEqual(annc.Creator.Id,staff2.Id);
 
 
                     Assert.Throws<FineWorkException>(() =>
@@ -70,12 +69,7 @@ namespace FineWork.Colla
                         var id = Guid.NewGuid();
                         anncAttManager.CreateAnncAtt(annc.Id, id, true);
                     });
-
-                    Assert.Throws<FineWorkException>(() =>
-                    {
-                        anncIncentiveManager.CreateOrUpdateAnncIncentive(annc.Id, 1, 100);
-                    });
-
+ 
 
                     tx.NoComplete();
                 }

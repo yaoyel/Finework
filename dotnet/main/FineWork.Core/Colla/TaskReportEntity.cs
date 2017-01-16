@@ -26,7 +26,7 @@ namespace FineWork.Colla
         public byte[] RowVer { get; set; }
 
         public virtual TaskEntity Task { get; set; } 
-
+         
         public virtual ICollection<TaskReportAttEntity> Atts { get; set; } = new HashSet<TaskReportAttEntity>();
     }
 }

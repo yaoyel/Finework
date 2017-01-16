@@ -86,7 +86,7 @@ namespace FineWork.Web.WebApi.Colla
                 //发送群消息
                 var message = string.Format(m_Config["LeanCloud:Messages:Task:Incentive"], partaker.Staff.Name,
                     incentiveKind.Name, amount);
-                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.Conversation.Id, task.Name, message);
                 var result = new ObjectResult(taskIncentive);
                 tx.Complete();
                 return result;

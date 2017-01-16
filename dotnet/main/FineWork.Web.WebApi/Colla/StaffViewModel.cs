@@ -7,7 +7,7 @@ namespace FineWork.Web.WebApi.Colla
 {
     public class StaffViewModel
     {
-        [Necessity]
+        [Necessity] 
         public String Name { get; set; }
 
         [Necessity]

@@ -9,7 +9,10 @@ namespace FineWork.Colla
 
         void DeleteForumLike(Guid staffId, Guid topicId);
 
+        IEnumerable<ForumLikeEntity> FetchForumLikesByTopicCreatorId(Guid staffId);
+
         IEnumerable<ForumLikeEntity> FetchForumLikesByTopicId(Guid topicId);
+         
 
     }
 }

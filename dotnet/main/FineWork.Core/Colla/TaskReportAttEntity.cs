@@ -6,11 +6,10 @@ namespace FineWork.Colla
 {
     public class TaskReportAttEntity:EntityBase<Guid>
     { 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-          
-        [Required]
-        public virtual  TaskSharingEntity TaskSharing { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  
 
+        public virtual  TaskSharingEntity TaskSharing { get; set; }
+          
         public virtual TaskReportEntity TaskReport { get; set; }
          
     }

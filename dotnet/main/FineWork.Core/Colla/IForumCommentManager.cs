@@ -10,6 +10,8 @@ namespace FineWork.Colla
 
         IEnumerable<ForumCommentEntity> FetchForumCommentsByTopicId(Guid topicId);
 
+        IEnumerable<ForumCommentEntity> FetchCommentsByTopicOrCommentCreator(Guid staffId);
+
         void DeleteForumComment(Guid commentId);
 
         ForumCommentEntity FindById(Guid forumCommentId);

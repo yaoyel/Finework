@@ -2,138 +2,9 @@
   "locked": false,
   "version": 2,
   "targets": {
-    ".NETFramework,Version=v4.5.1": {
-      "AppNext.Common/1.0.0": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Common.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Common.dll": {}
-        }
-      },
-      "AppNext.Data/1.0.0": {
-        "type": "package",
-        "dependencies": {
-          "AppNext.Common": "1.0.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Data.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Data.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.5.1/win7-x86": {
-      "AppNext.Common/1.0.0": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Common.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Common.dll": {}
-        }
-      },
-      "AppNext.Data/1.0.0": {
-        "type": "package",
-        "dependencies": {
-          "AppNext.Common": "1.0.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Data.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Data.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.5.1/win7-x64": {
-      "AppNext.Common/1.0.0": {
-        "type": "package",
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Common.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Common.dll": {}
-        }
-      },
-      "AppNext.Data/1.0.0": {
-        "type": "package",
-        "dependencies": {
-          "AppNext.Common": "1.0.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/net451/AppNext.Data.dll": {}
-        },
-        "runtime": {
-          "lib/net451/AppNext.Data.dll": {}
-        }
-      }
-    }
+    ".NETFramework,Version=v4.5.1": {}
   },
-  "libraries": {
-    "AppNext.Common/1.0.0": {
-      "type": "package",
-      "sha512": "RVNqMEJdK1z6d/SqcGE7GOe/pyzSxSGAQDdIxOutguJM4BgYY1/TsghIko4QHJ6vwKZ5tnX5N6kgOF2ETNmDYQ==",
-      "files": [
-        "AppNext.Common.1.0.0.nupkg",
-        "AppNext.Common.1.0.0.nupkg.sha512",
-        "AppNext.Common.nuspec",
-        "lib/net451/AppNext.Common.dll",
-        "root/project.json",
-        "root/project.lock.json"
-      ]
-    },
-    "AppNext.Data/1.0.0": {
-      "type": "package",
-      "sha512": "lGZw3n/XptB/DBvShgRSy7VmHFsCubvTYLe6Ln/SthJAgk855Du9VIu1kqYxRrt/l8BVCUSXwnqeaX5ckxwH1Q==",
-      "files": [
-        "AppNext.Data.1.0.0.nupkg",
-        "AppNext.Data.1.0.0.nupkg.sha512",
-        "AppNext.Data.nuspec",
-        "lib/net451/AppNext.Data.dll",
-        "root/project.json",
-        "root/project.lock.json"
-      ]
-    }
-  },
+  "libraries": {},
   "projectFileDependencyGroups": {
     "": [
       "AppNext.Data >= 1.0.0"
@@ -141,5 +12,7 @@
     ".NETFramework,Version=v4.5.1": [
       "AppNext.Common >= 1.0.0-*"
     ]
-  }
+  },
+  "tools": {},
+  "projectFileToolGroups": {}
 }

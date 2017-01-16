@@ -17,43 +17,38 @@ namespace FineWork.Colla.Impls
         public IncentiveManager(ISessionProvider<AefSession> dbContextProvider,
             IStaffManager staffManager, ITaskIncentiveManager taskIncentiveManager,
             ITaskLogManager taskLogManager,
-            ILazyResolver<IAnncIncentiveManager> anncIncentiveLazyResolver
+            ITaskManager taskManager
             )
             : base(dbContextProvider)
         {
-            if (anncIncentiveLazyResolver == null) throw new ArgumentNullException(nameof(anncIncentiveLazyResolver));
             m_StaffManager = staffManager;
             m_TaskIncentiveManager = taskIncentiveManager;
             m_TaskLogManager = taskLogManager;
-            m_AnncIncentiveLazyResolver = anncIncentiveLazyResolver;
+            m_TaskManager = taskManager;
         }
 
         private readonly IStaffManager m_StaffManager;
         private readonly ITaskIncentiveManager m_TaskIncentiveManager;
         private readonly ITaskLogManager m_TaskLogManager;
-        private readonly ILazyResolver<IAnncIncentiveManager> m_AnncIncentiveLazyResolver;
-
-        private IAnncIncentiveManager AnncIncentiveManager
-        {
-            get { return m_AnncIncentiveLazyResolver.Required; }
-        }
+        private readonly ITaskManager m_TaskManager;
 
         public IncentiveEntity CreateIncentive(Guid taskId, int incentiveKindId, Guid senderStaffId,
             Guid receiverStaffId, decimal quantity)
         {
+            var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
             var sender = StaffExistsResult.Check(this.m_StaffManager, senderStaffId).ThrowIfFailed().Staff;
             var receiver = StaffExistsResult.Check(this.m_StaffManager, receiverStaffId).ThrowIfFailed().Staff;
             var taskIncentive =
                 TaskIncentiveExistsResult.Check(this.m_TaskIncentiveManager, taskId, incentiveKindId)
                     .TaskIncentive;
 
-            if (quantity>0 && taskIncentive == null)
+            if (quantity > 0 && taskIncentive == null)
                 throw new FineWorkException("请先对任务的激励进行设置。");
 
             if (quantity > 0)
             {
                 var balance =
-                    IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this.AnncIncentiveManager, this, taskId,
+                    IncentiveBalanceResult.Check(this.m_TaskIncentiveManager, this, taskId,
                         incentiveKindId).ThrowIfFailed().Balance;
 
                 if (balance < quantity)

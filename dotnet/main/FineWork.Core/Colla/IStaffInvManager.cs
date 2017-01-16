@@ -17,6 +17,8 @@ namespace FineWork.Colla
 
         StaffInvEntity FindStaffInvByOrgAccount(Guid orgId,Guid accountId);
 
+        StaffInvEntity FindStaffInvByOrgWithPhoneNumber(Guid orgId, string phoneNumber);
+
         ICollection<StaffInvEntity> FetchStaffInvsByAccount(Guid accountId);
 
         void ChangeReviewStatus(StaffInvEntity staffInv, ReviewStatuses newRevStatus); 

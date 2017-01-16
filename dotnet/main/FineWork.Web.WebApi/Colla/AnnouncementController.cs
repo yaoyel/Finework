@@ -15,6 +15,7 @@ using FineWork.Common;
 using FineWork.Web.WebApi.Core;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Abstractions;
 
 namespace FineWork.Web.WebApi.Colla
 {
@@ -25,71 +26,106 @@ namespace FineWork.Web.WebApi.Colla
         public AnnouncementController(ISessionProvider<AefSession> sessionProvider,
             IAnncAttManager anncAttManager,
             IAnnouncementManager announcementManager,
-            IAnncIncentiveManager anncIncentiveManager,
             IPartakerManager partakerManager,
             ITaskManager taskManager,
             IAnncReviewManager anncReviewManager,
-            IIncentiveKindManager incentiveKindManager) : base(sessionProvider)
+            IIncentiveKindManager incentiveKindManager,
+            IAnncAlarmManager anncAlarmManager,
+            IAnncAlarmRecManager anncAlarmRecManager) : base(sessionProvider)
         {
             Args.NotNull(anncAttManager, nameof(anncAttManager));
             Args.NotNull(announcementManager, nameof(announcementManager));
-            Args.NotNull(anncIncentiveManager, nameof(anncIncentiveManager));
             Args.NotNull(partakerManager, nameof(partakerManager));
             Args.NotNull(taskManager, nameof(taskManager));
             Args.NotNull(anncReviewManager, nameof(anncReviewManager));
-            Args.NotNull(incentiveKindManager, nameof(incentiveKindManager)); 
+            Args.NotNull(incentiveKindManager, nameof(incentiveKindManager));
 
             m_TaskManager = taskManager;
             m_AnncAttManager = anncAttManager;
-            m_AnncIncentiveManager = anncIncentiveManager;
             m_PartakerManager = partakerManager;
             m_AnnouncementManager = announcementManager;
             m_AnncReviewManager = anncReviewManager;
             m_IncentiveKindManager = incentiveKindManager;
+            m_AnncAlarmManager = anncAlarmManager;
+            m_AnncAlarmRecManager = anncAlarmRecManager;
         }
 
         private readonly ITaskManager m_TaskManager;
         private readonly IPartakerManager m_PartakerManager;
         private readonly IAnnouncementManager m_AnnouncementManager;
-        private readonly IAnncIncentiveManager m_AnncIncentiveManager;
         private readonly IAnncAttManager m_AnncAttManager;
         private readonly IAnncReviewManager m_AnncReviewManager;
         private readonly IIncentiveKindManager m_IncentiveKindManager;
+        private readonly IAnncAlarmManager m_AnncAlarmManager;
+        private readonly IAnncAlarmRecManager m_AnncAlarmRecManager;
 
         [HttpPost("CreateAnnc")]
         public IActionResult CreateAnnc([FromBody] CreateAnncModel anncModel)
         {
+            var task = TaskExistsResult.Check(m_TaskManager, anncModel.TaskId).ThrowIfFailed().Task;
+
+            //老版本 0.9.0
+            if (anncModel.StaffId != default(Guid))
+            {
+                var partakerForAccount = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
+                PartakerExistsResult.CheckForStaff(task, anncModel.StaffId).ThrowIfFailed();
+                anncModel.CreatorId = partakerForAccount.Staff.Id;
+                anncModel.ExecutorId = anncModel.StaffId;
+                anncModel.InspecterId = partakerForAccount.Staff.Id;
+            }
+
+            //执行人一人变多人
+            if (anncModel.ExecutorId != default(Guid) && anncModel.ExecutorIds == null)
+            {
+                anncModel.ExecutorIds=new Guid[] {anncModel.ExecutorId};
+            } 
+            
+            if(anncModel.StartAt.HasValue && anncModel.EndAt.HasValue)
+                if(anncModel.EndAt.Value<anncModel.StartAt.Value)
+                    throw  new FineWorkException("结束时间不能小于开始时间.");
+
             using (var tx = TxManager.Acquire())
             {
-                var task = TaskExistsResult.Check(m_TaskManager, anncModel.TaskId).ThrowIfFailed().Task;
-                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).ThrowIfFailed().Partaker;
-
-                if (partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您没有权限创建里程碑.");
-
-                var incentiveKinds = m_IncentiveKindManager.FetchIncentiveKind().Select(p=>p.ToViewModel()).ToList();
                 var annc = this.m_AnnouncementManager.CreateAnnc(anncModel);
-                var result = annc.ToViewModel(incentiveKinds);
+                var result = annc.ToViewModel();
                 tx.Complete();
                 return new ObjectResult(result);
-            } 
+            }
+        }
+
+        /// <summary>
+        /// 复制任务计划
+        /// </summary>
+        /// <param name="anncModels"></param>
+        /// <returns></returns>
+        [HttpPost("CreateAnncs")]
+        public IActionResult CreateAnnc([FromBody] List<CreateAnncModel> anncModels)
+        {  
+            List<AnncViewModel> result;
+            using (var tx = TxManager.Acquire())
+            {
+                var anncs=m_AnnouncementManager.CreateAnncs(anncModels, false);
+                result = anncs.Select(p => p.ToViewModel()).ToList();
+                tx.Complete();
+            }
+            return new ObjectResult(result);
         }
 
         [HttpPost("UploadAnncAtt")]
         public IActionResult UploadAnncAtt(Guid anncId, Guid[] taskSharingIds, bool isAchv)
-        { 
+        {
             using (var tx = TxManager.Acquire())
             {
                 var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc;
 
-                if (isAchv && annc.Staff.Account.Id != this.AccountId)
+                if (isAchv && annc.Inspecter.Account.Id != this.AccountId && annc.Executors.All(p => p.Staff.Account.Id != this.AccountId))
                     throw new FineWorkException("您没有权限上传成果");
 
                 var atts = new List<AnncAttEntity>();
 
-                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId,true);
+                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId, true);
                 foreach (var taskSharingId in taskSharingIds.Distinct())
-                { 
+                {
                     var att = this.m_AnncAttManager.CreateAnncAtt(anncId, taskSharingId, isAchv);
                     atts.Add(att);
                 }
@@ -115,74 +151,36 @@ namespace FineWork.Web.WebApi.Colla
         public IActionResult FetchAnncsByTaskId(Guid taskId, int? page, int? pageSize)
         {
             var anncs =
-                this.m_AnnouncementManager.FetchAnncsByTaskId(taskId).AsQueryable().ToPagedList(page, pageSize).ToList();
+                this.m_AnnouncementManager.FetchAnncsByTaskId(taskId).AsQueryable().ToPagedList(page, pageSize).Data.ToList();
 
-            var incentiveKinds = m_IncentiveKindManager.FetchIncentiveKind().Select(p => p.ToViewModel()).ToList();
-            if (anncs.Any()) return new ObjectResult(anncs.Select(p => p.ToViewModel(incentiveKinds)));
+            if (anncs.Any()) return new ObjectResult(anncs.Select(p => p.ToViewModel()));
 
             return new HttpNotFoundObjectResult(taskId);
         }
 
         [HttpPost("ChangeAnncStatus")]
-        public IActionResult ChangeAnncStatus(Guid anncId, ReviewStatuses status)
+        public IActionResult ChangeAnncStatus(Guid anncId, AnncStatus status,DateTime? delayAt)
         {
             using (var tx = TxManager.Acquire())
             {
                 var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc;
 
-                var partaker = AccountIsPartakerResult.Check(annc.Task, this.AccountId).ThrowIfFailed().Partaker;
 
-                if (partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您没有权限验收里程碑.");
+               if( annc.Inspecter.Account.Id != this.AccountId) 
+                throw new FineWorkException("您没有权限验收该计划.");
 
-                this.m_AnncReviewManager.CreateAnncReivew(anncId, status);
+                this.m_AnncReviewManager.CreateAnncReivew(anncId, status,delayAt);
                 tx.Complete();
 
                 return new HttpStatusCodeResult(200);
             }
-        }
-
-        [HttpPost("ChangeAnncIncentive")]
-        public IActionResult ChangeAnncIncentive(Guid anncId, int incentiveKind, decimal amount,bool isGrant=false)
-        {
-            using (var tx = TxManager.Acquire())
-            {
-                var  annc=AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc;
-                if(annc.Reviews.Any(p=>p.Reviewstatus==ReviewStatuses.Approved))
-                    throw new FineWorkException("激励已经兑现，不可修改.");
-
-                this.m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncId, incentiveKind, amount);
-                tx.Complete();
-
-                return new HttpStatusCodeResult(200);
-            }
-        }
-
-        [HttpPost("ChangeAnncIncentives")] 
-        public IActionResult ChangeAnncIncetives([FromBody]UpdateAnncIncentiveModel updateAnncIncentiveModel)
-        {
-            Args.NotNull(updateAnncIncentiveModel, nameof(updateAnncIncentiveModel));
-            using (var tx = TxManager.Acquire())
-            {
-                var annc = AnncExistsResult.Check(this.m_AnnouncementManager, updateAnncIncentiveModel.AnncId).ThrowIfFailed().Annc;
-                if (annc.Reviews.Any(p => p.Reviewstatus == ReviewStatuses.Approved))
-                    throw new FineWorkException("激励已经兑现，不可修改.");
-                foreach (var anncIncentive in updateAnncIncentiveModel.Incentives)
-                {
-                    this.m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(annc.Id, anncIncentive.Item1,
-                        anncIncentive.Item2,updateAnncIncentiveModel.IsGrant);
-                }
-                tx.Complete();
-            }
-            return new HttpStatusCodeResult(200);
-        }
-
+        } 
 
         [HttpPost("DeleteAnncByIds")]
         public void DeleteAnncByIds(Guid[] anncIds)
         {
             if (anncIds.Length == 0)
-                throw new FineWorkException("请传入要删除的里程碑Id");
+                throw new FineWorkException("请传入要删除的计划Id");
             using (var tx = TxManager.Acquire())
             {
 
@@ -190,20 +188,15 @@ namespace FineWork.Web.WebApi.Colla
                 {
                     var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).ThrowIfFailed().Annc;
 
-                    if (annc.Reviews.Any(p => p.Reviewstatus != ReviewStatuses.Unspecified))
-                    {
-                        var anncReviewStatus = annc.Reviews.First();
-                        var anncReivewStatusDesc = anncReviewStatus.Reviewstatus == ReviewStatuses.Approved
-                            ? "已验收"
-                            : "暂未达成";
-
-                        throw new FineWorkException($"[{annc.Content}]处于[{anncReivewStatusDesc}]状态，不可以删除.");
+                    if (annc.Reviews.Any(p => p.Reviewstatus == AnncStatus.Approved))
+                    { 
+                        throw new FineWorkException($"计划处于[已验收]状态，不可以删除.");
                     }
 
                     var partaker = AccountIsPartakerResult.Check(annc.Task, this.AccountId).ThrowIfFailed().Partaker;
 
-                    if (partaker.Kind != PartakerKinds.Leader)
-                        throw new FineWorkException("您没有权限删除里程碑.");
+                    if (partaker.Staff.Id != annc.Creator.Id)
+                        throw new FineWorkException("您没有权限删除计划.");
 
                     this.m_AnnouncementManager.DeleteAnnc(anncId);
                 }
@@ -215,6 +208,11 @@ namespace FineWork.Web.WebApi.Colla
         [HttpPost("UpdateAnnc")]
         public void UpdateAnnc([FromBody] UpdateAnncModel updateAnncModel)
         {
+            if (updateAnncModel.ExecutorId != default(Guid) && updateAnncModel.ExecutorIds == null)
+            {
+                updateAnncModel.ExecutorIds = new Guid[] { updateAnncModel.ExecutorId };
+            }
+
             Args.NotNull(updateAnncModel, nameof(updateAnncModel));
             using (var tx = TxManager.Acquire())
             {
@@ -228,18 +226,17 @@ namespace FineWork.Web.WebApi.Colla
         public IActionResult FindAnncById(Guid anncId)
         {
             var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).Annc;
-            var incentiveKinds = m_IncentiveKindManager.FetchIncentiveKind().Select(p => p.ToViewModel()).ToList();
-            if (annc != null) return new ObjectResult(annc.ToViewModel(incentiveKinds));
+            if (annc != null) return new ObjectResult(annc.ToViewModel());
             return new HttpNotFoundObjectResult(anncId);
         }
 
         [HttpGet("FetchAnncsByStatus")]
-        public IActionResult FetchAnncsByStatus(Guid staffId,ReviewStatuses status = ReviewStatuses.Unspecified)
+        public IActionResult FetchAnncsByStatus(Guid staffId, ReviewStatuses status = ReviewStatuses.Unspecified)
         {
             var result = this.m_AnnouncementManager.FetchAnncByStatus(staffId, status).ToList();
-       
 
-            if (result.Any()) return new ObjectResult(result.Select(p=>p.ToViewModelWithTask()));
+
+            if (result.Any()) return new ObjectResult(result.Select(p => p.ToViewModelWithTask()));
 
             return new HttpNotFoundObjectResult(staffId);
         }
@@ -249,9 +246,60 @@ namespace FineWork.Web.WebApi.Colla
         {
             var annc = AnncExistsResult.Check(this.m_AnnouncementManager, anncId).Annc;
 
-            if(annc!=null) return new ObjectResult(annc.ToViewModelWithTask());
+            if (annc != null) return new ObjectResult(annc.ToViewModelWithTask());
             return new HttpNotFoundObjectResult(anncId);
         }
 
-    }
+        [HttpPost("CreateAnncAlarm")]
+        public IActionResult CreateAnncAlarm(CreateAnncAlarmModel anncAlarmModel)
+        {
+            using (var tx = TxManager.Acquire())
+            {
+                var alarm = m_AnncAlarmManager.CreateAnnAlarm(anncAlarmModel);
+                var result = alarm.ToViewModel();
+                tx.Complete();
+                return new HttpOkResult();
+            }
+        }
+
+        [HttpPost("DeleteAnncAlarm")]
+        public IActionResult DeleteAnncAlarm(Guid anncAlarmId)
+        {
+            using (var tx = TxManager.Acquire())
+            {
+                m_AnncAlarmManager.DeleteAnncAlarm(anncAlarmId);
+                tx.Complete();
+                return new HttpOkResult();
+            }
+        }
+
+        [HttpPost("UpdateAnncAlarm")]
+        public IActionResult UpdateAnncAlarm(UpdateAnncAlarmModel anncAlarmModel)
+        {
+            using (var tx = TxManager.Acquire())
+            {
+                m_AnncAlarmManager.UpdateAnncAlarm(anncAlarmModel);
+                tx.Complete();
+                return new HttpOkResult();
+            }
+        }
+
+        [HttpGet("IsAlarmReceiver")]
+        public bool IsAlarmReceiver(Guid anncId, Guid staffId, AnncRoles role)
+        {
+            return m_AnncAlarmRecManager.FetchRecsByAnncIdWithStaffId(anncId, staffId, role) != null;
+        }
+
+        [HttpPost("UpdateAnncStatus")]
+        public IActionResult UpdateAnncStatus(Guid anncAlarmId, bool isEnabled)
+        {
+            using (var tx = TxManager.Acquire())
+            {
+                m_AnncAlarmManager.UpdateAnncAlarmStatus(anncAlarmId,isEnabled);
+                tx.Complete();
+            }
+       
+            return new HttpOkResult();
+        }
+     }
 }

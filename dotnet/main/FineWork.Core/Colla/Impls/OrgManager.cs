@@ -97,26 +97,22 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(q => q);
         }
 
-        public IEnumerable<OrgEntity> FetchOrgsByAccount(Guid accountId)
+        public IEnumerable<OrgEntity> FetchOrgsByAccount(Guid accountId, bool includeDisabled = false)
         {
-            var staffs = StaffManager.FetchStaffsByAccount(accountId).Where(p=>p.IsEnabled);
-            var orgs = staffs.Select(staff => staff.Org);
-            return orgs;
+            var staffs = StaffManager.FetchStaffsByAccount(accountId);
+            if (includeDisabled)
+            {
+                return staffs.Select(staff => staff.Org);
+            }
+            else
+                return staffs.Where(p => p.IsEnabled).Select(staff => staff.Org); 
         }
-
-        public IEnumerable<OrgEntity> FetchOrgsByStaff(Guid staffId)
-        {
-            var staffs = this.StaffManager.FetchAllStaff();
-            var orgs = staffs.Where(staff => staff.Id == staffId
-             &&　staff.IsEnabled).Select(staff => staff.Org);
-            return orgs;
-        }
-
+          
         public void UploadOrgAvatar(Stream stream, Guid orgId, string contentType)
         {
             AvatarManager.CreateAvatars(KnownAvatarOwnerTypes.Orgs, orgId, stream);
-            var org = OrgExistsResult.Check(this, orgId).ThrowIfFailed().Org;
-           this.UpdateOrgWithNewStamp(org);
+           // var org = OrgExistsResult.Check(this, orgId).ThrowIfFailed().Org;
+           //this.UpdateOrgWithNewStamp(org);
         }
 
         protected void UpdateOrgWithNewStamp(OrgEntity org)

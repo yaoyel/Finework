@@ -4,6 +4,13 @@
         <name>FineWork.Web.WebApi</name>
     </assembly>
     <members>
+        <member name="M:FineWork.Web.WebApi.Colla.AnnouncementController.CreateAnnc(System.Collections.Generic.List{FineWork.Colla.Models.CreateAnncModel})">
+            <summary>
+            复制任务计划
+            </summary>
+            <param name="anncModels"></param>
+            <returns></returns>
+        </member>
         <member name="M:FineWork.Web.WebApi.Colla.OrgController.FetchOrgs">
             <summary>
             获取所有组织机构信息
@@ -34,36 +41,37 @@
             <param name="staffId"></param>
             <returns></returns>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveCollabrator(System.Guid,System.Guid)">
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveCollabrator(System.Guid,System.Guid[])">
             <summary>
             移除协同者
             </summary>
             <param name="taskId"></param>
-            <param name="staffId"></param>
+            <param name="staffIds"></param>
             <returns></returns>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveMentor(System.Guid,System.Guid)">
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveMentor(System.Guid,System.Guid[])">
             <summary>
             移除指导者
             </summary>
             <param name="taskId"></param>
-            <param name="staffId"></param>
+            <param name="staffIds"></param>
             <returns></returns>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveRecipient(System.Guid,System.Guid)">
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.RemoveRecipient(System.Guid,System.Guid[])">
             <summary>
             移除接受者
             </summary>
             <param name="taskId"></param>
-            <param name="staffId"></param>
+            <param name="staffIds"></param>
             <returns></returns>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.ChangeLeader(System.Guid,System.Guid)">
+        <member name="M:FineWork.Web.WebApi.Colla.PartakerController.ChangeLeader(System.Guid,System.Guid,FineWork.Colla.PartakerKinds)">
             <summary>
             移交任务
             </summary>
             <param name="taskId"></param>
             <param name="staffId"></param>
+            <param name="newKind"></param>
             <returns></returns>
         </member>
         <member name="M:FineWork.Web.WebApi.Colla.PartakerController.ExitTask(System.Guid,System.Guid)">
@@ -136,15 +144,6 @@
             <param name="comment"></param>
             <returns></returns>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.TaskAlarmController.FetchAlarmsByChatRoomKind(System.Guid,FineWork.Colla.ChatRoomKinds,System.Guid)">
-            <summary>
-            根据聊天室类型返回未处理的预警
-            </summary> 
-            <param name="taskId"></param>
-            <param name="chatRoomKind"></param>
-            <param name="creatorStaffId"></param>
-            <returns></returns>
-        </member>
         <member name="M:FineWork.Web.WebApi.Colla.TaskAlarmViewModelExtensions.ToViewModel(FineWork.Colla.TaskAlarmEntity,System.Boolean,System.Boolean)">
             <summary>
             
@@ -181,7 +180,7 @@
              <param name="taskId"></param>
              <param name="newRecuitmentStatus"></param>
         </member>
-        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskRecruitmentRoles(System.Guid,System.String)">
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.ChangeTaskRecruitmentRoles(System.Guid,System.Int32[])">
             <summary>
             更新招募的角色
             </summary>
@@ -194,6 +193,12 @@
             </summary>
             <param name="taskId"></param>
             <param name="newRecuitmentDesc"></param>
+        </member>
+        <member name="M:FineWork.Web.WebApi.Colla.TaskController.FetchTaskNoticesByStaffId(System.Guid)">
+            <summary>
+            获取个人中心任务相关的提醒，包括共识，里程碑，共筹。。
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:FineWork.Web.WebApi.Colla.VoteController.FetchUnApprovedVotesByTaskIdAndStaffId(System.Guid,System.Guid)">
             <summary>

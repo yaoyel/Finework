@@ -2,6 +2,7 @@
 using AppBoot.Checks;
 using JetBrains.Annotations;
 using FineWork.Common;
+using System.Linq;
 
 namespace FineWork.Colla.Checkers
 {
@@ -31,6 +32,14 @@ namespace FineWork.Colla.Checkers
             {
                 return new TaskExistsResult(false, message, null);
             }
+
+            if (task.IsDeserted.HasValue && task.IsDeserted.Value)
+            {
+                var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
+                var abandonMessage = $"当前任务已被{leader.Staff.Name}放弃.";
+                return new TaskExistsResult(false, abandonMessage, task);
+            }
+
             return new TaskExistsResult(true, null, task);
         }
     }

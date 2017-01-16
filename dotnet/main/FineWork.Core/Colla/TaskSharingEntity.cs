@@ -25,5 +25,6 @@ namespace FineWork.Colla
 
         public virtual TaskEntity Task { get; set; } 
          
+         
     }
 }

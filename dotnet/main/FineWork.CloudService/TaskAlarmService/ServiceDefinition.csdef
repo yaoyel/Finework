@@ -7,6 +7,10 @@
       <Setting name="PushKey" />
       <Setting name="PushSecret" />
       <Setting name="StorageConnectionString" />
+      <Setting name="LcId"/>
+      <Setting name="LcKey"/>
+      <Setting name="LcMaster"/>
+      <Setting name="apns_production"/>
     </ConfigurationSettings>
     <Imports>
       <Import moduleName="RemoteAccess" />

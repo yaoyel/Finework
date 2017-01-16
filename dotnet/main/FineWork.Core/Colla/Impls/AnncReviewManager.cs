@@ -14,20 +14,17 @@ namespace FineWork.Colla.Impls
     public class AnncReviewManager: AefEntityManager<AnncReviewEntity, Guid>, IAnncReviewManager
     {
         public AnncReviewManager(ISessionProvider<AefSession> sessionProvider,
-            LazyResolver<IAnnouncementManager> announcementLazyResolver,
-            IAnncIncentiveManager anncIncentiveManager,
+            LazyResolver<IAnnouncementManager> announcementLazyResolver, 
             IIncentiveManager incentiveManager) : base(sessionProvider)
         {
-            Args.NotNull(announcementLazyResolver, nameof(announcementLazyResolver));
-            Args.NotNull(anncIncentiveManager, nameof(anncIncentiveManager));
+            Args.NotNull(announcementLazyResolver, nameof(announcementLazyResolver)); 
             Args.NotNull(incentiveManager, nameof(incentiveManager));
-            m_AnnouncementLazyResolver = announcementLazyResolver;
-            m_AnncIncentiveManager = anncIncentiveManager;
+            m_AnnouncementLazyResolver = announcementLazyResolver; 
             m_IncentiveManager = incentiveManager;
         }
 
         private readonly LazyResolver<IAnnouncementManager> m_AnnouncementLazyResolver;
-        private readonly IAnncIncentiveManager m_AnncIncentiveManager;
+     
         private readonly IIncentiveManager m_IncentiveManager;
 
         private IAnnouncementManager AnnouncementManager
@@ -35,33 +32,32 @@ namespace FineWork.Colla.Impls
             get { return m_AnnouncementLazyResolver.Required; }
         }
 
-        public AnncReviewEntity CreateAnncReivew(Guid anncId, ReviewStatuses reviewStatus)
-        { 
+        public AnncReviewEntity CreateAnncReivew(Guid anncId, AnncStatus reviewStatus, DateTime? delayAt=null)
+        {
             var annc = AnncExistsResult.Check(this.AnnouncementManager, anncId).ThrowIfFailed().Annc;
 
             var lastReviewStatus = annc.Reviews.OrderByDescending(p => p.CreatedAt).FirstOrDefault();
-            if(lastReviewStatus!=null && lastReviewStatus.Reviewstatus==  ReviewStatuses.Approved)
-                throw new FineWorkException($"该里程碑于{lastReviewStatus.CreatedAt.ToString("yyyy-MM-dd")}已验证通过，不可重新验证.");
+            if (lastReviewStatus != null && lastReviewStatus.Reviewstatus == AnncStatus.Approved)
+                throw new FineWorkException($"该计划于{lastReviewStatus.CreatedAt.ToString("yyyy-MM-dd")}已验证通过，不可重新验证.");
+            if (reviewStatus == AnncStatus.Abandon && annc.Reviews.Any(p => p.Reviewstatus == AnncStatus.Abandon))
+                throw new FineWorkException($"该计划已经被放弃,不可重复改操作.");
 
-            var anncReviewEnitty=new AnncReviewEntity();
+            var anncReviewEnitty = new AnncReviewEntity(); 
+  
+            if (reviewStatus == AnncStatus.Delay)
+            {
+                if (!delayAt.HasValue)
+                    throw new FineWorkException("请设置延期时间.");
+                if (delayAt.HasValue && delayAt.Value < annc.EndAt)
+                    throw new FineWorkException("延期时间不能小于计划的结束时间");
+                anncReviewEnitty.DelayAt = delayAt;
+            }
             anncReviewEnitty.Id = Guid.NewGuid();
             anncReviewEnitty.Reviewstatus = reviewStatus;
             anncReviewEnitty.Annc = annc;
+
+
             this.InternalInsert(anncReviewEnitty);
-
-
-            var leader = annc.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff;
-            //兑现激励
-            if (reviewStatus == ReviewStatuses.Approved)
-                foreach (var incentive in annc.AnncIncentives)
-                {
-                    if (incentive.Amount > 0)
-                    {
-                        m_IncentiveManager.CreateIncentive(annc.Task.Id, incentive.IncentiveKind.Id, leader.Id,
-                          annc.Staff.Id, incentive.Grant ?? incentive.Amount); 
-                    }
-                }
-
             return anncReviewEnitty;
         }
 

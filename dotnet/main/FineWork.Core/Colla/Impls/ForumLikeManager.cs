@@ -47,9 +47,13 @@ namespace FineWork.Colla.Impls
             if (forumLike != null) this.InternalDelete(forumLike); 
         }
 
+        public IEnumerable<ForumLikeEntity> FetchForumLikesByTopicCreatorId(Guid staffId)
+        {
+            return this.InternalFetch(p => p.ForumTopic.Staff.Id == staffId);
+        }
         public IEnumerable<ForumLikeEntity> FetchForumLikesByTopicId(Guid topicId)
         {
             return this.InternalFetch(p => p.ForumTopic.Id == topicId);
-        }
+        } 
     }
 }

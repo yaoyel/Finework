@@ -94,7 +94,7 @@ namespace FineWork.Web.WebApi.Colla
             Task.Factory.StartNew(async () =>
             {
                var message = string.Format(m_Configuration["LeanCloud:Messages:Task:Join"],string.Join(",",inviteeStaffs.Select(p=>p.Name)));
-                await m_IIMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+                await m_IIMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.Conversation.Id, task.Name, message);
             });
 
             return result;
@@ -114,7 +114,7 @@ namespace FineWork.Web.WebApi.Colla
             if (newRevStatus == ReviewStatuses.Approved)
             {
                 var message = string.Format(m_Configuration["LeanCloud:Messages:Task:Join"], partakerInvEntity.Staff.Name);
-                m_IIMService.SendTextMessageByConversationAsync(partakerInvEntity.Task.Id, this.AccountId, partakerInvEntity.Task.ConversationId, partakerInvEntity.Task.Name, message);
+                m_IIMService.SendTextMessageByConversationAsync(partakerInvEntity.Task.Id, this.AccountId, partakerInvEntity.Task.Conversation.Id, partakerInvEntity.Task.Name, message);
             }
 
             return new HttpStatusCodeResult(200);

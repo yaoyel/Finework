@@ -34,5 +34,5 @@ namespace FineWork.Common
         }
 
         #endregion
-    }
+    } 
 }

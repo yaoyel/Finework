@@ -27,7 +27,7 @@
     "Microsoft.AspNet.Authentication.JwtBearer": "1.0.0-rc1-final",
     "Microsoft.AspNet.Server.WebListener": "1.0.0-rc1-final",
     "Microsoft.AspNet.Hosting": "1.0.0-rc1-final",
-    "AspNet.Security.OpenIdConnect.Server": "1.0.0-beta4"
+    "AspNet.Security.OpenIdConnect.Server": "1.0.0-beta4" 
   },
 
   "commands": {

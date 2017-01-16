@@ -72,7 +72,7 @@ namespace FineWork.Colla
                     var alarlm = new CreateTaskAlarmModel()
                     {
                         TaskId=task.Id,
-                        StaffId=staff.Id,
+                        CreatorId= staff.Id,
                         AlarmKind= TaskAlarmKinds.PhysicalStrength,
                         Content="类死个人了。。"  
                     };

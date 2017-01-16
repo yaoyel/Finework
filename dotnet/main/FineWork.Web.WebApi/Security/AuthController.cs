@@ -81,5 +81,7 @@ namespace FineWork.Web.WebApi.Security
         {
             return this.User != null ? this.User.Identity.Name : "anonymous";
         }
+
+       
     }
 }

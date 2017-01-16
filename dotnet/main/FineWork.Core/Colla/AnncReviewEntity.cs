@@ -9,9 +9,11 @@ namespace FineWork.Colla
 {
     public class AnncReviewEntity:EntityBase<Guid>
     {
-        public  ReviewStatuses Reviewstatus { get; set; }
+        public  AnncStatus Reviewstatus { get; set; }
 
         public AnnouncementEntity Annc { get; set; }
+
+        public DateTime? DelayAt { get; set; }
 
         public DateTime CreatedAt { get; set; }=DateTime.Now;
     }

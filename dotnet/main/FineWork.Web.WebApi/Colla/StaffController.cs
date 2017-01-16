@@ -31,7 +31,18 @@ namespace FineWork.Web.WebApi.Colla
             IIMService imService,
             INotificationManager notificationManager,
             IConfiguration config,
-            IAccessTimeManager accessTimeManager)
+            IAccessTimeManager accessTimeManager,
+            IForumTopicManager forumTopicManager,
+            IForumCommentManager forumCommentManager,
+            IForumSectionManager forumSectionManager,
+            IForumCommentLikeManager forumCommentLikeManager,
+            IMomentManager momentManager,
+            IMomentCommentManager momentCommentManager,
+            IMomentLikeManager momentLikeManager,
+            IAlarmManager alarmManager,
+            IVoteManager voteManager,
+            IAnncAlarmManager anncAlarmManager,
+            ITaskVoteManager taskVoteManager)
             : base(sessionProvider)
         {
             Args.NotNull(staffManager, nameof(staffManager));
@@ -49,21 +60,38 @@ namespace FineWork.Web.WebApi.Colla
             this.NotificationManager = notificationManager;
             this.Config = config;
             this.AccessTimeManager = accessTimeManager;
+
+            ForumTopicManager = forumTopicManager;
+            ForumCommentManager = forumCommentManager;
+            ForumSectionManager = forumSectionManager;
+            ForumCommentLikeManager = forumCommentLikeManager;
+            MomentManager = momentManager;
+            MomentCommentManager = momentCommentManager;
+            MomentLikeManager = momentLikeManager;
+            AlarmManager = alarmManager;
+            VoteManager = voteManager;
+            AnncAlarmManager = anncAlarmManager;
+            TaskVoteManager = taskVoteManager;
         }
 
         private IStaffManager StaffManager { get; }
-
         private ITaskManager TaskManager { get; }
-
         private IIMService IMService { get; }
-
         private INotificationManager NotificationManager { get; }
-
         private IPartakerManager PartakerManager { get; }
-
         private IConfiguration Config { get; }
-
-        private IAccessTimeManager AccessTimeManager { get; } 
+        private IAccessTimeManager AccessTimeManager { get; }
+        private IForumTopicManager ForumTopicManager { get; }
+        private IForumCommentManager ForumCommentManager { get; }
+        private IForumSectionManager ForumSectionManager { get; }
+        private IForumCommentLikeManager ForumCommentLikeManager { get; }
+        private IMomentManager MomentManager { get; }
+        private IMomentCommentManager MomentCommentManager { get; }
+        private IMomentLikeManager MomentLikeManager { get; }
+        private IAlarmManager AlarmManager { get; }
+        private IVoteManager VoteManager { get; }
+        private IAnncAlarmManager AnncAlarmManager { get; }
+        private ITaskVoteManager TaskVoteManager { get; }
 
         //Match: http://localhost:41969/api/Staff/FindById?staffId=85A1ABCC-4B30-4258-87B3-F37601A97185
         [HttpGet("FindById")]
@@ -97,7 +125,7 @@ namespace FineWork.Web.WebApi.Colla
         [HttpGet("FetchByOrgAndStaffName")]
         public IEnumerable<StaffViewModel> FetchByOrgAndStaffName(Guid orgId, String staffName = null)
         {
-            IEnumerable<StaffEntity> staffs = this.StaffManager.FetchStaffsByOrg(orgId,true);
+            IEnumerable<StaffEntity> staffs = this.StaffManager.FetchStaffsByOrg(orgId, true);
             if (!String.IsNullOrEmpty(staffName))
                 staffs = staffs.Where(x => x.Name == staffName);
             return staffs.Select(x => x.ToViewModel()).ToList();
@@ -119,6 +147,18 @@ namespace FineWork.Web.WebApi.Colla
             return staffs.Select(x => x.ToViewModel()).ToList();
         }
 
+        [HttpGet("FetchStaffsByName")]
+        public IActionResult FetchStaffsByName(Guid orgId,string name,int?page,int?pageSize)
+        {
+            var staffs = this.StaffManager.FetchStaffsByName(orgId,name).Select(p=>p.ToViewModel()).ToList();
+
+            if (page == null && pageSize == null)
+                return new ObjectResult(staffs);
+            if (staffs.Any())
+               return new ObjectResult( staffs.AsQueryable().ToPagedList(page, pageSize));
+            return new HttpNotFoundObjectResult(name); 
+
+        }
 
         /// <summary>
         /// 员工退出组织，管理员删除员工通用此接口 
@@ -132,13 +172,14 @@ namespace FineWork.Web.WebApi.Colla
         {
             using (var tx = TxManager.Acquire())
             {
-                var staff = StaffExistsResult.Check(this.StaffManager, staffIds,false).ThrowIfFailed().Staff;
+                var staff = StaffExistsResult.Check(this.StaffManager, staffIds, false).ThrowIfFailed().Staff;
 
                 //必须是组织管理员才可以进行此操作
                 StaffExistsResult.CheckForAdmin(this.StaffManager, staff.Org.Id, this.AccountId).ThrowIfFailed();
 
                 //判断是否有预警或共识未处理 
-                AlarmOrVoteExistsResult.Check(this.PartakerManager,staffIds).ThrowIfFailed();
+                if (!newStatus)
+                    PartakerKindUpdateResult.Check(this.PartakerManager, staffIds).ThrowIfFailed();
 
                 //如果是任务的负责人，管理员无权禁用
                 var leader = PartakerManager.FetchPartakersByStaff(staffIds)
@@ -152,7 +193,7 @@ namespace FineWork.Web.WebApi.Colla
                 //推送消息至禁用的账号
                 var attrs = new Dictionary<string, string>();
                 attrs.Add("PathTo", "EnabledStaff");
-                attrs.Add("Status",newStatus?"True":"False");
+                attrs.Add("Status", newStatus ? "True" : "False");
                 attrs.Add("StaffId", staff.Id.ToString());
                 var pushMessage = string.Format(Config["PushMessage:ChangeStaffStatus"], staff.Org.Name,
                     newStatus ? "解禁" : "禁用");
@@ -166,7 +207,8 @@ namespace FineWork.Web.WebApi.Colla
                         newStatus ? "启用" : "禁用");
                     tasks.ForEach(p =>
                     {
-                        IMService.SendTextMessageByConversationAsync(p.Id,this.AccountId, p.ConversationId.ToString(), null, imMessage);
+                        IMService.SendTextMessageByConversationAsync(p.Id, this.AccountId, p.Conversation.Id.ToString(),
+                            null, imMessage);
                     });
 
                 }
@@ -214,8 +256,8 @@ namespace FineWork.Web.WebApi.Colla
         //[DataScoped(true)]
         public void ChangeStaffDepartment(Guid staffId, string newDepartment)
         {
-            if(!string.IsNullOrEmpty(newDepartment))
-            Args.MaxLength(newDepartment, 32, nameof(newDepartment), "部门备注");
+            if (!string.IsNullOrEmpty(newDepartment))
+                Args.MaxLength(newDepartment, 32, nameof(newDepartment), "部门备注");
 
             using (var tx = TxManager.Acquire())
             {
@@ -225,6 +267,39 @@ namespace FineWork.Web.WebApi.Colla
                 this.StaffManager.UpdateStaff(staff);
                 tx.Complete();
             }
-        } 
+        }
+
+        [HttpGet("HasUnReadMessage")]
+        public IActionResult HasUnReadMessage(Guid staffId, string tabName = "")
+        {
+            if (tabName == "PersonalCenter")
+            {
+                var untreatedAlarmPeriodCount = AlarmManager.FetchUntreatedAlarmPeriodByStaff(staffId).Count();
+                var voteCount = this.VoteManager.FetchVotesByStaffId(staffId)
+                    .Where(p => p.EndAt <= DateTime.Now && !p.IsApproved.HasValue)
+                    .Join(TaskVoteManager.FetchAllVotes(), u => u.Id, c => c.Vote.Id, (u, c) => u).Count();
+
+                var anncs = this.AnncAlarmManager
+                    .FetchAnncAlarmsByStaffId(
+                        staffId)
+                    .Count(w => w.Annc.EndAt <= DateTime.Now && (!w.Annc.Reviews.Any() ||
+                            w.Annc.Reviews.All(p => p.Reviewstatus == AnncStatus.Delay && p.DelayAt<= DateTime.Now)));
+
+                return new ObjectResult(untreatedAlarmPeriodCount + voteCount+ anncs);
+            }
+
+            var hasUnReadMoment = this.MomentManager.HasUnReadMoment(staffId);
+            var hasUnReadComment = this.MomentManager.FetchUnReadCommentCountByStaffId(staffId).Item1 > 0;
+            var unReadForumSections = this.ForumSectionManager.HasUnReadForumByStaffId(staffId);
+            var hasIrrelevates = this.ForumSectionManager.FetchIrrelevantForumsByStaff(staffId,ForumSections.Mission,ForumSections.OrgGovernance,ForumSections.Strategy,
+                ForumSections.Values,ForumSections.Vision).Item2;
+
+            if (hasUnReadMoment || hasUnReadComment || hasIrrelevates.Any()|| (unReadForumSections != null && unReadForumSections.Any()))
+                return
+                    new ObjectResult(new Tuple<bool, ForumSections[]>(hasUnReadMoment || hasUnReadComment,
+                        unReadForumSections));
+
+            return new HttpNotFoundObjectResult(staffId);
+        }
     }
 }

@@ -115,6 +115,14 @@ namespace FineWork.Colla.Impls
                 .Select(p => p.First());
         }
 
+        public void DeleteTaskIncentiveByTaskId(Guid taskId)
+        {
+              var taskIncentives = this.InternalFetch(p => p.Task.Id == taskId);
+
+            if(taskIncentives.Any())
+                taskIncentives.ToList().ForEach(this.InternalDelete);
+        }
+
         private TaskIncentiveEntity InternalCreate(TaskEntity task, IncentiveKindEntity incentiveKind, decimal amount)
         {
             var taskIncentive = new TaskIncentiveEntity()

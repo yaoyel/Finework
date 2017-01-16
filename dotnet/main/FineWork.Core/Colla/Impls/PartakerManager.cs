@@ -24,7 +24,8 @@ namespace FineWork.Colla.Impls
             ILazyResolver<ITaskAlarmManager> taskAlarmManagerResolver,
             IIMService imService ,
             INotificationManager notification,
-            IConfiguration config)
+            IConfiguration config,
+            IMemberManager memberManager)
             :base(dbContextProvider)
         {
             if (staffManager == null) throw new ArgumentNullException(nameof(staffManager));
@@ -38,7 +39,8 @@ namespace FineWork.Colla.Impls
             this.TaskAlarmManagerResolver = taskAlarmManagerResolver;
             this.IMService = imService;
             NotificationManager = notification;
-            Config = config; 
+            Config = config;
+            m_MemberManager = memberManager;
         }
 
         private IStaffManager StaffManager { get; } 
@@ -49,6 +51,7 @@ namespace FineWork.Colla.Impls
 
         private ILazyResolver<ITaskAlarmManager> TaskAlarmManagerResolver;
 
+        private IMemberManager m_MemberManager;
         private ITaskAlarmManager TaskAlarmManager {
             get { return TaskAlarmManagerResolver.Required; }
         }
@@ -57,9 +60,9 @@ namespace FineWork.Colla.Impls
         
         private IConfiguration Config { get; }
 
-        public  PartakerEntity CreatePartaker(Guid taskId, Guid staffId, PartakerKinds kind,bool isSendMessage=true)
+        public  PartakerEntity CreatePartaker(Guid taskId, Guid staffId, PartakerKinds kind,bool sendMessage=true)
         {
-            return InternalCreatePartaker(taskId, staffId, kind,isSendMessage);
+            return InternalCreatePartaker(taskId, staffId, kind,sendMessage);
         }
 
         public PartakerEntity CreateCollabrator(Guid taskId, Guid staffId)
@@ -92,11 +95,10 @@ namespace FineWork.Colla.Impls
             return InternalRemovePartaker(taskId, staffId, PartakerKinds.Recipient);
         }
 
-        public PartakerEntity ChangeLeader(Guid taskId, Guid staffId)
+        public PartakerEntity ChangeLeader(Guid taskId, Guid staffId, PartakerKinds newKind)
         {
-            var task = TaskExistsResult.Check(this.TaskManager, taskId).ThrowIfFailed().Task; 
-
-            //移除原负责人改为协同者
+            var task = TaskExistsResult.Check(this.TaskManager, taskId).ThrowIfFailed().Task;  
+       
             var oldLeader = task.Partakers.SingleOrDefault(x => x.Kind == PartakerKinds.Leader);
             if (oldLeader != null)
             {
@@ -104,7 +106,7 @@ namespace FineWork.Colla.Impls
                 {
                     return oldLeader;
                 }
-                oldLeader.Kind = PartakerKinds.Collaborator;
+                oldLeader.Kind = newKind;
                 InternalUpdate(oldLeader);
             }
 
@@ -135,8 +137,7 @@ namespace FineWork.Colla.Impls
             return partaker;
         }
 
-        private PartakerEntity InternalCreatePartaker(Guid taskId, Guid staffId, PartakerKinds partakerKinds,
-            bool isSendMessage = true)
+        private PartakerEntity InternalCreatePartaker(Guid taskId, Guid staffId, PartakerKinds partakerKinds,bool sendMessage=true)
         {
             var task = TaskExistsResult.Check(this.TaskManager, taskId).ThrowIfFailed().Task;
             var staff = StaffExistsResult.Check(this.StaffManager, staffId).ThrowIfFailed().Staff;
@@ -152,40 +153,22 @@ namespace FineWork.Colla.Impls
             this.InternalInsert(partaker);
 
 
-            if (!string.IsNullOrEmpty(task.ConversationId))
+            if (task.Conversation != null)
             {
                 //加入任务的群组
                 var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
-                IMService.AddMemberAsync(leader.Staff.Id.ToString(), task.ConversationId, staffId.ToString()).Wait();
-            }
+                IMService.AddMemberAsync(leader.Staff.Id.ToString(), task.Conversation.Id, staffId.ToString()).Wait();
+                m_MemberManager.CreateMember(task.ConversationId, staff.Id);
+            } 
 
-            var taskAlarms = TaskAlarmManager.FetchAlarmsByPartakerKind(partaker.Task.Id, partaker.Kind).ToList();
-
-            //加入讨论组 
-            if (taskAlarms.Any())
+            if (sendMessage && task.Conversation != null)
             {
-                taskAlarms.ForEach(f =>
-                {
-                    IMService.AddMemberAsync(f.Staff.Id.ToString(), f.ConversationId, staffId.ToString()).Wait();
-                });
-            }
-
-
-            if (isSendMessage)
-            { 
-                var notificationMessage = string.Format(Config["PushMessage:PartakerInv:inv"], staff.Name, task.Name);
-
-                var extra = new Dictionary<string, string>();
-                extra.Add("PathTo", "index");
-                extra.Add("OrgId", staff.Org.Id.ToString());
-
-                NotificationManager.SendByAliasAsync(null, notificationMessage, extra, staff.Account.PhoneNumber);
-
                 var message = string.Format(Config["LeanCloud:Messages:Task:Join"], staff.Name);
-                IMService.SendTextMessageByConversationAsync(task.Id,staff.Account.Id, task.ConversationId, task.Name, message);
-
+                IMService.SendTextMessageByConversationAsync(task.Id, staff.Account.Id, task.Conversation.Id,
+                    task.Name, message);
 
             }
+
             return partaker;
         }
 
@@ -206,13 +189,14 @@ namespace FineWork.Colla.Impls
 
 
             //判断是否有预警或共识为处理 
-            AlarmOrVoteExistsResult.Check(partaker,taskId,this.TaskAlarmManager).ThrowIfFailed(); 
+            PartakerKindUpdateResult.Check(partaker,taskId,this.TaskAlarmManager,true).ThrowIfFailed(); 
 
             this.InternalDelete(partaker);
 
             //移出任务的群组 
-            IMService.RemoveMemberAsync(staffId.ToString(), task.ConversationId, staffId.ToString());
-            IMService.RemoveConversationAsync(staffId.ToString(), taskId.ToString()).Wait();  
+            m_MemberManager.DeleteMember(task.ConversationId,staffId);
+            IMService.RemoveMemberAsync(staffId.ToString(), task.Conversation.Id, staffId.ToString());
+            IMService.RemoveConversationByStaffIdAsync(staffId.ToString(), taskId.ToString()).Wait();  
             return partaker;
         }
 
@@ -233,7 +217,7 @@ namespace FineWork.Colla.Impls
 
         public IEnumerable<PartakerEntity> FetchPartakersByStaff(Guid staffId)
         {
-            return this.InternalFetch(q => q.Where(x => x.Staff.Id == staffId)
+            return this.InternalFetch(q => q.Where(x => x.Staff.Id == staffId && x.Task.IsDeserted==null)
                 .Include(x => x.Staff)
                 .Include(x => x.Task.Partakers.Select(p=>p.Staff.Account))
                 .Include(x=>x.Task.Creator.Account));
@@ -267,6 +251,19 @@ namespace FineWork.Colla.Impls
         {
             return this.InternalFetch(p => p.Task.Id == taskId && p.IsExils.HasValue && p.IsExils.Value);
         }
-         
+
+        public IEnumerable<PartakerEntity> FetchPartakerByKind(Guid taskId, PartakerKinds kind)
+        {
+            return this.InternalFetch(p => p.Task.Id == taskId && p.Kind == kind);
+        }
+
+
+        public void DeletePartakersByTaskId(Guid taskId)
+        {
+            var partakers = this.InternalFetch(p => p.Task.Id == taskId).ToList();
+
+            if(partakers.Any())
+                partakers.ForEach(InternalDelete);
+        }
     }
 }

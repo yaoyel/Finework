@@ -19,6 +19,9 @@ namespace FineWork.Web.WebApi.Message
         /// </summary>
         public Guid AccountId { get; set; }
 
+        public string MsgType { get; set; }
+
+        public string CustomId { get; set; }
         /// <summary>
         /// 区分个人/聊天室
         /// </summary>

@@ -17,7 +17,7 @@ namespace FineWork.Colla
 
         public string TargetContent { get; set; }
 
-        public virtual ForumCommentEntity DerivativeComment { get; set; }
+        public virtual  ICollection<ForumCommentEntity> DerivativeComments { get; set; }
 
         [Timestamp]
         public byte[] RowVer { get; set; }
@@ -26,7 +26,6 @@ namespace FineWork.Colla
 
         public virtual ForumTopicEntity ForumTopic { get; set; }
 
-        public virtual ICollection<ForumCommentLikeEntity> Likes { get; set; }=new HashSet<ForumCommentLikeEntity>();
-
+        public virtual ICollection<ForumCommentLikeEntity> Likes { get; set; }=new HashSet<ForumCommentLikeEntity>(); 
     }
 }

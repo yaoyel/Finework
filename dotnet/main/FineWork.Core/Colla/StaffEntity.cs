@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.UI.WebControls;
 using FineWork.Common;
 using FineWork.Security.Repos.Aef;
 
@@ -36,7 +37,7 @@ namespace FineWork.Colla
 
         //任务承诺
         //ToDo 整理
-        public virtual ICollection<TaskAnnouncementEntity> Promise { get; set; } = new HashSet<TaskAnnouncementEntity>();
+        public virtual ICollection<TaskNoteEntity> Promise { get; set; } = new HashSet<TaskNoteEntity>();
 
 
         public virtual ICollection<TaskAlarmEntity> Alarms { get; set; } =
@@ -81,7 +82,6 @@ namespace FineWork.Colla
 
         public virtual ICollection<ForumSectionEntity> ForumSections { get; set; }=new HashSet<ForumSectionEntity>();
 
-        public virtual ICollection<ForumTopicEntity> ForumTopics { get; set; }=new HashSet<ForumTopicEntity>();
-         
+        public virtual ICollection<ForumTopicEntity> ForumTopics { get; set; }=new HashSet<ForumTopicEntity>();  
     }
 }

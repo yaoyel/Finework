@@ -20,7 +20,7 @@ namespace FineWork.Colla.Checkers
             if (orgManager == null) throw new ArgumentNullException(nameof(orgManager));
             var org = orgManager.FindOrg(orgId);
 
-            return Check(org, "当前组织不允许员工要求成员，请联系管理员.");
+            return Check(org, "当前组织不允许员工邀请成员，请联系管理员.");
         }
 
         private static InvitationIsEnabledResult Check(OrgEntity org, String message)

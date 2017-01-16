@@ -42,11 +42,20 @@ namespace FineWork.Colla
         /// <summary>
         /// 对话id，看sdk的更新进度决定是否保留此字段
         /// </summary>
+        //public string ConversationId { get; set; }
+
+        public virtual ConversationEntity Conversation { get; set; }
+
         public string ConversationId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime? EndAt { get; set; }
+
+        //是否放弃
+        public bool? IsDeserted { get; set; } 
+
+        public  Guid? CopyFrom { get; set; }
 
         public virtual ICollection<PartakerEntity> Partakers { get; set; } = new HashSet<PartakerEntity>();
 
@@ -56,7 +65,7 @@ namespace FineWork.Colla
 
         //任务承诺 
         //TODO 整理
-        public virtual ICollection<TaskAnnouncementEntity> Promise { get; set; } = new HashSet<TaskAnnouncementEntity>();
+        public virtual ICollection<TaskNoteEntity> Notes { get; set; } = new HashSet<TaskNoteEntity>();
 
         public virtual ICollection<TaskAlarmEntity> Alarms { get; set; } = new HashSet<TaskAlarmEntity>();
 
@@ -78,9 +87,9 @@ namespace FineWork.Colla
 
         public virtual ICollection<PartakerInvEntity> PartakerInvs { get; set; } = new HashSet<PartakerInvEntity>();
 
-        public virtual ICollection<AnnouncementEntity> Announcements { get; set; } = new HashSet<AnnouncementEntity>();
+        public virtual ICollection<AnnouncementEntity> Announcements { get; set; } = new HashSet<AnnouncementEntity>(); 
 
-        public virtual TaskReportEntity Report { get; set; }
+        public virtual TaskReportEntity Report { get; set; } 
 
         public PartakerKinds PartakerKindFor(StaffEntity staff)
         {

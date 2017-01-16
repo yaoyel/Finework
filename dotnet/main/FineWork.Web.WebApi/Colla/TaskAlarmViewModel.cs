@@ -65,20 +65,18 @@ namespace FineWork.Web.WebApi.Colla
                 ["Task"] = (t) => t.Task.ToViewModel(),
                 ["StaffFrom"] = (t) => t.Staff.ToViewModel(isShowhighOnly,isShowLow),
                 ["ClosedAt"] = (t) => t.ClosedAt,
-                ["ConversationId"]=(t)=>t.ConversationId,
+                ["ConversationId"]=(t)=>t.Conversation.Id,
                 ["StaffTo"] = (t) =>
                 {
-                    if (t.ReceiversArray == null || !t.ReceiversArray.Any())
+                    if (!t.Conversation.Members.Any())
                         return null;
-                    var receivePartakerKind = t.ReceiversArray;
-                    var receiveStaff = t.Task.Partakers.Where(s => receivePartakerKind.Contains((int) s.Kind)).ToList();
-                 
-                    if(!receiveStaff.Any())
-                    return null;
-                    return receiveStaff.Select(p => p.Staff.ToViewModel(isShowhighOnly, isShowLow)).ToList();
+                    return t.Conversation.Members.GroupBy(p=>p.Staff.Id).Select(p=>p.First()).Where(p=>p.Staff.Id!=t.Staff.Id).Select(p => new StaffViewModel()
+                    {
+                        Id=p.Staff.Id,
+                        Name = p.Staff.Name
+                    }).ToList();
                 } 
-            };
-
+            }; 
             #endregion
 
             NecessityAttributeUitl<TaskAlarmViewModel, TaskAlarmEntity>.SetVuleByNecssityAttribute(this, entity,

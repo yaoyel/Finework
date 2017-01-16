@@ -159,5 +159,12 @@ namespace FineWork.Colla.Impls
             this.InternalUpdate(vote);
         }
 
+
+        public IEnumerable<VoteEntity> FetchVotesByStaffId(Guid staffId)
+        {
+            return this.InternalFetch(p => p.Creator.Id == staffId);
+        }
+
+     
     }
 }

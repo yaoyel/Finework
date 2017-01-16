@@ -1,5 +1,6 @@
 using System;
 using FineWork.Common;
+using FineWork.Logging;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -19,18 +20,11 @@ namespace FineWork.Web.WebApi.Core
     public class HandleErrorsAttribute : ExceptionFilterAttribute
     {
 
-        private readonly ILogger _logger;
-        private readonly string _storageConnectionString;
-
-        public HandleErrorsAttribute(ILoggerFactory loggerfactory,IConfiguration config)
-        {
-            _logger = loggerfactory.CreateLogger<HandleErrorsAttribute>();
-            _storageConnectionString = config["AzureSettings:StorageConnectionString"];
-        }
-
+        private readonly ILogger m_logger;  
 
         public HandleErrorsAttribute()
         {
+            m_logger = LogManager.GetLogger(typeof(HandleErrorsAttribute));
             this.Order = FwDefaultFilterOrders.HandleErrors;
         }
 
@@ -38,15 +32,14 @@ namespace FineWork.Web.WebApi.Core
         {
             HandleException(context);
 
-            _logger.LogInformation(context.HttpContext.Request.Path);
-            _logger.LogError(3,"ServerError",context.Exception);
-            LogExceptionByBlob(context.Exception);
+            m_logger.LogInformation(context.HttpContext.Request.Path);
+            m_logger.LogError(3,"ServerError",context.Exception); 
         }
 
         private static void HandleException( ExceptionContext context, int httpStatusCode = 500)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-             
+            if (context == null) throw new ArgumentNullException(nameof(context)); 
+            
             var info = HttpErrorInfo.Create(context);
             int statusCode = 500; 
 
@@ -54,15 +47,6 @@ namespace FineWork.Web.WebApi.Core
             {
               StatusCode=statusCode
             }; 
-        }
-
-        private void LogExceptionByBlob(Exception ex)
-        { 
-            var container = CloudStorageAccount.Parse(_storageConnectionString)
-                  .CreateCloudBlobClient().GetContainerReference("errors");
-            container.CreateIfNotExists();
-            var blob = container.GetBlockBlobReference($"error-{$"chrdapi"}-{DateTime.Now.ToString("G")}");
-            blob.UploadText(ex.ToString());
-        }
+        } 
     }
 }

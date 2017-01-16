@@ -5,7 +5,7 @@ namespace FineWork.Colla
 {
     public interface IPartakerManager
     {
-        PartakerEntity CreatePartaker(Guid taskId, Guid staffId, PartakerKinds kind, bool isSendMessage = true);
+        PartakerEntity CreatePartaker(Guid taskId, Guid staffId, PartakerKinds kind,bool sendMessage=true);
 
         PartakerEntity CreateCollabrator(Guid taskId, Guid staffId);
 
@@ -19,7 +19,7 @@ namespace FineWork.Colla
 
         PartakerEntity RemoveRecipient(Guid taskId, Guid staffId);
 
-        PartakerEntity ChangeLeader(Guid taskId, Guid staffId); 
+        PartakerEntity ChangeLeader(Guid taskId, Guid staffId, PartakerKinds newKind); 
 
         PartakerEntity ExitTask(Guid taskId, Guid staffId);
 
@@ -36,6 +36,9 @@ namespace FineWork.Colla
         void UpdatePartaker(PartakerEntity partaker); 
 
         IEnumerable<PartakerEntity> FetchExilsesByTaskId(Guid taskId);
-         
+
+        IEnumerable<PartakerEntity> FetchPartakerByKind(Guid taskId, PartakerKinds kind);
+
+        void DeletePartakersByTaskId(Guid taskId);
     }
 }

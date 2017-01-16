@@ -15,5 +15,7 @@ namespace FineWork.Colla
         TaskIncentiveEntity FindTaskIncentiveByTaskIdAndKindId(Guid taskId,int kindId,bool returnNull=false);
 
         IEnumerable<TaskIncentiveEntity> FetchTaskIncentiveByTaskId(Guid taskId,bool includeAllKind=true);
+
+        void DeleteTaskIncentiveByTaskId(Guid taskId);
     }
 }

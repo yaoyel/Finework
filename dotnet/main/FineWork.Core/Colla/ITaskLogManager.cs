@@ -10,7 +10,7 @@ namespace FineWork.Colla
     {
         TaskLogEntity CreateTaskLog(Guid taskId,Guid staffId,string targetKind,Guid targetId,ActionKinds actionKind,string message,string columnName="");
 
-        IEnumerable<TaskLogEntity> FetchTaskLogByTaskId(Guid taskId);
+        IEnumerable<TaskLogEntity> FetchTaskLogByTaskId(Guid taskId,bool includeAll=false);
 
         IEnumerable<TaskLogEntity> FetchExcitationLogByTaskId(Guid taskId);
 

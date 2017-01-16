@@ -16,7 +16,7 @@ namespace FineWork.Colla.Checkers
         public static ForumSectionExistsResult Check(IForumSectionManager forumSectionManager, Guid forumSectionId)
         {
             var forumSection = forumSectionManager.FindById(forumSectionId);
-            return Check(forumSection, "不存在对用的基本法.");
+            return Check(forumSection, "不存在对应的基本法版本");
         }
 
 

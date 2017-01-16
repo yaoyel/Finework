@@ -60,13 +60,30 @@ namespace FineWork.Colla.Impls
             get { return m_AnncAttManagerLazyResolver.Required; }
         }
 
-
-
         private string GetTaskSharingDirectory(TaskSharingEntity taskSharing)
         {
             ////同一个人可以多次上传同一个文件，路径中加入时间的ticks区别 
             //用content-md5作为路径值，方便实现秒传
             return $"tasks/sharings/{taskSharing.ContentMd5}";
+        }
+
+        public TaskSharingEntity CreateTaskSharing(Guid taskId, Guid staffId,Guid taskSharingId)
+        {
+            var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+            var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
+            var taskSharing = TaskSharingExistsResult.Check(this, taskSharingId).TaskSharing;
+            if (taskSharing == null) return null;  
+
+            var newSharing = new TaskSharingEntity();
+            newSharing.Id = Guid.NewGuid();
+            newSharing.Staff = staff;
+            newSharing.Task = task;
+            newSharing.FileName = taskSharing.FileName;
+            newSharing.ContentMd5 = taskSharing.ContentMd5;
+            newSharing.ContentType = taskSharing.ContentType;
+            newSharing.Size = taskSharing.Size;
+            this.InternalInsert(newSharing);
+            return newSharing;
         }
 
         public TaskSharingEntity CreateTaskSharing(Guid taskId, Guid staffId, string fileName, string contentType,
@@ -94,7 +111,7 @@ namespace FineWork.Colla.Impls
             var imMesasge =  string.Format(m_Config["LeanCloud:Messages:Task:Sharing"], staff.Name);
 
             //发送群通知
-            m_IMService.SendTextMessageByConversationAsync(task.Id,staff.Account.Id,task.ConversationId,task.Name, imMesasge);
+            m_IMService.SendTextMessageByConversationAsync(task.Id,staff.Account.Id,task.Conversation.Id,task.Name, imMesasge);
 
             //记入日志
             m_TaskLogManager.CreateTaskLog(task.Id, staff.Id, taskSharing.GetType().FullName, taskSharing.Id, ActionKinds.InsertTable,message);
@@ -108,9 +125,7 @@ namespace FineWork.Colla.Impls
         }
 
         public void DeleteTaskSharing(Guid taskSharingId)
-        {
-            
-
+        { 
             var taskSharing = TaskSharingExistsResult.Check(this, taskSharingId).TaskSharing;
             if (taskSharing == null) return;
 
@@ -136,6 +151,12 @@ namespace FineWork.Colla.Impls
         public TaskSharingEntity FindTaskSharing(Guid taskSharingId)
         {
             return this.InternalFind(taskSharingId);
+        } 
+
+        public TaskSharingEntity FindTaskSharingWithTask(Guid taskId,Guid taskSharingId)
+        {
+            return this.InternalFetch(p => p.Id == taskSharingId && p.Task.Id == taskId)
+                .FirstOrDefault() ;
         }
 
         public IEnumerable<TaskSharingEntity> FetchTaskSharingByContentMd5(string contentMd5)

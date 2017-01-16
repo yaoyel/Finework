@@ -5,7 +5,7 @@ namespace FineWork.Colla
 {
     public interface IAnncReviewManager
     {
-        AnncReviewEntity CreateAnncReivew(Guid anncId, ReviewStatuses reviewStatus);
+        AnncReviewEntity CreateAnncReivew(Guid anncId, AnncStatus reviewStatus,DateTime? delayAt=null);
 
         IEnumerable<AnncReviewEntity> FetchAnncReviewByAnncId(Guid anncId);
 

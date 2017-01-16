@@ -11,7 +11,7 @@ using FineWork.Colla.Checkers;
 
 namespace FineWork.Colla.Impls
 {
-    public  class AccessTimeManager : AefEntityManager<AccessTimeEntity, Guid>, IAccessTimeManager
+    public class AccessTimeManager : AefEntityManager<AccessTimeEntity, Guid>, IAccessTimeManager
     {
         public AccessTimeManager(ISessionProvider<AefSession> sessionProvider,
             IStaffManager staffManager) : base(sessionProvider)
@@ -31,8 +31,12 @@ namespace FineWork.Colla.Impls
             return this.InternalFind(accessTimeId);
         }
 
-        public AccessTimeEntity CreateAccessTimeEntity(Guid staffId, DateTime? lastEntryOrgAt, DateTime? lastViewMomentAt,
-            DateTime? lastViewCommentAt,DateTime? lastViewNewsAt)
+        public AccessTimeEntity CreateAccessTimeEntity(Guid staffId, DateTime? lastEntryOrgAt,
+            DateTime? lastViewMomentAt,
+            DateTime? lastViewCommentAt, DateTime? lastViewNewsAt, DateTime? lastViewForumAt,
+            DateTime? lastViewForumCommentAt,
+            DateTime? lastViewMissinAt, DateTime? lastViewVisionAt, DateTime? lastViewValuesAt,
+            DateTime? lastViewStrategyAt, DateTime? lastViewOrgGovernanceAt)
         {
             var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
 
@@ -43,16 +47,24 @@ namespace FineWork.Colla.Impls
             result.LastViewCommentAt = lastViewCommentAt;
             result.LastViewMomentAt = lastViewMomentAt;
             result.LastViewNewsAt = lastViewNewsAt;
+            result.LastViewForumAt = lastViewForumAt;
+            result.LastViewForumCommentAt = lastViewForumCommentAt;
+            result.LastViewMissinAt = lastViewMissinAt;
+            result.LastViewVisionAt = lastViewVisionAt;
+            result.LastViewValuesAt = lastViewValuesAt;
+            result.LastViewStrategyAt = lastViewStrategyAt;
+            result.LastViewOrgGovernanceAt = lastViewOrgGovernanceAt; 
             this.InternalInsert(result);
 
-            return result; 
+            return result;
         }
 
-        public void UpdateLastVoewMomentTime( Guid staffId, DateTime lastViewMomentAt)
+        public void UpdateLastVoewMomentTime(Guid staffId, DateTime lastViewMomentAt)
         {
             var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
             if (accessTime == null)
-                this.CreateAccessTimeEntity(staffId, null, lastViewMomentAt, null,null);
+                this.CreateAccessTimeEntity(staffId, null, lastViewMomentAt, null, null, null, null, null, null, null,
+                    null, null);
             else
             {
                 this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
@@ -62,23 +74,25 @@ namespace FineWork.Colla.Impls
         }
 
         public void UpdateLastEnterOrgTime(Guid staffId, DateTime lastEntryOrgAt)
-        {  
+        {
             var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
             if (accessTime == null)
-                this.CreateAccessTimeEntity(staffId, lastEntryOrgAt, null, null,null);
+                this.CreateAccessTimeEntity(staffId, lastEntryOrgAt, null, null, null, null, null, null, null, null,
+                    null, null);
             else
-            { 
-                this.Session.DbContext.Entry(accessTime).State= EntityState.Modified;
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
                 accessTime.LastEnterOrgAt = lastEntryOrgAt;
                 this.InternalUpdate(accessTime);
             }
         }
 
-        public void UpdateLastViewCommentTime(Guid staffId,DateTime lastViewCommentAt)
+        public void UpdateLastViewCommentTime(Guid staffId, DateTime lastViewCommentAt)
         {
             var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
             if (accessTime == null)
-                this.CreateAccessTimeEntity(staffId, null, null, lastViewCommentAt,null);
+                this.CreateAccessTimeEntity(staffId, null, null, lastViewCommentAt, null, null, null, null, null, null,
+                    null, null);
             else
             {
                 this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
@@ -91,7 +105,8 @@ namespace FineWork.Colla.Impls
         {
             var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
             if (accessTime == null)
-                this.CreateAccessTimeEntity(staffId, null, null, null,lastViewNewsAt);
+                this.CreateAccessTimeEntity(staffId, null, null, null, lastViewNewsAt, null, null, null, null, null,
+                    null, null);
             else
             {
                 this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
@@ -99,5 +114,104 @@ namespace FineWork.Colla.Impls
                 this.InternalUpdate(accessTime);
             }
         }
+
+        public void UpdateLastViewForumTime(Guid staffId, DateTime lastViewForumAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, lastViewForumAt, null, null, null, null,
+                    null, null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewForumAt = lastViewForumAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewMissinTime(Guid staffId, DateTime lastViewMissinAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, null, lastViewMissinAt, null, null,
+                    null, null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewMissinAt = lastViewMissinAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewVisionTime(Guid staffId, DateTime lastViewVisionAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, null, null, lastViewVisionAt, null,
+                    null,null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewVisionAt = lastViewVisionAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewValuesTime(Guid staffId, DateTime lastViewValuesAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, null, null, null, lastViewValuesAt,
+                    null, null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewValuesAt = lastViewValuesAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewStrategyTime(Guid staffId, DateTime lastViewStrategyAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, null, null, null, null,
+                    lastViewStrategyAt, null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewStrategyAt = lastViewStrategyAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewOrgGovernanceTime(Guid staffId, DateTime lastViewOrgGovernanceAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, null, null, null, null, null,
+                    lastViewOrgGovernanceAt);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewOrgGovernanceAt = lastViewOrgGovernanceAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+
+        public void UpdateLastViewForumCommentTime(Guid staffId, DateTime lastViewForumCommentAt)
+        {
+            var accessTime = AccessTimeExistsResult.CheckByStaff(this, staffId).AccessTime;
+            if (accessTime == null)
+                this.CreateAccessTimeEntity(staffId, null, null, null, null, null, lastViewForumCommentAt, null, null,
+                    null, null, null);
+            else
+            {
+                this.Session.DbContext.Entry(accessTime).State = EntityState.Modified;
+                accessTime.LastViewForumCommentAt = lastViewForumCommentAt;
+                this.InternalUpdate(accessTime);
+            }
+        }
+ 
     }
 }

@@ -58,11 +58,8 @@ namespace FineWork.Web.WebApi.Colla
             this.Message = entity.Message; 
             this.ReviewStatus = entity.ReviewStatus;
             this.ReviewAt = entity.ReviewAt;
-            this.ReviewKind = entity.Task.Partakers.FirstOrDefault(p => p.Staff == entity.Staff)?.Kind;
-
-        }
-
-    
+            this.ReviewKind = entity.Task.Partakers.FirstOrDefault(p => p.Staff == entity.Staff)?.Kind; 
+        } 
     }
 
     public static class PartakerInvViewModelExtensions

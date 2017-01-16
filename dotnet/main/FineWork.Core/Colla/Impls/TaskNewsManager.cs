@@ -72,7 +72,7 @@ namespace FineWork.Colla.Impls
 
             //发送群通知
             var imMessage = string.Format(m_Config["LeanCloud:Messages:Task:News"], staff.Name);
-            m_IMService.SendTextMessageByConversationAsync(task.Id,staff.Account.Id, task.ConversationId, task.Name, imMessage);
+            m_IMService.SendTextMessageByConversationAsync(task.Id,staff.Account.Id, task.Conversation.Id, task.Name, imMessage);
             return taskNews;
         }
 
@@ -119,7 +119,7 @@ namespace FineWork.Colla.Impls
                 : news.Where(p => p.CreatedAt >= accessTime.LastViewNewsAt.Value); 
 
             return new Tuple<int, IEnumerable<Guid>>(news.Count(),item2.Select(p=>p.Id));
-        }
+        } 
 
     }
 }

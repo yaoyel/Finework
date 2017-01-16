@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AVOSCloud.RealtimeMessageV2;
 
 namespace FineWork.Net.IM
 {
@@ -12,7 +13,7 @@ namespace FineWork.Net.IM
     /// </summary>
     public  interface IIMService
     {
-
+       Task<IEnumerable<AVIMConversation>> FecthConversationsByStaffIdAsync(Guid staffId);
         /// <summary>
         /// 创建一个单人对话，针对客户端id发送消息
         /// 返回一个对话的id
@@ -66,20 +67,23 @@ namespace FineWork.Net.IM
 
         Task<bool> AddMemberAsync(string creatorId, string conversationId,params string[] clientId);
 
-        Task<bool> RemoveMemberAsync(string creatorId, string conversationId, string clientId);
+        Task<bool> RemoveMemberAsync(string creatorId, string conversationId, params string[] clientIds);
         
         Task<bool> ChangeConversationMemberAsync(string clientId,string conversationId, string[] members);
 
         Task<bool> ChangeConversationNameAsync(string clientId, string conversationId, string name);
  
-        Task ChangeConAttr(string creatorId, string conversationId, string key, object value);
+        Task ChangeConAttrAsync(string creatorId, string conversationId, string key, object value);
 
         Task<bool> SendTextMessageByConversationAsync(Guid taskId, Guid accountId,string conversationId,string title,string textMessage,
             bool transient = false);
 
-        Task RemoveConversationAsync(string staffId,string taskId,bool isShineOnly=true);
+        Task RemoveConversationByStaffIdAsync(string staffId,string taskId,bool isShineOnly=true);
+
+        Task RemoveConversationById(string convId);
 
         Task ChangeConversationNameByStaffAsync(string staffId,string oldStaffName, string newStaffName);
-
+        Task<string> FetchMessageByConversationAsync(string convId, int limit, long maxts=0L, string msgId=""); 
+        Task<string> FetchMessageAsync(int limit, long maxts); 
     }
 }

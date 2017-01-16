@@ -19,6 +19,6 @@ namespace FineWork.Colla
 
         void DeleteTaskNewsById(Guid taskNewsId);
 
-        Tuple<int,IEnumerable<Guid>> FetchUnReadNewsesByStaffId(Guid staffId);
+        Tuple<int,IEnumerable<Guid>> FetchUnReadNewsesByStaffId(Guid staffId); 
     }
 }

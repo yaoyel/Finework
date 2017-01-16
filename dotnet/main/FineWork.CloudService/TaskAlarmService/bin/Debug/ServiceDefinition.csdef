@@ -16,30 +16,16 @@
       <Setting name="PushKey" />
       <Setting name="PushSecret" />
       <Setting name="StorageConnectionString" />
-      <Setting name="CloudToolsDiagnosticAgentVersion" />
+      <Setting name="LcId" />
+      <Setting name="LcKey" />
+      <Setting name="LcMaster" />
+      <Setting name="apns_production" />
     </ConfigurationSettings>
     <Imports>
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
-      <Import moduleName="RemoteDebuggerConnector" />
     </Imports>
-    <Endpoints>
-      <InstanceInputEndpoint name="Microsoft.WindowsAzure.Plugins.RemoteDebugger.Connector" protocol="tcp" localPort="30398">
-        <AllocatePublicPortFrom>
-          <FixedPortRange min="30400" max="30424" />
-        </AllocatePublicPortFrom>
-      </InstanceInputEndpoint>
-      <InstanceInputEndpoint name="Microsoft.WindowsAzure.Plugins.RemoteDebugger.Forwarder" protocol="tcp" localPort="31398">
-        <AllocatePublicPortFrom>
-          <FixedPortRange min="31400" max="31424" />
-        </AllocatePublicPortFrom>
-      </InstanceInputEndpoint>
-      <InstanceInputEndpoint name="Microsoft.WindowsAzure.Plugins.RemoteDebugger.FileUpload" protocol="tcp" localPort="32398">
-        <AllocatePublicPortFrom>
-          <FixedPortRange min="32400" max="32424" />
-        </AllocatePublicPortFrom>
-      </InstanceInputEndpoint>
-    </Endpoints>
+    <Endpoints></Endpoints>
     <Contents>
       <Content destination=".\">
         <SourceDirectory path="D:\FineWork\devel\sources\dotnet\main\FineWork.CloudService\TaskAlarmService\rcf\Debug\FwWorkerRoleContent\" />

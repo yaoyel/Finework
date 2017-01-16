@@ -26,15 +26,17 @@ namespace FineWork.Colla.Impls
                 ["TaskAlarmKind"] = (int) alarmKind,
                 ["LeaderStaffId"] = task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff.Id.ToString(),
                 ["ResolvedCount"] = 0,
+                ["OrgId"]=creator.Org.Id.ToString()
             };
 
             var creatorId = creator.Id.ToString();
             var memberIds = members.Select(p => p.Id.ToString()).ToList();
-            var chatRoomName = GetShineRoomName(members, task);
+            var chatRoomName = GetShineRoomName(creator,members, task);
 
             return imService.CreateConversationAsync(creatorId, memberIds, chatRoomName, attrs).Result;
         }
 
+ 
         /// <summary>
         /// 任务负责人，目标不清/方法不够/协同不足-->Tong
         /// 不开学/累趴了/能力差/制度不好/流程不畅/资源不足-->与指导者形成Shine
@@ -52,11 +54,11 @@ namespace FineWork.Colla.Impls
             //目标不清，方法不够，协同不足返回进去tong会议室
             if (alarmKind.GetGroupName() == TaskAlarmFactor.Project)
             {
-                ChangeChatRoomToTong(imService, creator.Id.ToString(), task.ConversationId).Wait(); 
+                ChangeChatRoomToTong(imService, creator.Id.ToString(), task.Conversation.Id).Wait(); 
 
                 //增加一个预警
-                imService.AddTaskAlarms(creator.Id.ToString(), task.ConversationId).Wait();
-                return task.ConversationId;
+                imService.AddTaskAlarms(creator.Id.ToString(), task.Conversation.Id).Wait();
+                return task.Conversation.Id;
             }
 
             //其他的预警与指导者进入shine会议室
@@ -111,10 +113,10 @@ namespace FineWork.Colla.Impls
 
             if (alarmKind.GetGroupName() == TaskAlarmFactor.Project)
             {
-                imService.ChangeChatRoomToTong( creator.Id.ToString(), task.ConversationId).Wait();
+                imService.ChangeChatRoomToTong( creator.Id.ToString(), task.Conversation.Id).Wait();
                 //增加一个预警
-                imService.AddTaskAlarms(creator.Id.ToString(), task.ConversationId).Wait();
-                return task.ConversationId;
+                imService.AddTaskAlarms(creator.Id.ToString(), task.Conversation.Id).Wait();
+                return task.Conversation.Id;
             }
 
             var members = new List<StaffEntity>() {creator};
@@ -146,21 +148,19 @@ namespace FineWork.Colla.Impls
             var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
             members.Add(leader.Staff);
 
-            return CreateChatRoom(imService, creator, members, task, alarmKind);
-
+            return CreateChatRoom(imService, creator, members, task, alarmKind); 
         }
 
         #region 修改聊天室属性
-        public static async Task ChangeTaskName(this IIMService imService, string creator,TaskEntity task,string taskName)
+        public static async Task ChangeTaskNameAsync(this IIMService imService, string creator,TaskEntity task,string taskName)
         {
             //修改所有与之相关聊天室的名称
             var creatorClient = new AVIMClient(creator);
             var query = creatorClient.GetQuery();
             var findConversations = (query.WhereEqualTo("attr.TaskId", task.Id.ToString())).FindAsync();
 
-            await imService.ChangeConAttr(creator, task.ConversationId, "TaskName", taskName);
-            var conversations= (await findConversations).AsParallel().ToList();
-
+            await imService.ChangeConAttrAsync(creator, task.Conversation.Id, "TaskName", taskName);
+            var conversations= (await findConversations).AsParallel().ToList(); 
           
             if (conversations.Any())
             {
@@ -177,44 +177,55 @@ namespace FineWork.Colla.Impls
 
         private static async Task ChangeChatRoomToTong(this IIMService imService, string creator, string conversationId)
         {
-            await imService.ChangeConAttr(creator, conversationId, "ChatRoomKind", (short)ChatRoomKinds.Tong);
+            await imService.ChangeConAttrAsync(creator, conversationId, "ChatRoomKind", (short)ChatRoomKinds.Tong);
         }
 
-        public static async Task ChangeTaskProgress(this IIMService imService, string creator, string conversationId,int progress)
+        public static   Task ChangeTaskProgressAsync(this IIMService imService, string creator, string conversationId,int progress)
         {
-            await imService.ChangeConAttr(creator, conversationId, "Progress", progress);
+             return Task.Factory.StartNew(()=> imService.ChangeConAttrAsync(creator, conversationId, "Progress", progress));
         }
 
         public static async Task ChangeTaskLeader(this IIMService imService, string creator, string conversationId,string leaderId)
         {
-            await imService.ChangeConAttr(creator, conversationId, "LeaderStaffId", leaderId);
+            await imService.ChangeConAttrAsync(creator, conversationId, "LeaderStaffId", leaderId);
         }
 
         public static async Task CloseTaskAlarms(this IIMService imService, string creator, string conversationId)
         {
-            await imService.ChangeConAttr(creator, conversationId, "AlarmsCount", "subtract");
-            await imService.ChangeConAttr(creator, conversationId, "ResolvedCount", "subtract");
+            await imService.ChangeConAttrAsync(creator, conversationId, "AlarmsCount", "subtract");
+            await imService.ChangeConAttrAsync(creator, conversationId, "ResolvedCount", "subtract");
         }
 
         public static async Task ResolveTaskAlarms(this IIMService imService, string creator, string conversationId)
         {
-            await imService.ChangeConAttr(creator, conversationId, "ResolvedCount", "Add");
+            await imService.ChangeConAttrAsync(creator, conversationId, "ResolvedCount", "Add");
         }
 
         public static async Task AddTaskAlarms(this IIMService imService, string creator, string conversationId)
-        {
-            await imService.ChangeConAttr(creator, conversationId, "AlarmsCount", "Add"); 
+        { 
+            await imService.ChangeConAttrAsync(creator, conversationId, "AlarmsCount", "Add"); 
         }
 
-        #endregion
+        public static async Task ChangeConversationNameAsync(this IIMService imService,string convId,StaffEntity creator, IList<StaffEntity> members, TaskEntity task)
+        {
+            var convName = GetShineRoomName(creator, members, task);
+            await imService.ChangeConversationNameAsync(creator.Id.ToString(),convId,convName);
+        }
 
-        private static string GetShineRoomName(IList<StaffEntity> members, TaskEntity task)
+        #endregion 
+        private static string GetShineRoomName(StaffEntity creator,IList<StaffEntity> members, TaskEntity task)
         {
             Args.NotNull(members, nameof(members));
             Args.NotNull(task, nameof(task));
-            if (members.Count() > 4) members = members.Take(4).ToList();
+            if (members.Count() > 2)
+            {
+                members.Remove(creator);
+               
+                var firstMember = members.OrderBy(p=>p.Id).First(p => p.Id != creator.Id); 
+                return string.Concat( creator.Name, ",",firstMember.Name, "...", $"({task.Name})");
+            }
 
-            return string.Concat(string.Join(",", members.Select(p => p.Name).ToArray()), $"({task.Name})");
+            return string.Concat(string.Join(",",members.Select(p => p.Name).ToArray()), $"({task.Name})");
         } 
     }
 }

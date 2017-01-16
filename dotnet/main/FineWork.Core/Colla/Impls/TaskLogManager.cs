@@ -48,17 +48,19 @@ namespace FineWork.Colla.Impls
             return taskLog;
         }
 
-        public IEnumerable<TaskLogEntity> FetchTaskLogByTaskId(Guid taskId)
+        public IEnumerable<TaskLogEntity> FetchTaskLogByTaskId(Guid taskId,bool includeAll= false)
         {
             var insert = ActionKinds.InsertColumn.GetLabel();
             var update = ActionKinds.UpdateColumn.GetLabel();
             var delete = ActionKinds.DeleteColumn.GetLabel();
 
-            return this.InternalFetch(p => p.Task.Id == taskId && p.Staff.IsEnabled
-                                           && p.ActionKind != insert
-                                           && p.ActionKind != update
-                                           && p.ActionKind != delete)
+            var result= this.InternalFetch(p => p.Task.Id == taskId && p.Staff.IsEnabled) 
                 .OrderByDescending(p => p.CreatedAt);
+            if (includeAll) return result;
+            return result.Where(p => p.ActionKind != insert
+                                     && p.ActionKind != update
+                                     && p.ActionKind != delete);
+
         }
 
         /// <summary>
@@ -82,9 +84,8 @@ namespace FineWork.Colla.Impls
         }
 
         public IEnumerable<TaskLogEntity> FetchExcitationLogByTaskId(Guid taskId)
-        {
-            //TODO 激励的kind
-            return this.InternalFetch(p => p.Task.Id == taskId).Where(p => p.TargetKind == "");
+        { 
+            return this.InternalFetch(p => p.Task.Id == taskId);
         }
     }
 }

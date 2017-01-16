@@ -59,11 +59,11 @@ namespace FineWork.Colla.Impls
             taskReport.EffScore = createTaskReportModel.EffScore;
             taskReport.QualityScore = createTaskReportModel.QualityScore;
             taskReport.Task = task;
-            taskReport.CreatedAt=DateTime.Now; 
+            taskReport.CreatedAt = DateTime.Now;
 
             this.InternalInsert(taskReport);
             //设置表现突出的战友
-            if (createTaskReportModel.Exilses.Any())
+            if (createTaskReportModel.Exilses != null && createTaskReportModel.Exilses.Any())
             {
                 foreach (var exils in createTaskReportModel.Exilses)
                 {
@@ -72,26 +72,25 @@ namespace FineWork.Colla.Impls
                     m_PartakerManager.UpdatePartaker(partaker);
                 }
             }
-             
+
             //添加附件
-            if (createTaskReportModel.Atts!=null && createTaskReportModel.Atts.Any())
+            if (createTaskReportModel.Atts != null && createTaskReportModel.Atts.Any())
             {
                 foreach (var attId in createTaskReportModel.Atts)
                 {
-                    var taskSharing = TaskSharingExistsResult.Check(m_TaskSharingManager,attId).ThrowIfFailed().TaskSharing;
+                    var taskSharing =
+                        TaskSharingExistsResult.Check(m_TaskSharingManager, attId).ThrowIfFailed().TaskSharing;
                     m_TaskReportAttManager.CreateReportAtt(taskReport.Id, taskSharing.Id);
                 }
             }
 
             var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
-            Task.Factory.StartNew(() =>
-            {
-                var message = string.Format(m_Config["LeanCloud:Messages:Task:Report"],leader.Staff.Name);
-                m_Imservice.ChangeConAttr(task.Creator.Id.ToString(),task.ConversationId, "IsEnd", true);
-                m_Imservice.SendTextMessageByConversationAsync(task.Id, leader.Staff.Account.Id, task.ConversationId, "",
-                    message);
 
-            });
+            var message = string.Format(m_Config["LeanCloud:Messages:Task:Report"], leader.Staff.Name);
+            m_Imservice.ChangeConAttrAsync(task.Creator.Id.ToString(), task.Conversation.Id, "IsEnd", true).Wait();
+            m_Imservice.SendTextMessageByConversationAsync(task.Id, leader.Staff.Account.Id, task.Conversation.Id, "",
+                message).Wait();
+
             return taskReport;
         }
 

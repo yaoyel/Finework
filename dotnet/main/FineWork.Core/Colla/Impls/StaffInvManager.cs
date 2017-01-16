@@ -73,10 +73,12 @@ namespace FineWork.Colla.Impls
             if (!PermissionIsAdminResult.Check(this.OrgManager, invStaffs.OrgId, invStaffs.StaffId).IsSucceed)
                 InvitationIsEnabledResult.Check(this.OrgManager, invStaffs.OrgId).ThrowIfFailed();
 
-            var org = OrgExistsResult.Check(this.OrgManager, invStaffs.OrgId).ThrowIfFailed().Org;
+            //var org = OrgExistsResult.Check(this.OrgManager, invStaffs.OrgId).ThrowIfFailed().Org;
 
             invStaffs.Invitees.ToList().ForEach(p =>
             {
+                this.CreateStaffInv(p.Item2, p.Item1, invStaffs.InviterName, invStaffs.OrgId);
+
                 var account = AccountExistsResult.CheckByPhoneNumber(this.AccountManager, p.Item2).Account;
                 if (account == null)
                 {
@@ -84,15 +86,12 @@ namespace FineWork.Colla.Impls
                     var attrs = new Dictionary<string, object>()
                     {
                         ["AccountName"] = p.Item2,
-                        ["InviterName"] = invStaffs.InviterName,
-                        ["OrgName"] = org.Name
+
+                        ["inviter"] = "下载地址:app.chinahrd.net/Download"
                     };
-                    SmsService.SendMessage(p.Item2, "StaffReqTemp", attrs);
+                    SmsService.SendMessage(p.Item2, "invitestaff ", attrs);
                 }
-
-                this.CreateStaffInv(p.Item2, p.Item1, invStaffs.InviterName, invStaffs.OrgId);
             });
-
         }
 
 
@@ -110,18 +109,16 @@ namespace FineWork.Colla.Impls
                     throw new ArgumentException($"成员名称不允许有标点符号、数字及特殊字符");
                 }
             }
-            StaffInvEntity staffInv = null;
+            StaffInvEntity staffInv =  StaffInvExistsResult.CheckByPhoneNumber(this, orgId, phoneNumber).StaffInv;
 
-            if(account!=null)
-            {
-                staffInv = StaffInvExistsResult.Check(this, orgId, account.Id).StaffInv;
+            if (account!=null)
+            { 
                 StaffNotExistsResult.Check(this.StaffManager, orgId, account.Id).ThrowIfFailed();
             }
 
             //已存在邀请，直接将邀请人姓名添加至InvitersName字段后
             if (staffInv != null)
             {
-
                 if (!staffInv.InviterNames.Contains(inviterName))
                     staffInv.InviterNames = string.Concat(inviterName, ",", staffInv.InviterNames);
 
@@ -152,7 +149,12 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(p => p.PhoneNumber == account.PhoneNumber && p.ReviewStatus == ReviewStatuses.Unspecified)
                      .FirstOrDefault(p => p.Org.Id == orgId);  
         }
-         
+
+
+        public StaffInvEntity FindStaffInvByOrgWithPhoneNumber(Guid orgId, string phoneNumber)
+        {
+            return this.InternalFetch(p => p.PhoneNumber == phoneNumber && p.Org.Id == orgId).FirstOrDefault();
+        }
 
         public ICollection<StaffInvEntity> FetchStaffInvsByAccount(Guid accountId)
         {

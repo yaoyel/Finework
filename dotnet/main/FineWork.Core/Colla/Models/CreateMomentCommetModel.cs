@@ -11,11 +11,11 @@ namespace FineWork.Colla.Models
     {
         public Guid MomentId { get; set; }
 
-        public Guid TargetCommentId { get; set; }
+        public Guid TargetCommentId { get; set; } 
 
         public Guid StaffId { get; set; }
 
-        [MaxLength(150,ErrorMessage ="评论不能超过150字")]
+        //[MaxLength(150,ErrorMessage ="评论不能超过150字")]
         [Required(ErrorMessage ="请填写评论")]
         public string Comment { get; set; }  
     }

@@ -20,5 +20,7 @@ namespace FineWork.Colla
         public virtual StaffEntity Staff { get; set; }
 
         public virtual ICollection<ForumTopicEntity> ForumTopics { get; set; }=new HashSet<ForumTopicEntity>();
+
+        public virtual ICollection<ForumSectionViewEntity> ViewStaffs { get; set; }=new HashSet<ForumSectionViewEntity>();
     }
 }

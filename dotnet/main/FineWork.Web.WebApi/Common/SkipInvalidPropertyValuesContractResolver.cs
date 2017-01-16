@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace FineWork.Web.WebApi.Common
 {
-    internal class SkipInvalidPropertyValuesContractResolver : DefaultContractResolver
+    internal class SkipDefaultPropertyValuesContractResolver : DefaultContractResolver
     {
         protected override JsonProperty CreateProperty(MemberInfo member,
             MemberSerialization memberSerialization)

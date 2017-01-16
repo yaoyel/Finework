@@ -28,6 +28,8 @@ namespace FineWork.Web.WebApi.Colla
 
         public  DateTime? LastUpdatedAt { get; set; }
 
+        public long ViewTotal { get; set; }
+
         public virtual void AssignFrom(ForumTopicEntity source,
          bool isShowhighOnly = false, bool isShowLow = true)
         {
@@ -38,6 +40,7 @@ namespace FineWork.Web.WebApi.Colla
             this.CommentTotal = source.ForumComments.Count;
             this.CreatedAt = source.CreatedAt;
             this.LastUpdatedAt = source.LastUpdatedAt;
+            this.ViewTotal = source.ViewTotal;
             if (TopicType == ForumPostTypes.Vote)
             {
                 var vote = source.ForumVote.Vote;
@@ -74,9 +77,7 @@ namespace FineWork.Web.WebApi.Colla
         }
     }
 
-
-    //主题
-    public class ForumTopicViewModel
+    public class SimpleTopicViewModel
     {
         public Guid TopicId { get; set; }
 
@@ -86,6 +87,38 @@ namespace FineWork.Web.WebApi.Colla
 
         public string Content { get; set; }
 
+        public StaffViewModel Staff { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public ForumSections Section { get; set; }
+        public string Version { get; set; }
+
+        public virtual void AssignFrom(ForumTopicEntity source, Guid accountId,
+            bool isShowhighOnly = false, bool isShowLow = true)
+        {
+            Args.NotNull(source, nameof(source));
+
+            this.TopicId = source.Id;
+            this.Staff = source.Staff.ToViewModel(isShowhighOnly, isShowLow);
+            this.Content = source.Content;
+            this.Title = String.IsNullOrEmpty( source.Title)?Content.Substring(0,Content.Length>20?20:Content.Length):source.Title; 
+            this.TopicType = source.Type;
+            this.CreatedAt = source.CreatedAt;
+            this.Section = source.ForumSection.Section;
+            if (source.Type == ForumPostTypes.Vote)
+            {
+                var vote = source.ForumVote.Vote;
+                this.Content = vote.Subject;
+            }
+        }
+
+
+    }
+
+        //主题
+    public class ForumTopicViewModel : SimpleTopicViewModel
+    {
         public VoteViewModel Vote { get; set; }
 
         public long ViewTotal { get; set; }
@@ -94,35 +127,22 @@ namespace FineWork.Web.WebApi.Colla
 
         public long CommentTotal { get; set; }
 
-        public StaffViewModel Staff { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public ForumSections Section { get; set; } 
-
         public bool LikeFlag { get; set; }
-
-        public string Version { get; set; }
 
         public int IsApproved { get; set; }
 
         public DateTime? LastUpdatedAt { get; set; }
 
-        public virtual void AssignFrom(ForumTopicEntity source,Guid accountId,
+        public override void AssignFrom(ForumTopicEntity source, Guid accountId,
             bool isShowhighOnly = false, bool isShowLow = true)
         {
             Args.NotNull(source, nameof(source));
 
-            this.TopicId = source.Id;
-            this.Staff = source.Staff.ToViewModel(isShowhighOnly, isShowLow);
-            this.Title = source.Title;
-            this.Content = source.Content;
-            this.TopicType = source.Type;
+            base.AssignFrom(source, accountId, isShowhighOnly, isShowLow);
             this.ViewTotal = source.ViewTotal;
             this.CommentTotal = source.ForumComments.Count;
             this.LikeTotal = source.ForumLikes.Count;
-            this.CreatedAt = source.CreatedAt;
-            this.Section = source.ForumSection.Section;
+
             this.LastUpdatedAt = source.LastUpdatedAt;
             if (source.Type == ForumPostTypes.Vote)
             {
@@ -134,10 +154,41 @@ namespace FineWork.Web.WebApi.Colla
                     IsApproved = source.ForumVote.Vote.IsApproved.Value ? 1 : -1;
                 else
                     IsApproved = 0;
-            } 
+            }
         }
     }
 
+    public class UnReadForumViewModel
+    {
+        public  string Version { get; set; }
+        public ForumSections Section { get; set; } 
+
+        public Guid ForumId { get; set; }
+
+        public Guid? CommentId { get; set; }
+
+        public string Content { get; set; }
+
+        public Guid? LikeId { get; set; }
+
+        public Guid AccountId { get; set; }
+
+        public string StaffName { get; set; }
+
+        public string SecurityStamp { get; set; }
+
+        public bool IsLike { get; set; }
+
+        public Guid TopicId { get; set; }
+
+        public string TopicCotent { get; set; }
+
+        public Guid? TargetCommentId { get; set; }
+
+        public string TargetCommentContent { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+    }
 
     public class ForumCommentViewModel
     {
@@ -208,6 +259,16 @@ namespace FineWork.Web.WebApi.Colla
             result.AssignFrom(entity,accountId, isShowhighOnly, isShowLow);
             return result;
         }
+
+        public static SimpleTopicViewModel ToSimpleViewModel(this ForumTopicEntity entity, Guid accountId, bool isShowhighOnly = false,
+          bool isShowLow = true)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            var result = new SimpleTopicViewModel();
+            result.AssignFrom(entity, accountId, isShowhighOnly, isShowLow);
+            return result;
+        }
+
     }
 
     public static class ForumCommentViewModelExtensions
@@ -220,5 +281,5 @@ namespace FineWork.Web.WebApi.Colla
             result.AssignFrom(entity, accountId,isShowhighOnly, isShowLow);
             return result;
         }
-    }
+    } 
 }

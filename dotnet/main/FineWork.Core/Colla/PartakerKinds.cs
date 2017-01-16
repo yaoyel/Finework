@@ -16,7 +16,7 @@ namespace FineWork.Colla
         Leader,
         [Display(Name = "指导者")]
         Mentor,
-        [Display(Name = "接收者")]
+        [Display(Name = "验收者")]
         Recipient
     }
 

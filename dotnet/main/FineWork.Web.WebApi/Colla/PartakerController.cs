@@ -18,6 +18,7 @@ using AppBoot.Transactions;
 using FineWork.Common;
 using FineWork.Net.IM;
 using FineWork.Colla.Impls;
+using FineWork.Message;
 using Microsoft.Extensions.Configuration;
 
 namespace FineWork.Web.WebApi.Colla
@@ -33,7 +34,8 @@ namespace FineWork.Web.WebApi.Colla
             IPartakerManager partakerManager,
             IPartakerReqManager partakerReqManager,
             IIMService imService,
-            IConfiguration config)
+            IConfiguration config,
+            INotificationManager notificationManager)
             : base(sessionProvider)
         {
             if (partakerManager == null) throw new ArgumentNullException(nameof(partakerManager));
@@ -51,6 +53,7 @@ namespace FineWork.Web.WebApi.Colla
             m_IMService = imService;
             m_Config = config;
             m_SessionProvider = sessionProvider;
+            m_NotificationManager = notificationManager;
         }
 
         private readonly IPartakerManager m_PartakerManager;
@@ -61,6 +64,7 @@ namespace FineWork.Web.WebApi.Colla
         private readonly IConfiguration m_Config;
         private readonly ITaskAlarmManager m_TaskAlarmManager;
         private readonly ISessionProvider<AefSession> m_SessionProvider;
+        private readonly INotificationManager m_NotificationManager;
 
         [HttpGet("FetchPartakersWithReqsByStaff")]
         public IActionResult FetchPartakersWithReqsByStaff(Guid staffId)
@@ -72,7 +76,8 @@ namespace FineWork.Web.WebApi.Colla
                 var partakerReqSet = sp.DbContext.Set<PartakerReqEntity>()
                     .Where(p=>p.ReviewStatus== ReviewStatuses.Unspecified)
                     .Include(p=>p.Task.Creator)
-                    .Include(p => p.Staff.Account).AsParallel().ToList(); 
+                    .Include(p => p.Staff.Account)
+                    .Include(p=>p.Staff.Org).AsParallel().ToList(); 
 
                 var partakers = m_PartakerManager.FetchPartakersByStaff(staffId).AsParallel().ToList();
 
@@ -166,102 +171,147 @@ namespace FineWork.Web.WebApi.Colla
         /// 移除协同者
         /// </summary>
         /// <param name="taskId"></param>
-        /// <param name="staffId"></param>
+        /// <param name="staffIds"></param>
         /// <returns></returns>
         [HttpPost("RemoveCollabrator")]
         //[DataScoped(true)]
-        public IActionResult RemoveCollabrator(Guid taskId, Guid staffId)
+        public IActionResult RemoveCollabrator(Guid taskId, Guid[] staffIds)
         {
+            if (!staffIds.Any()) throw new FineWorkException("请选择要删除的成员.");
+
+            var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+            var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
+
+            if (partaker == null || partaker.Kind != PartakerKinds.Leader)
+                throw new FineWorkException("您无权进行此操作.");
+
+            var staffNames = new List<string>();
+            var phoneNumbers = new List<string>();
+
             using (var tx = TxManager.Acquire())
             {
-                var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
-                if (staff.Account.Id == this.AccountId)
-                    throw new FineWorkException("用户无法删除自己的角色");
+                foreach (var staffId in staffIds)
+                {
+                    var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
+                    if (staff.Account.Id == this.AccountId)
+                        throw new FineWorkException("用户无法删除自己的角色");
 
-                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
-                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
-
-                if (partaker == null || partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您无权进行此操作.");
-
-                this.m_PartakerManager.RemoveCollabrator(taskId, staffId);
-
-                //发送群消息
-                var message = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name, staff.Name);
-                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+                    staffNames.Add(staff.Name);
+                    phoneNumbers.Add(staff.Account.PhoneNumber);
+                    this.m_PartakerManager.RemoveCollabrator(taskId, staffId);
+                }
                 tx.Complete();
-                return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
             }
+            //发送群消息
+            var imMessage = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name,
+                string.Join(",", staffNames));
+            m_IMService.SendTextMessageByConversationAsync(task.Id, this.AccountId, task.Conversation.Id, task.Name,
+                imMessage);
+
+          
+            //推送消息给申请人员
+            var message = string.Format(m_Config["PushMessage:Task:remove"], task.Name);
+
+            m_NotificationManager.SendByAliasAsync(null, message, null, phoneNumbers.ToArray());
+            return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
+
         }
 
         /// <summary>
         /// 移除指导者
         /// </summary>
         /// <param name="taskId"></param>
-        /// <param name="staffId"></param>
+        /// <param name="staffIds"></param>
         /// <returns></returns>
         [HttpPost("RemoveMentor")]
         //[DataScoped(true)]
-        public IActionResult RemoveMentor(Guid taskId, Guid staffId)
+        public IActionResult RemoveMentor(Guid taskId, Guid[] staffIds)
         {
+            if (!staffIds.Any()) throw new FineWorkException("请选择要删除的成员.");
+
+            var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+
+            var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
+
+            if (partaker == null || partaker.Kind != PartakerKinds.Leader)
+                throw new FineWorkException("您无权进行此操作.");
+
+            var staffNames = new List<string>();
+            var phoneNumbers = new List<string>();
+
             using (var tx = TxManager.Acquire())
             {
-                var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
-                if (staff.Account.Id == this.AccountId)
-                    throw new FineWorkException("用户无法删除自己的角色");
-
-                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
-
-                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
-
-                if (partaker == null || partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您无权进行此操作.");
-
-
-                this.m_PartakerManager.RemoveMentor(taskId, staffId);
-
-                //发送群消息
-                var message = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name, staff.Name);
-                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+                foreach (var staffId in staffIds)
+                {
+                    var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
+                    if (staff.Account.Id == this.AccountId)
+                        throw new FineWorkException("用户无法删除自己的角色");
+                    staffNames.Add(staff.Name);
+                    phoneNumbers.Add(staff.Account.PhoneNumber);
+                    this.m_PartakerManager.RemoveMentor(taskId, staffId);
+                }
                 tx.Complete();
-                return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
             }
-        }
+            //发送群消息
+            var imMessage = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name,
+                string.Join(",", staffNames));
+            m_IMService.SendTextMessageByConversationAsync(task.Id, this.AccountId, task.Conversation.Id, task.Name,
+                imMessage);
+            //推送消息给申请人员
+            var pushMessage = string.Format(m_Config["PushMessage:Task:remove"], task.Name);
 
+            m_NotificationManager.SendByAliasAsync(null, pushMessage, null, phoneNumbers.ToArray());
+
+            return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
+
+        }
 
         /// <summary>
         /// 移除接受者
         /// </summary>
         /// <param name="taskId"></param>
-        /// <param name="staffId"></param>
+        /// <param name="staffIds"></param>
         /// <returns></returns>
         [HttpPost("RemoveRecipient")]
         //[DataScoped(true)]
-        public IActionResult RemoveRecipient(Guid taskId, Guid staffId)
+        public IActionResult RemoveRecipient(Guid taskId, Guid[] staffIds)
         {
+            if (!staffIds.Any()) throw new FineWorkException("请选择要删除的成员.");
+
+            var staffNames = new List<string>();
+            var phoneNumbers = new List<string>();
+            var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+
+            var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
+
+            if (partaker == null || partaker.Kind != PartakerKinds.Leader)
+                throw new FineWorkException("您无权进行此操作.");
+
             using (var tx = TxManager.Acquire())
             {
-                var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
-                if (staff.Account.Id == this.AccountId)
-                    throw new FineWorkException("用户无法删除自己的角色");
+                foreach (var staffId in staffIds)
+                {
+                    var staff = StaffExistsResult.Check(this.m_StaffManager, staffId).ThrowIfFailed().Staff;
+                    if (staff.Account.Id == this.AccountId)
+                        throw new FineWorkException("用户无法删除自己的角色");
 
-                var task = TaskExistsResult.Check(this.m_TaskManager, taskId).ThrowIfFailed().Task;
+                    staffNames.Add(staff.Name);
+                    phoneNumbers.Add(staff.Account.PhoneNumber);
+                    this.m_PartakerManager.RemoveRecipient(taskId, staffId);
+                }
 
-
-                var partaker = AccountIsPartakerResult.Check(task, this.AccountId).Partaker;
-
-                if (partaker == null || partaker.Kind != PartakerKinds.Leader)
-                    throw new FineWorkException("您无权进行此操作.");
-
-
-                this.m_PartakerManager.RemoveRecipient(taskId, staffId);
-
-                //发送群消息
-                var message = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name, staff.Name);
-                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
                 tx.Complete();
-                return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
             }
+            //发送群消息
+            var message = string.Format(m_Config["LeanCloud:Messages:Task:Remove"], partaker.Staff.Name,
+                string.Join(",", staffNames));
+            m_IMService.SendTextMessageByConversationAsync(task.Id, this.AccountId, task.Conversation.Id, task.Name,
+                message);
+            //推送消息给申请人员
+            var pushMessage = string.Format(m_Config["PushMessage:Task:remove"], task.Name);
+
+            m_NotificationManager.SendByAliasAsync(null, pushMessage, null, phoneNumbers.ToArray());
+            return new HttpStatusCodeResult((int) HttpStatusCode.NoContent);
         }
 
         /// <summary>
@@ -269,10 +319,11 @@ namespace FineWork.Web.WebApi.Colla
         /// </summary>
         /// <param name="taskId"></param>
         /// <param name="staffId"></param>
+        /// <param name="newKind"></param>
         /// <returns></returns>
         [HttpPost("ChangeLeader")]
         //[DataScoped(true)]
-        public PartakerViewModel ChangeLeader(Guid taskId, Guid staffId)
+        public PartakerViewModel ChangeLeader(Guid taskId, Guid staffId,PartakerKinds newKind)
         {
             using (var tx = TxManager.Acquire())
             {
@@ -284,17 +335,17 @@ namespace FineWork.Web.WebApi.Colla
                     throw new FineWorkException("任务协同者不可用进行此操作。");
 
                 //判断是否有预警或共识为处理 
-                AlarmOrVoteExistsResult.Check(partaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
+                //AlarmOrVoteExistsResult.Check(partaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
 
 
-                var leader = this.m_PartakerManager.ChangeLeader(taskId, staffId);
+                var leader = this.m_PartakerManager.ChangeLeader(taskId, staffId,newKind);
 
                 var message = string.Format(m_Config["LeanCloud:Messages:Task:Transfer"], partaker.Staff.Name,
                     staff.Name);
 
-                m_IMService.ChangeTaskLeader(partaker.Staff.Id.ToString(), task.ConversationId, staffId.ToString())
+                m_IMService.ChangeTaskLeader(partaker.Staff.Id.ToString(), task.Conversation.Id, staffId.ToString())
                     .Wait();
-                m_IMService.SendTextMessageByConversationAsync(task.Id, this.AccountId,task.ConversationId, task.Name, message);
+                m_IMService.SendTextMessageByConversationAsync(task.Id, this.AccountId,task.Conversation.Id, task.Name, message);
                 var result = leader.ToViewModel();
                 tx.Complete();
                 return result;
@@ -320,7 +371,7 @@ namespace FineWork.Web.WebApi.Colla
                 var message = string.Format(m_Config["LeanCloud:Messages:Task:Exit"], partaker.Staff.Name);
                 this.m_PartakerManager.ExitTask(taskId, staffId);
                 tx.Complete(); 
-                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+                m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.Conversation.Id, task.Name, message);
                 return new HttpStatusCodeResult(204);
             }
         }
@@ -366,16 +417,61 @@ namespace FineWork.Web.WebApi.Colla
 
 
             //判断是否有预警或共识为处理 
-            AlarmOrVoteExistsResult.Check(pendingPartaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
+            //AlarmOrVoteExistsResult.Check(pendingPartaker, taskId, m_TaskAlarmManager).ThrowIfFailed();
 
             var result = this.m_PartakerManager.ChangePartakerKind(task, staff, partakerKind);
 
             //发送群消息
             var message = string.Format(m_Config["LeanCloud:Messages:Task:ChangePartakerKind"], partaker.Staff.Name,
                 staff.Name, partakerKind.GetLabel());
-            m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.ConversationId, task.Name, message);
+            m_IMService.SendTextMessageByConversationAsync(task.Id,this.AccountId, task.Conversation.Id, task.Name, message);
 
             return result.ToViewModel();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("FecthConversationsByStaffId")]
+        public IActionResult FecthConversationsByStaffId(Guid staffId)
+        { 
+            var task = m_PartakerManager.FetchPartakersByStaff(staffId).Select(p => p.Task).Where(p=>p.IsDeserted==null).ToList();
+
+            var convrs = m_IMService.FecthConversationsByStaffIdAsync(staffId).Result.ToList();
+
+            var alarms =
+                m_TaskAlarmManager.FetchTaskAlarmsByStaffIdWithTaskId(staffId,null).ToList();
+
+            var taskResult = convrs.Join(task, u => u.ConversationId, c => c.ConversationId, (u, c) =>
+              {
+                  if (u.Attributes.ContainsKey("IsDeserted"))
+                      u.Attributes["IsDeserted"] = c.IsDeserted;
+                  if (u.Attributes.ContainsKey("Progress"))
+                      u.Attributes["IsDeserted"] = c.Progress;
+                  if (u.Attributes.ContainsKey("IsEnd"))
+                      u.Attributes["IsDeserted"] = c.Report != null;
+                  if (u.Attributes.ContainsKey("IsDeserted"))
+                      u.Attributes["IsDeserted"] = c.IsDeserted;
+                  if (u.Attributes.ContainsKey("ResolvedCount"))
+                      u.Attributes["ResolvedCount"] = alarms.Count(p => p.ResolveStatus == ResolveStatus.Closed && p.Conversation.Id == u.ConversationId);
+                  if (u.Attributes.ContainsKey("AlarmsCount"))
+                      u.Attributes["AlarmsCount"] = alarms.Count(p => p.Conversation.Id == u.ConversationId);
+
+                  return u;
+              }).ToList();
+
+            var alarmResult = convrs.Join(alarms, u => u.ConversationId, c => c.Conversation.Id, (u, c) =>
+            {
+                if (u.Attributes.ContainsKey("ResolvedCount"))
+                    u.Attributes["ResolvedCount"] = alarms.Count(p => p.ResolveStatus == ResolveStatus.Closed && p.Conversation.Id == u.ConversationId);
+
+                if (u.Attributes.ContainsKey("AlarmsCount"))
+                    u.Attributes["AlarmsCount"] = alarms.Count(p => p.Conversation.Id == u.ConversationId);
+
+                return u;
+            }).ToList();
+
+
+            if (convrs.Any()) return new ObjectResult(taskResult.Union(alarmResult));
+            return new HttpNotFoundObjectResult(staffId);
         }
     }
 }

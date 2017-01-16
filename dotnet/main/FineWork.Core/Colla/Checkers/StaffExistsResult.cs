@@ -56,7 +56,7 @@ namespace FineWork.Colla.Checkers
             }
 
             if (!staff.IsEnabled && checkIsEnabled)
-                return new StaffExistsResult(false, "该员工已被当前组织禁用，请重新选择组织.", staff);
+                return new StaffExistsResult(false, $"{staff.Name}已被当前组织禁用，请重新选择组织.", staff);
 
             return new StaffExistsResult(true, null, staff);
           

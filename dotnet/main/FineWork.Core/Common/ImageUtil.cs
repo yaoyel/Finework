@@ -40,8 +40,9 @@ namespace FineWork.Common
             }
         }
 
-        public static Stream CutFromCenter(Stream fileStream, int width, int height,bool zoomByShortSide=true)
+        public static Stream CutFromCenter(Stream fileStream, int? width, int? height,bool zoomByShortSide=true)
         {
+            if (!width.HasValue &&!height.HasValue) return fileStream;
 
             if (fileStream == null) throw new ArgumentException(nameof(fileStream));
 
@@ -61,9 +62,9 @@ namespace FineWork.Common
             if (zoomByShortSide)
             {
                 if (originWidth > originHeight)
-                    scale =(double) height/originHeight;
+                    scale =(double) (height??originHeight)/originHeight;
                 else
-                    scale = (double)width/originWidth;
+                    scale = (double)(width??originWidth)/originWidth;
             }
 
             scaledWidth = Convert.ToInt32(originWidth*scale);

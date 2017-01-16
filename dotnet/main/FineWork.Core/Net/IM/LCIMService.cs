@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AppBoot.Common;
+using AppBoot.Security.Crypto;
 using AVOSCloud;
 using AVOSCloud.RealtimeMessageV2;
 using FineWork.Colla;
@@ -23,13 +26,35 @@ namespace FineWork.Net.IM
                 return;
             m_Config = config;
             m_AppId = config["LeanCloud:AppId"];
-            m_AppKey = config["LeanCloud:MasterKey"];
-            AVClient.Initialize(m_AppId, m_AppKey);
+            m_AppMaster = config["LeanCloud:MasterKey"];
+            m_AppKey = config["LeanCloud:AppKey"];
+            AVClient.Initialize(m_AppId, m_AppMaster);
+        }
+
+        public LCIMService(string lcId, string lcKey, string lcMaster)
+        {
+            m_AppId = lcId;
+            m_AppMaster = lcMaster;
+            m_AppKey = lcKey;
         }
 
         private readonly string m_AppKey;
         private readonly string m_AppId;
+        private readonly string m_AppMaster;
         private readonly IConfiguration m_Config;
+        private const string m_FetchLogUrl = "https://leancloud.cn/1.1/rtm/messages/logs";
+
+
+        public async Task<IEnumerable<AVIMConversation>> FecthConversationsByStaffIdAsync(Guid staffId)
+        {
+            var creatorClient = new AVIMClient(staffId.ToString()); 
+                  
+            var conQuery = creatorClient.GetQuery();
+
+            var queryCondition = conQuery.WhereContains("m", staffId.ToString()).Limit(int.MaxValue);
+
+            return await queryCondition.FindAsync();
+        }
 
         public async Task<string> CreateConversationAsync(string creatorId, string clientId, string name,
             IDictionary<string, object> attrs)
@@ -46,7 +71,7 @@ namespace FineWork.Net.IM
                     return conversationWithAttrs.ConversationId;
                 }
                 var conversationWithName = await creatorClient.CreateConversationAsync(clientId, name);
-                return conversationWithName.ConversationId;
+                return conversationWithName.ConversationId; 
             }
 
             var conversation = await creatorClient.CreateConversationAsync(clientId);
@@ -62,10 +87,14 @@ namespace FineWork.Net.IM
             var conversation = creatorClient.CreateConversationAsync(clientIds, name, attrs, transient).Result;
 
             //新建的shine会议室默认预警数量加1
-            object chatRoomKind;
-            var hasChatRoomKindAttr = attrs.TryGetValue("ChatRoomKind", out chatRoomKind);
-            if (hasChatRoomKindAttr && chatRoomKind.ToString() == ((int) ChatRoomKinds.Shine).ToString())
-                await SetAttribute(conversation.ConversationId, "AlarmsCount", "Add");
+            if (attrs != null)
+            {
+                object chatRoomKind;
+                var hasChatRoomKindAttr = attrs.TryGetValue("ChatRoomKind", out chatRoomKind);
+                if (hasChatRoomKindAttr && chatRoomKind.ToString() == ((int)ChatRoomKinds.Shine).ToString())
+                    await SetAttribute(conversation.ConversationId, "AlarmsCount", "Add");
+            }
+
 
             return conversation.ConversationId;
         }
@@ -127,7 +156,7 @@ namespace FineWork.Net.IM
             return result.Item1;
         }
 
-        public async Task<bool> AddMemberAsync(string creatorId, string conversationId, params string[] clientId)
+        public  async Task<bool> AddMemberAsync(string creatorId, string conversationId, params string[] clientId)
         {
             Args.NotNull(creatorId, nameof(creatorId));
             Args.NotNull(conversationId, nameof(conversationId));
@@ -139,7 +168,7 @@ namespace FineWork.Net.IM
             return await conversation.AddMembersAsync(clientId);
         }
 
-        public async Task<bool> RemoveMemberAsync(string creatorId, string conversationId, string clientId)
+        public async Task<bool> RemoveMemberAsync(string creatorId, string conversationId, params string[] clientId)
         {
             Args.NotNull(creatorId, nameof(creatorId));
             Args.NotNull(conversationId, nameof(conversationId));
@@ -153,6 +182,8 @@ namespace FineWork.Net.IM
         {
             var creatorClient = new AVIMClient(clientId);
             var conversation = creatorClient.GetConversationById(conversationId);
+
+            
             if (conversation != null)
             {
                 var memberIds = conversation.MemberIds;
@@ -183,13 +214,13 @@ namespace FineWork.Net.IM
         }
 
 
-        public async Task ChangeConAttr(string creatorId, string conversationId, string key, object value)
+        public async Task ChangeConAttrAsync(string creatorId, string conversationId, string key, object value)
         {
             Args.NotNull(creatorId, nameof(creatorId));
             Args.NotNull(conversationId, nameof(conversationId));
             Args.NotNull(key, nameof(key));
             await SetAttribute(conversationId, key, value);
-        }
+        } 
 
         /// <summary>
         /// 在不能确认发送方的情况下使用，其他情况下尽量不使用此方法
@@ -208,7 +239,7 @@ namespace FineWork.Net.IM
             var url = m_Config["LeanCloud:Urls:SendMessage"];
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("X-LC-Id", m_AppId);
-            client.DefaultRequestHeaders.Add("X-LC-Key", $"{m_AppKey},master");
+            client.DefaultRequestHeaders.Add("X-LC-Key", $"{m_AppMaster},master");
 
             var message = new
             {
@@ -231,7 +262,74 @@ namespace FineWork.Net.IM
             return (int) request.StatusCode == 200;
         }
 
-        public async Task RemoveConversationAsync(string staffId, string taskId, bool isShineOnly = true)
+        public async Task<string> FetchMessageByConversationAsync(string convId, int limit, long maxts = 0L, string msgId = "")
+        {
+            var urlBuilder =new UriBuilder( m_Config["LeanCloud:Urls:FetchMessages"]);
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("X-LC-Id", m_AppId);
+            client.DefaultRequestHeaders.Add("X-LC-Key", $"{m_AppMaster},master");
+
+            urlBuilder.Query= $"convid={convId}&limit={limit}";
+
+
+            if (maxts != 0L)
+                urlBuilder.Query+=$"&max_ts= {maxts}";
+            if(!string.IsNullOrEmpty(msgId))
+                urlBuilder.Query += $"&msgid= {msgId}";
+
+
+            var result = await client.GetAsync(urlBuilder.Uri);
+            return await result.Content.ReadAsStringAsync();
+        }
+        public static string StrToMD5(string str)
+        {
+            byte[] data = Encoding.GetEncoding("GB2312").GetBytes(str);
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] outBytes = md5.ComputeHash(data);
+
+            string outString = "";
+            for (int i = 0; i < outBytes.Length; i++)
+            {
+                outString += outBytes[i].ToString("x2");
+            }
+
+            return outString.ToLower();
+        }
+        public async Task<string> FetchMessageAsync(int limit, long maxts)
+        {
+            var urlBuilder = new UriBuilder(m_Config==null?m_FetchLogUrl: m_Config["LeanCloud:Urls:FetchMessages"]);
+         
+            var time = DateTime.Now.ToUniversalTime();
+            long unixTimestamp = (long)(time.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+            var md5 = StrToMD5(string.Concat(unixTimestamp.ToString(), m_AppKey));
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("Application/x-www-form-urlencoded"));
+            client.DefaultRequestHeaders.Add("X-LC-Id", m_AppId);
+            client.DefaultRequestHeaders.Add("X-LC-Sign", $"{md5},{unixTimestamp}");
+            client.DefaultRequestHeaders.Add("X-LC-Key", $"{m_AppMaster},master");
+
+            urlBuilder.Query = $"max_ts={maxts}&limit={limit}"; 
+
+            var result = await client.GetAsync(urlBuilder.Uri);
+            if(result.IsSuccessStatusCode)
+            return await result.Content.ReadAsStringAsync();
+            return await Task.FromResult(string.Empty);
+        }
+
+        public async Task RemoveConversationById(string convId)
+        {
+            Args.NotEmpty(convId, nameof(convId));
+
+            var urlBuilder = new UriBuilder(string.Format( m_Config["LeanCloud:Urls:DeleteConv"]),convId);
+            var client = new HttpClient(); 
+            client.DefaultRequestHeaders.Add("X-LC-Id", m_AppId); 
+            client.DefaultRequestHeaders.Add("X-LC-Key", m_AppKey);
+
+            await client.DeleteAsync(urlBuilder.Uri); 
+        }
+
+        public async Task RemoveConversationByStaffIdAsync(string staffId, string taskId, bool isShineOnly = true)
         {
             Args.NotEmpty(staffId, nameof(staffId));
             Args.NotEmpty(taskId, nameof(taskId));
@@ -357,7 +455,7 @@ namespace FineWork.Net.IM
                     attrs[key] = value;
                 }
 
-                await obj.SaveAsync();
+                await  obj.SaveAsync();
             }
 
         }
