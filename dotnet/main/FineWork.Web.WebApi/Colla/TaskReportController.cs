@@ -53,8 +53,8 @@ namespace FineWork.Web.WebApi.Colla
                 if (partaker.Kind != PartakerKinds.Leader)
                     throw new FineWorkException("你没有权限结束任务.");
 
-                //判断是否有预警或共识未处理 
-                AlarmOrVoteExistsResult.Check(this.m_TaskManager, taskReportModel.TaskId).ThrowIfFailed();
+                ////判断是否有预警或共识未处理 
+                //AlarmOrVoteExistsResult.Check(this.m_TaskManager, taskReportModel.TaskId).ThrowIfFailed();
 
                 this.m_TaskReportManager.CreateTaskReport(taskReportModel);
 

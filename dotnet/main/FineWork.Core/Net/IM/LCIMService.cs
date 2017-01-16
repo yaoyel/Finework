@@ -197,6 +197,7 @@ namespace FineWork.Net.IM
         /// <param name="taskId"></param> 
         /// <param name="title"></param>
         /// <param name="conversationId"></param>
+        /// <param name="accountId"></param>
         /// <param name="textMessage"></param>
         /// <param name="transient"></param>
         /// <returns></returns>

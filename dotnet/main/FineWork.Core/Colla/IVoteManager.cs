@@ -14,8 +14,10 @@ namespace FineWork.Colla
         IEnumerable<VoteEntity> FetchVotesByTaskId(Guid taskId,bool? isApproved);
 
         VoteEntity FindVoteByVoteId(Guid voteId);
-
+          
         void UpdateVoteApprovedStatus(VoteEntity vote,bool isApproved);
- 
+
+        void UpdateVote(UpdateVoteModel voteModel);
+
     }
 }

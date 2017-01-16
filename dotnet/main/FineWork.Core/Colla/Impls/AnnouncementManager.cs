@@ -10,6 +10,8 @@ using AppBoot.Repos.Aef;
 using FineWork.Colla.Checkers;
 using FineWork.Colla.Models;
 using FineWork.Common;
+using FineWork.Net.IM;
+using Microsoft.Extensions.Configuration;
 
 namespace FineWork.Colla.Impls
 {
@@ -21,7 +23,11 @@ namespace FineWork.Colla.Impls
             IAnncIncentiveManager anncIncentiveManager,
             IAnncAttManager anncAttManager,
             ITaskSharingManager taskSharingManager,
-            IIncentiveManager incentiveManager
+            IIncentiveManager incentiveManager,
+            IPartakerManager partakerManager,
+            IIMService imService,
+            ITaskLogManager taskLogManager,
+            IConfiguration config
             ) : base(sessionProvider)
         {
             Args.NotNull(taskManager, nameof(taskManager));
@@ -30,6 +36,10 @@ namespace FineWork.Colla.Impls
             Args.NotNull(anncAttManager, nameof(anncAttManager));
             Args.NotNull(taskSharingManager, nameof(taskSharingManager));
             Args.NotNull(incentiveManager, nameof(incentiveManager));
+            Args.NotNull(partakerManager, nameof(partakerManager));
+            Args.NotNull(imService, nameof(imService));
+            Args.NotNull(taskLogManager, nameof(taskLogManager));
+            Args.NotNull(config, nameof(config));
 
             m_TaskManager = taskManager;
             m_StaffManager = staffManager;
@@ -37,6 +47,10 @@ namespace FineWork.Colla.Impls
             m_AnncAttManager = anncAttManager;
             m_TaskSharingManager = taskSharingManager;
             m_IncentiveManager = incentiveManager;
+            m_PartakerManager = partakerManager;
+            m_ImService = imService;
+            m_TaskLogManager = taskLogManager;
+            m_Config = config;
         }
 
         private readonly ITaskManager m_TaskManager;
@@ -45,7 +59,10 @@ namespace FineWork.Colla.Impls
         private readonly IAnncAttManager m_AnncAttManager;
         private readonly ITaskSharingManager m_TaskSharingManager;
         private readonly IIncentiveManager m_IncentiveManager;
-
+        private readonly IPartakerManager m_PartakerManager;
+        private readonly IIMService m_ImService;
+        private readonly ITaskLogManager m_TaskLogManager;
+        private readonly IConfiguration m_Config;
         public AnnouncementEntity CreateAnnc(CreateAnncModel createAnncModel)
         {
             var staff = StaffExistsResult.Check(m_StaffManager, createAnncModel.StaffId).ThrowIfFailed().Staff;
@@ -56,16 +73,17 @@ namespace FineWork.Colla.Impls
             anncEntity.Staff = staff;
             anncEntity.Task = task;
             anncEntity.Content = createAnncModel.Content;
-            anncEntity.IsNeedAchv = createAnncModel.IsNeedAchv;
-            anncEntity.ReviewStatus=ReviewStatuses.Unspecified;
+            anncEntity.IsNeedAchv = createAnncModel.IsNeedAchv; 
             anncEntity.EndAt = createAnncModel.EndAt;
 
             this.InternalInsert(anncEntity);
             //处理激励
             if (createAnncModel.Incentives!=null && createAnncModel.Incentives.Any())
                  foreach (var incentive in createAnncModel.Incentives)
-                 { 
-                     m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Item1, incentive.Item2);
+                 {
+                     if (incentive.Item2 > 0)
+                         m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(anncEntity.Id, incentive.Item1,
+                             incentive.Item2);
                  }
 
             //处理资源
@@ -75,14 +93,21 @@ namespace FineWork.Colla.Impls
                     m_AnncAttManager.CreateAnncAtt(anncEntity.Id, att, false);
                 }
 
+            var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
+            var message=String.Format(m_Config["LeanCloud:Messages:Task:Annc"],leader.Staff.Name,staff.Name)  ;
+            m_ImService.SendTextMessageByConversationAsync(task.Id, staff.Account.Id, task.ConversationId, task.Name,message);
+
+            m_TaskLogManager.CreateTaskLog(task.Id, leader.Staff.Id, anncEntity.GetType().FullName, anncEntity.Id,
+                ActionKinds.InsertTable, "创建了一个里程碑");
            
             return anncEntity;
         }
+
         public void UpdateAnnc(UpdateAnncModel updateAnncModel)
         {
             Args.NotNull(updateAnncModel, nameof(updateAnncModel));
 
-            var staff = StaffExistsResult.Check(m_StaffManager, updateAnncModel.StaffId).ThrowIfFailed().Staff;  
+            var staff = StaffExistsResult.Check(m_StaffManager, updateAnncModel.StaffId).ThrowIfFailed().Staff;
             var annc = AnncExistsResult.Check(this, updateAnncModel.Id).ThrowIfFailed().Annc;
 
             annc.Content = updateAnncModel.Content;
@@ -92,19 +117,15 @@ namespace FineWork.Colla.Impls
 
             if (updateAnncModel.Incentives != null && updateAnncModel.Incentives.Any())
             {
-               foreach (var incentive in updateAnncModel.Incentives)
-               {
-                   this.m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(annc.Id, incentive.Item1,
-                       incentive.Item2);
-               }
-            }
+                foreach (var incentive in updateAnncModel.Incentives)
+                {
+                    this.m_AnncIncentiveManager.CreateOrUpdateAnncIncentive(annc.Id, incentive.Item1,
+                        incentive.Item2);
+                }
+            } 
+            this.m_AnncAttManager.UpdateAnncAtts(annc, updateAnncModel.Atts);
 
-            if (annc.Atts != null && annc.Atts.Any())
-            {
-              this.m_AnncAttManager.UpdateAnncAtts(annc,annc.Atts.Select(p=>p.TaskSharing.Id).ToArray());
-            }
-            this.InternalUpdate(annc);
-
+            this.InternalUpdate(annc); 
 
         }
 
@@ -115,7 +136,7 @@ namespace FineWork.Colla.Impls
 
         public IEnumerable<AnnouncementEntity> FetchAnncsByTaskId(Guid taskId)
         {
-            return this.InternalFetch(p => p.Task.Id == taskId);
+            return this.InternalFetch(p => p.Task.Id == taskId).OrderBy(p=>p.EndAt);
         }
 
         public IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId)
@@ -123,30 +144,20 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(p => p.Staff.Id == staffId);
         }
 
-        public IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus)
+        public IEnumerable<AnnouncementEntity> FetchAnncByStatus(Guid staffId,ReviewStatuses status=ReviewStatuses.Unspecified)
         {
-            return this.InternalFetch(p => p.ReviewStatus == reviewStatus);
-        } 
-        public void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses reviewStatus)
-        {
-            Args.NotNull(annc, nameof(annc));
-
-            if(annc.ReviewStatus==ReviewStatuses.Approved)
-                throw new FineWorkException($"Invalid ReviewStatus {reviewStatus}.");
-
-            annc.ReviewStatus = reviewStatus;
-
-            this.InternalUpdate(annc);
-
-            var leader = annc.Task.Partakers.First(p => p.Kind == PartakerKinds.Leader).Staff;
-            //兑现激励
-            if (reviewStatus == ReviewStatuses.Approved)
-                foreach (var incentive in annc.AnncIncentives)
-                { 
-                    m_IncentiveManager.CreateIncentive(annc.Task.Id, incentive.IncentiveKind.Id, leader.Id,
-                        annc.Staff.Id, incentive.Amount);
-                }
+            //获取staff参与的任务
+            var taskIds = this.m_PartakerManager.FetchPartakersByStaff(staffId).Select(p => p.Task.Id).ToArray(); 
             
+            return
+                this.InternalFetch(
+                    p =>p.EndAt<=DateTime.Now && taskIds.Contains(p.Task.Id) && !p.Reviews.Any());
+        }
+
+        public IEnumerable<AnnouncementEntity> FetchAnncByEndTime(DateTime endAt)
+        {
+            var endAtFormat =new DateTime(endAt.Year,endAt.Month,endAt.Day,endAt.Hour,endAt.Minute,0);
+            return this.InternalFetch(p => p.EndAt == endAtFormat && !p.Reviews.Any());
         }
 
         public void DeleteAnnc(Guid anncId)
@@ -154,7 +165,8 @@ namespace FineWork.Colla.Impls
             var annc = AnncExistsResult.Check(this, anncId).Annc;
             if (annc != null)
             {
-                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId);
+                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId,true);
+                this.m_AnncAttManager.DeleteAnncAttByAnncId(anncId, false);
                 this.m_AnncIncentiveManager.DeleteIncentiveByAnncId(anncId);
                 this.InternalDelete(annc);
             }

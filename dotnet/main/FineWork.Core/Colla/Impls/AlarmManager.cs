@@ -8,6 +8,7 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using FineWork.Colla.Checkers;
 using System.Data.Entity;
+using FineWork.Colla.Models;
 using FineWork.Common;
 
 namespace FineWork.Colla.Impls
@@ -16,7 +17,9 @@ namespace FineWork.Colla.Impls
     { 
         public AlarmManager(ISessionProvider<AefSession> sessionProvider,
             ITaskManager taskManager,
-            ITaskAlarmManager taskAlarmManager) 
+            ITaskAlarmManager taskAlarmManager,
+            IPartakerManager partakerManager
+            ) 
             : base(sessionProvider)
         {
             if (sessionProvider == null) throw new ArgumentException(nameof(sessionProvider));
@@ -25,35 +28,67 @@ namespace FineWork.Colla.Impls
 
             m_TaskManager = taskManager;
             m_TaskAlarmManager = taskAlarmManager;
+            m_PartakerManager =partakerManager;
         }
 
         private readonly ITaskManager m_TaskManager;
         private readonly ITaskAlarmManager m_TaskAlarmManager;
+        private readonly IPartakerManager m_PartakerManager;
 
-        public AlarmEntity CreateAlarmPeriod(TaskEntity task, int weekdays, string shortTime,string bell,bool isEnabled=true)
+        public AlarmEntity CreateAlarmPeriod(CreateAlarmPeriodModel createAlarmPeriodModel)
         {
-            if (shortTime == null) throw new ArgumentException(nameof(shortTime));
-            if (task == null) throw new ArgumentException(nameof(task)); 
+            if (createAlarmPeriodModel.ShortTime == null)
+                throw new ArgumentException(nameof(createAlarmPeriodModel.ShortTime));
+
+
+            var task =
+                TaskExistsResult.Check(this.m_TaskManager, createAlarmPeriodModel.TaskId.Value).ThrowIfFailed().Task;
 
             var alarmPeriod = new AlarmEntity();
             alarmPeriod.Id = Guid.NewGuid();
-            alarmPeriod.Weekdays = weekdays;
-            alarmPeriod.ShortTime = shortTime;
+            alarmPeriod.Weekdays = createAlarmPeriodModel.Weekdays;
+            alarmPeriod.ShortTime = createAlarmPeriodModel.ShortTime;
             alarmPeriod.Task = task;
-            alarmPeriod.Bell = bell;
-            alarmPeriod.IsEnabled = isEnabled;
+            alarmPeriod.Bell = createAlarmPeriodModel.Bell;
+            alarmPeriod.IsEnabled = createAlarmPeriodModel.IsEnabled;
+
+
+            if (createAlarmPeriodModel.ReceiverStaffIds!=null && createAlarmPeriodModel.ReceiverStaffIds.Any())
+            {
+                alarmPeriod.ReceiverStaffIds = string.Join(",", createAlarmPeriodModel.ReceiverStaffIds);
+            }
+            else
+            {
+                if (createAlarmPeriodModel.ReceiverKinds!=null && createAlarmPeriodModel.ReceiverKinds.Any())
+                    alarmPeriod.ReceiverKinds = string.Join(",", createAlarmPeriodModel.ReceiverKinds.OrderBy(p => p).Select(p=>(int)p));
+            }
+
 
             this.InternalInsert(alarmPeriod);
-            return alarmPeriod; 
+
+            return alarmPeriod;
         }
 
-        public AlarmEntity UpdateAlarmPeriodTime(Guid alarmPeriodId,int weekdays, string shortTime,string bell)
-        { 
-            var alarmPeriod = AlarmExistsResult.Check(this, alarmPeriodId).ThrowIfFailed().AlarmPeriod;
-             
-            alarmPeriod.ShortTime = shortTime;
-            alarmPeriod.Weekdays = weekdays;
-            alarmPeriod.Bell = bell;
+        public AlarmEntity UpdateAlarmPeriodTime(UpdateAlarmPeriodModel updateAlarmPeriodModel)
+        {
+            var alarmPeriod = AlarmExistsResult.Check(this, updateAlarmPeriodModel.AlarmId).ThrowIfFailed().AlarmPeriod;
+
+            alarmPeriod.ShortTime = updateAlarmPeriodModel.ShortTime;
+            alarmPeriod.Weekdays = updateAlarmPeriodModel.Weekdays;
+            alarmPeriod.Bell = updateAlarmPeriodModel.Bell;
+
+            //更新接受者
+
+
+            if (updateAlarmPeriodModel.ReceiverStaffIds!=null && updateAlarmPeriodModel.ReceiverStaffIds.Any())
+            {
+                alarmPeriod.ReceiverStaffIds = string.Join(",", updateAlarmPeriodModel.ReceiverStaffIds);
+            }
+            else
+            {
+                if (updateAlarmPeriodModel.ReceiverKinds!=null && updateAlarmPeriodModel.ReceiverKinds.Any())
+                    alarmPeriod.ReceiverKinds = string.Join(",", updateAlarmPeriodModel.ReceiverKinds.OrderBy(p => p).Select(p => (int)p));
+            }
             this.InternalUpdate(alarmPeriod);
             return alarmPeriod;
         }

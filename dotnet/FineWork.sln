@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7050D931-7630-49C5-B549-26780E19A120}"
 	ProjectSection(SolutionItems) = preProject
@@ -46,9 +46,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FineWork.SysSetup", "main\F
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FineWork.Web.WebApi", "main\FineWork.Web.WebApi\FineWork.Web.WebApi.xproj", "{15BE19E1-2DBA-4CC1-B557-B84D66699233}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "TaskAlarmWorker", "main\FineWork.CloudService\TaskAlarmService\TaskAlarmWorker.ccproj", "{B674E132-028B-4408-8E50-CBF350143B6C}"
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FwWorker", "main\FineWork.CloudService\TaskAlarmService\FwWorker.ccproj", "{B674E132-028B-4408-8E50-CBF350143B6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskAlarmWorkerRole", "main\FineWork.CloudService\TaskAlarmWorkerRole\TaskAlarmWorkerRole.csproj", "{E96E633B-12E8-4111-B1C2-D47EF2536A40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwWorkerRole", "main\FineWork.CloudService\TaskAlarmWorkerRole\FwWorkerRole.csproj", "{E96E633B-12E8-4111-B1C2-D47EF2536A40}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FineWork.Web.WebApi.Tests", "tests\FineWork.Web.WebApi.Tests\FineWork.Web.WebApi.Tests.xproj", "{88188981-58BC-4B9B-9C54-E9D875892558}"
 EndProject

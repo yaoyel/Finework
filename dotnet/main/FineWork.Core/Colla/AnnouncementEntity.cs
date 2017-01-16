@@ -20,14 +20,15 @@ namespace FineWork.Colla
 
         [Timestamp]
         public byte[] RowVer { get; set; }
-
-        public ReviewStatuses ReviewStatus { get; set; }
+         
 
         public virtual TaskEntity Task { get; set; }
 
         public virtual StaffEntity Staff { get; set; } 
 
         public virtual ICollection<AnncAttEntity> Atts { get; set; } = new HashSet<AnncAttEntity>();
+
+        public virtual ICollection<AnncReviewEntity> Reviews { get; set; }=new HashSet<AnncReviewEntity>();
 
         public virtual ICollection<AnncIncentiveEntity> AnncIncentives { get; set; } =
             new HashSet<AnncIncentiveEntity>();

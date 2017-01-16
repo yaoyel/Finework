@@ -31,6 +31,8 @@ namespace FineWork.Colla.Checkers
 
             return Check(taskSharing, "不存在对应的任务共享信息.");
         }
+         
+
         private static TaskSharingExistsResult Check([CanBeNull] TaskSharingEntity taskSharing, String message)
         {
             if (taskSharing == null)

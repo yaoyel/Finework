@@ -3,8 +3,8 @@
     "FineWork": "Server=192.168.1.200\\CHINAHRD;User Id=sa;Password=chrdwvr450G;Initial Catalog=FineWork;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;"
   }
 }
-//{
-//  "ConnectionStrings": {
-//    "FineWork": "Server=tcp:d6hy05nod6.database.chinacloudapi.cn,1433;Database=FineWork_release0.9;User ID=chinahrd_nj@d6hy05nod6;Password=chrdwvr450G;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
-//  } 
-//}
+////{
+////  "ConnectionStrings": {
+////    "FineWork": "Server=tcp:d6hy05nod6.database.chinacloudapi.cn,1433;Database=FineWork_release0.9;User ID=chinahrd_nj@d6hy05nod6;Password=chrdwvr450G;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
+////  } 
+////}

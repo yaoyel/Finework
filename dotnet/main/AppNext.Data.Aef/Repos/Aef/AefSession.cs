@@ -30,8 +30,8 @@ namespace AppBoot.Repos.Aef
         protected internal void HandleRepositoryChanged(IRepository repository)
         {
             if (m_WriteChangesImmediately)
-            {
-                SaveChanges();
+            { 
+                SaveChanges(); 
             }
         }
 

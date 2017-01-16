@@ -16,22 +16,23 @@ namespace FineWork.Colla.Impls
     public class TaskIncentiveManager : AefEntityManager<TaskIncentiveEntity, Guid>, ITaskIncentiveManager
     {
         public TaskIncentiveManager(ISessionProvider<AefSession> dbContextProvider,
-            ITaskManager taskManager, IIncentiveKindManager   incentiveKindManager)
+            ITaskManager taskManager, IIncentiveKindManager   incentiveKindManager  )
             : base(dbContextProvider)
         {
             if (dbContextProvider == null) throw new ArgumentNullException(nameof(dbContextProvider));
             if (taskManager == null) throw new ArgumentNullException(nameof(taskManager));
-            if (incentiveKindManager == null) throw new ArgumentNullException(nameof(incentiveKindManager));
+            if (incentiveKindManager == null) throw new ArgumentNullException(nameof(incentiveKindManager)); 
 
             m_TaskManager = taskManager;
             m_IncentiveKindManager = incentiveKindManager;
+            
         }
 
         private readonly ITaskManager m_TaskManager;
         private readonly IIncentiveKindManager m_IncentiveKindManager;
 
 
-        public TaskIncentiveEntity FindTaskIncentiveById(Guid taskIncentiveId)
+         public TaskIncentiveEntity FindTaskIncentiveById(Guid taskIncentiveId)
         {
             return this.InternalFind(taskIncentiveId);
         }

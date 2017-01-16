@@ -9,14 +9,16 @@ namespace FineWork.Colla
 {
    public  interface IMomentManager
    {
-       MomentEntity CreateMement(CreateMomentModel mementModel);
+       MomentEntity CreateMoment(CreateMomentModel momentModel);
 
-       MomentEntity FindMementById(Guid mementId);
+       MomentEntity FindMomentById(Guid momentId);
 
-       IEnumerable<MomentEntity> FetchMementsByOrgId(Guid orgId);
+       IEnumerable<MomentEntity> FetchMomentsByOrgId(Guid orgId);
 
-       IEnumerable<MomentEntity> FetchMementsByStaffId(Guid staffId);
+       IEnumerable<MomentEntity> FetchMomentsByStaffId(Guid staffId);
 
-       void DeleteMement(Guid mementId);
+       void DeleteMoment(Guid momentId);
+
+      Task SendMomentMessageAsync(StaffEntity staff, MomentEntity moment);
    }
 }

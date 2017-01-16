@@ -9,6 +9,8 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using FineWork.Colla.Checkers;
 using FineWork.Colla.Models;
+using FineWork.Net.IM;
+using Microsoft.Extensions.Configuration;
 
 namespace FineWork.Colla.Impls
 {
@@ -18,24 +20,32 @@ namespace FineWork.Colla.Impls
             ITaskManager taskManager,
             IPartakerManager partakerManager,
             ITaskReportAttManager taskReportAttManager,
-            ITaskSharingManager taskSharingManager) : base(sessionProvider)
+            ITaskSharingManager taskSharingManager,
+            IIMService imService,
+            IConfiguration config) : base(sessionProvider)
         {
 
             Args.NotNull(taskManager, nameof(taskManager));
             Args.NotNull(partakerManager, nameof(partakerManager));
             Args.NotNull(taskReportAttManager, nameof(taskReportAttManager));
             Args.NotNull(taskSharingManager, nameof(taskSharingManager));
+            Args.NotNull(imService, nameof(imService));
+            Args.NotNull(config, nameof(config)); 
 
             m_PartakerManager = partakerManager;
             m_TaskManager = taskManager;
             m_TaskReportAttManager = taskReportAttManager;
             m_TaskSharingManager = taskSharingManager;
+            m_Imservice = imService;
+            m_Config = config;
         }
 
         private readonly ITaskManager m_TaskManager;
         private readonly IPartakerManager m_PartakerManager;
         private readonly ITaskReportAttManager m_TaskReportAttManager;
         private readonly ITaskSharingManager m_TaskSharingManager;
+        private readonly IIMService m_Imservice;
+        private readonly IConfiguration m_Config;
 
         public TaskReportEntity CreateTaskReport(CreateTaskReportModel createTaskReportModel)
         {
@@ -49,6 +59,7 @@ namespace FineWork.Colla.Impls
             taskReport.EffScore = createTaskReportModel.EffScore;
             taskReport.QualityScore = createTaskReportModel.QualityScore;
             taskReport.Task = task;
+            taskReport.CreatedAt=DateTime.Now; 
 
             this.InternalInsert(taskReport);
             //设置表现突出的战友
@@ -71,6 +82,16 @@ namespace FineWork.Colla.Impls
                     m_TaskReportAttManager.CreateReportAtt(taskReport.Id, taskSharing.Id);
                 }
             }
+
+            var leader = task.Partakers.First(p => p.Kind == PartakerKinds.Leader);
+            Task.Factory.StartNew(() =>
+            {
+                var message = string.Format(m_Config["LeanCloud:Messages:Task:Report"],leader.Staff.Name);
+                m_Imservice.ChangeConAttr(task.Creator.Id.ToString(),task.ConversationId, "IsEnd", true);
+                m_Imservice.SendTextMessageByConversationAsync(task.Id, leader.Staff.Account.Id, task.ConversationId, "",
+                    message);
+
+            });
             return taskReport;
         }
 
@@ -92,7 +113,7 @@ namespace FineWork.Colla.Impls
             report.Summary = updateTaskReportModel.Summary;
             report.EffScore = updateTaskReportModel.EffScore;
             report.QualityScore = updateTaskReportModel.QualityScore;
-
+            report.LastUpdatedAt=DateTime.Now;
 
             var exilsIds = m_PartakerManager.FetchExilsesByTaskId(report.Task.Id).Select(p => p.Id).ToArray();
 

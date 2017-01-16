@@ -79,5 +79,9 @@ namespace FineWork.Colla
         public virtual ICollection<MomentCommentEntity> MomentComments { get; set; } =
             new HashSet<MomentCommentEntity>();
 
+        public virtual ICollection<ForumSectionEntity> ForumSections { get; set; }=new HashSet<ForumSectionEntity>();
+
+        public virtual ICollection<ForumTopicEntity> ForumTopics { get; set; }=new HashSet<ForumTopicEntity>();
+         
     }
 }

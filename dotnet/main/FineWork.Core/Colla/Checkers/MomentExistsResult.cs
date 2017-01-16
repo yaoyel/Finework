@@ -21,7 +21,7 @@ namespace FineWork.Colla.Checkers
         public static MomentExistsResult Check(IMomentManager momentManager, Guid momentId)
         {
             if (momentManager == null) throw new ArgumentNullException(nameof(momentManager));
-            var mement = momentManager.FindMementById(momentId);
+            var mement = momentManager.FindMomentById(momentId);
             return Check(mement, "不存在对应的共享信息.");
         }
 

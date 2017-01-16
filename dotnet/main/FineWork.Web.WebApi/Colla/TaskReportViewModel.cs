@@ -31,6 +31,8 @@ namespace FineWork.Web.WebApi.Colla
 
         public DateTime CreatedAt { get; set; }
 
+        public DateTime LastUpdatedAt { get; set; }
+
         public virtual void AssignFrom(TaskReportEntity entity, bool isShowhighOnly = false, bool isShowLow = true)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -48,6 +50,7 @@ namespace FineWork.Web.WebApi.Colla
                     .ToList();
             this.Atts = entity.Atts?.Select(p => p.ToViewModel()).ToList();
             this.CreatedAt = entity.CreatedAt;
+            this.LastUpdatedAt = entity.LastUpdatedAt;
         }
 
         private List<TaskViewModel> GetParentTasks(TaskEntity entity, List<TaskViewModel> parentTasks = null)

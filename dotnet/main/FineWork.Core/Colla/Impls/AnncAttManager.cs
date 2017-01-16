@@ -52,8 +52,7 @@ namespace FineWork.Colla.Impls
 
             this.InternalInsert(anncAttEntity);
             return anncAttEntity;
-        }
-
+        } 
 
 
         public IEnumerable<AnncAttEntity> FetchAnncAttsByAnncId(Guid anncId, bool isAchv)
@@ -61,7 +60,10 @@ namespace FineWork.Colla.Impls
             return this.InternalFetch(p => p.Announcement.Id == anncId && p.IsAchv == isAchv);
         }
 
-
+        public IEnumerable<AnncAttEntity> FetchAnncAttsBySharingId(Guid taskSharingId)
+        {
+            return this.InternalFetch(p => p.TaskSharing.Id == taskSharingId);
+        }
 
         public void DeleteAnncAtt(Guid anncAttId)
         {
@@ -70,10 +72,10 @@ namespace FineWork.Colla.Impls
             this.InternalDelete(anncAtt);
         }
 
-        public void DeleteAnncAttByAnncId(Guid anncId)
+        public void DeleteAnncAttByAnncId(Guid anncId,bool isAchv)
         {
             AnncExistsResult.Check(this.AnnouncementManager, anncId).ThrowIfFailed();
-            var atts = this.InternalFetch(p => p.Announcement.Id == anncId).ToList();
+            var atts = this.InternalFetch(p => p.Announcement.Id == anncId && p.IsAchv==isAchv).ToList();
             if (atts.Any())
             {
                 foreach (var att in atts)
@@ -93,30 +95,18 @@ namespace FineWork.Colla.Impls
 
         public void UpdateAnncAtts(AnnouncementEntity annc, Guid[] taskSharingIds)
         {
-            Args.NotNull(annc, nameof(annc));
-            var atts = annc.Atts.Select(p => p.TaskSharing.Id).ToArray();
+            Args.NotNull(annc, nameof(annc)); 
 
-            var newAtts = taskSharingIds.Except(atts).ToArray();
+            this.DeleteAnncAttByAnncId(annc.Id,false);
 
-            if (newAtts.Any())
+      
+            if (taskSharingIds.Any())
             {
-                foreach (var att in newAtts)
+                foreach (var att in taskSharingIds)
                 {
                     this.CreateAnncAtt(annc.Id, att, false);
                 }
-            }
-
-            var diffAtts = atts.Except(taskSharingIds).ToArray();
-
-            if (diffAtts.Any())
-            {
-                foreach (var att in diffAtts)
-                {
-                    var attEntity = AnncAttExistsResult.Check(this, annc.Id, att, false).AnncAtt;
-                    if (attEntity != null)
-                        this.InternalDelete(attEntity);
-                }
-            }
+            } 
 
         }
     }

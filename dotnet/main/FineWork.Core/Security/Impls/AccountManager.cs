@@ -103,7 +103,8 @@ namespace FineWork.Security.Impls
             account.Email = createAccountModel.Email;
             account.PhoneNumber = createAccountModel.PhoneNumber;
             account.IsEmailConfirmed = false;
-            account.IsPhoneNumberConfirmed = false;   
+            account.IsPhoneNumberConfirmed = false;
+            account.CreatedAt = DateTime.Now;
             this.PasswordService.SetPassword(account, SettingManager.PasswordFormat(), createAccountModel.Password);
             account.SecurityStamp = GenerateNewStamp(account);
             AccountRepository.Insert(account);

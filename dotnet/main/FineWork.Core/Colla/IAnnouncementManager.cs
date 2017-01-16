@@ -15,15 +15,15 @@ namespace FineWork.Colla
 
         IEnumerable<AnnouncementEntity> FetchAnncsByTaskId(Guid taskId);
 
-        IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId);
-
-        IEnumerable<AnnouncementEntity> FetchAnncsByStatus(ReviewStatuses reviewStatus);
-         
-        void ChangeAnncStatus(AnnouncementEntity annc, ReviewStatuses status);
+        IEnumerable<AnnouncementEntity> FetchAnncsByStaffId(Guid staffId); 
 
         void DeleteAnnc(Guid anncId);
 
         void UpdateAnnc(UpdateAnncModel updateAnncModel);
+
+        IEnumerable<AnnouncementEntity> FetchAnncByStatus(Guid staffId,ReviewStatuses status=ReviewStatuses.Unspecified);
+
+        IEnumerable<AnnouncementEntity> FetchAnncByEndTime(DateTime endAt);
 
 
     }

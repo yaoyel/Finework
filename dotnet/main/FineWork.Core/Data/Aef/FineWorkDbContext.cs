@@ -254,10 +254,6 @@ namespace FineWork.Data.Aef
                 .ToTable("fw_Votes")
                 .HasKey(p => p.Id);
 
-            voteCofnig.HasRequired(vote => vote.Task)
-                .WithMany(task => task.Votes)
-                .Map(fk => fk.MapKey("TaskId"));
-
             voteCofnig.HasRequired(vote => vote.Creator)
                 .WithMany(creator => creator.Votes)
                 .Map(fk => fk.MapKey("StaffId"));
@@ -448,7 +444,7 @@ namespace FineWork.Data.Aef
                 .WithMany(staff => staff.Announcements)
                 .Map(fk => fk.MapKey("StaffId"));
             anncConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
-            anncConfig.Property(p => p.EndAt).HasColumnType(m_SqlDateTime2); 
+            anncConfig.Property(p => p.EndAt).HasColumnType(m_SqlDateTime2);
 
             var anncAttConfig = modelBuilder.Entity<AnncAttEntity>()
                 .ToTable("fw_AnncAtts")
@@ -458,9 +454,9 @@ namespace FineWork.Data.Aef
                 .WithMany(annc => annc.Atts)
                 .Map(fk => fk.MapKey("AnncId"));
 
-            anncAttConfig.HasRequired(p=>p.TaskSharing)
+            anncAttConfig.HasRequired(p => p.TaskSharing)
                 .WithMany()
-                .Map(p=>p.MapKey("TaskSharingId"))
+                .Map(p => p.MapKey("TaskSharingId"))
                 .WillCascadeOnDelete();
 
             anncAttConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
@@ -479,7 +475,113 @@ namespace FineWork.Data.Aef
 
             anncIncentiveConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
 
-        }
 
+            var anncReviewConfig = modelBuilder.Entity<AnncReviewEntity>()
+                .ToTable("fw_AnncReviews")
+                .HasKey(p => p.Id);
+
+            anncReviewConfig.HasRequired(p => p.Annc)
+                .WithMany(annc => annc.Reviews)
+                .Map(fk => fk.MapKey("AnncId"));
+
+            anncReviewConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+
+            var taskVoteConfig = modelBuilder.Entity<TaskVoteEntity>()
+                .ToTable("fw_TaskVotes")
+                .HasKey(p => p.Id);
+
+            taskVoteConfig.HasRequired(p => p.Task)
+                .WithMany(task => task.TaskVotes)
+                .Map(fk => fk.MapKey("TaskId"));
+
+            taskVoteConfig.HasRequired(p => p.Vote)
+                .WithMany()
+                .Map(fk => fk.MapKey("VoteId")).WillCascadeOnDelete();
+
+            var forumSectionConfig = modelBuilder.Entity<ForumSectionEntity>()
+                .ToTable("fw_ForumSections")
+                .HasKey(p => p.Id);
+
+            forumSectionConfig.HasRequired(p => p.Staff)
+                .WithMany(staff => staff.ForumSections)
+                .Map(fk => fk.MapKey("StaffId"));
+
+            forumSectionConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+            var forumTopicConfig = modelBuilder.Entity<ForumTopicEntity>()
+                .ToTable("fw_ForumTopics")
+                .HasKey(p => p.Id);
+
+            forumTopicConfig.HasRequired(p => p.ForumSection)
+                .WithMany(section => section.ForumTopics)
+                .Map(fk => fk.MapKey("ForumSectionId"));
+
+            forumTopicConfig.HasRequired(p => p.Staff)
+                .WithMany(staff => staff.ForumTopics)
+                .Map(fk => fk.MapKey("StaffId"));
+
+            forumTopicConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+            var forumCommentConfig = modelBuilder.Entity<ForumCommentEntity>()
+                .ToTable("fw_ForumComments")
+                .HasKey(p => p.Id);
+
+            forumCommentConfig.HasRequired(p => p.Staff)
+                .WithMany()
+                .Map(fk => fk.MapKey("StaffId"));
+
+            forumCommentConfig.HasRequired(p => p.ForumTopic)
+                .WithMany(topic => topic.ForumComments)
+                .Map(fk => fk.MapKey("TopicId"));
+
+            forumCommentConfig.HasOptional(comment => comment.TargetComment)
+            .WithOptionalDependent(comment => comment.DerivativeComment)
+            .Map(fk => fk.MapKey("TargetCommentId"));
+
+
+            forumCommentConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+            forumCommentConfig.Property(p => p.LastUpdatedAt).HasColumnType(m_SqlDateTime2);
+
+            var forumLikeConfig = modelBuilder.Entity<ForumLikeEntity>()
+                .ToTable("fw_ForumLikes")
+                .HasKey(p => p.Id);
+
+            forumLikeConfig.HasRequired(p => p.ForumTopic)
+                .WithMany(topic => topic.ForumLikes)
+                .Map(fk => fk.MapKey("TopicId"));
+
+            forumLikeConfig.HasRequired(p => p.Staff)
+                .WithMany()
+                .Map(fk => fk.MapKey("StaffId"));
+            forumLikeConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2);
+
+            var forumVoteConfig = modelBuilder.Entity<ForumVoteEntity>()
+                .ToTable("fw_ForumVotes")
+                .HasKey(p => p.Id);
+
+            forumVoteConfig.HasRequired(p => p.ForumTopic)
+                .WithOptional(topic => topic.ForumVote)
+                .Map(fk => fk.MapKey("TopicId"));
+
+            forumVoteConfig.HasRequired(p => p.Vote)
+                .WithMany()
+                .Map(fk => fk.MapKey("VoteId")).WillCascadeOnDelete();
+
+
+            var commentLikeConfig = modelBuilder.Entity<ForumCommentLikeEntity>()
+                .ToTable("fw_ForumCommentLikes")
+                .HasKey(p => p.Id);
+
+            commentLikeConfig.HasRequired(p => p.ForumComment)
+                .WithMany(p => p.Likes)
+                .Map(fk => fk.MapKey("ForumCommentId"));
+
+            commentLikeConfig.HasRequired(p => p.Staff)
+                .WithMany()
+                .Map(fk => fk.MapKey("StaffId"));
+
+            commentLikeConfig.Property(p => p.CreatedAt).HasColumnType(m_SqlDateTime2); 
+        } 
     }
 }

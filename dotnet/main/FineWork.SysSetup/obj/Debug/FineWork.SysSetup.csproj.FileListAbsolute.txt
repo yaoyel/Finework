@@ -165,7 +165,6 @@ D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.Exte
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Newtonsoft.Json.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\System.Net.Http.Formatting.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.SqlServer.SqlEnum.dll
-D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.SqlServer.Dmf.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.SqlServer.ServiceBrokerEnum.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.Extensions.Primitives.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\websocket-sharp.dll
@@ -196,8 +195,6 @@ D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.Data
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.Data.Edm.xml
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\Microsoft.Azure.KeyVault.Core.xml
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\System.Spatial.xml
-D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\zh-CHS\Microsoft.SqlServer.Management.Sdk.Sfc.resources.dll
-D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\zh-CHS\Microsoft.SqlServer.Dmf.resources.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\de\System.Spatial.resources.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\es\System.Spatial.resources.dll
 D:\FineWork\devel\sources\dotnet\main\FineWork.SysSetup\bin\Debug\fr\System.Spatial.resources.dll

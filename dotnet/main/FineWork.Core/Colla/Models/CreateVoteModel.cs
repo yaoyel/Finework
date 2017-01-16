@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace FineWork.Colla.Models
 {
-    public class CreateVoteModel
+    public class VoteModel
     {
-        [Required(ErrorMessage ="请输入共识主题")] 
-        [MaxLength(128,ErrorMessage = "共识主题不能大于128字符")] 
+        [Required(ErrorMessage = "请输入共识主题")]
+        [MaxLength(128, ErrorMessage = "共识主题不能大于128字符")]
         public string Subject { get; set; }
 
-        [Required] 
+        [Required]
         public DateTime StartAt { get; set; }
 
         [Required]
@@ -24,9 +24,18 @@ namespace FineWork.Colla.Models
         public bool IsAnonEnabled { get; set; } = false;
 
         public Guid CreatorStaffId { get; set; }
+    }
 
-        public Guid TaskId { get; set; }
-
+    public class CreateVoteModel:VoteModel
+    { 
         public IList<CreateVoteOptionModel> VoteOptions { get; set; } = new List<CreateVoteOptionModel>();
     }
+
+    public class UpdateVoteModel:VoteModel
+    {
+        public  Guid VoteId { get; set; }
+
+        public IList<UpdateVoteOptionModel> VoteOptions { get; set; }=new List<UpdateVoteOptionModel>();
+    }
+
 }

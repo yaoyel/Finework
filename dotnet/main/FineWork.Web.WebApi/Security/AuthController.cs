@@ -8,7 +8,8 @@ using AppBoot.Repos;
 using AppBoot.Repos.Aef;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using FineWork.Security;  
+using FineWork.Security;
+using FineWork.Security.Passwords;
 using FineWork.Web.WebApi.Core;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.AspNet.Authentication.JwtBearer;
@@ -21,12 +22,14 @@ namespace FineWork.Web.WebApi.Security
         public AuthController(ISessionProvider<AefSession> sessionProvider,
             IOptions<JwtBearerOptions> bearerOptions, 
             SigningCredentials signingCredentials, 
-            IAccountManager accountManager)
+            IAccountManager accountManager,
+            IPasswordService passwordService)
             :base(sessionProvider)
         {
             this.m_BearerOptions = bearerOptions.Value;
             this.m_SigningCredentials = signingCredentials;
             this.m_AccountManager = accountManager;
+            this.m_PasswordService = passwordService;
         }
 
         [HttpGet("Info")]
@@ -38,6 +41,7 @@ namespace FineWork.Web.WebApi.Security
         private readonly JwtBearerOptions m_BearerOptions;
         private readonly SigningCredentials m_SigningCredentials;
         private readonly IAccountManager m_AccountManager;
+        private readonly IPasswordService m_PasswordService;
 
         [HttpGet("Token")]
         [AllowAnonymous]
@@ -48,8 +52,10 @@ namespace FineWork.Web.WebApi.Security
             if (string.IsNullOrEmpty(pwd)) throw new ArgumentException(nameof(pwd));
 
             var account = m_AccountManager.FindAccountByPhoneNumber(phoneNumber);
-            if (account == null || account.Password != pwd)
+            if (account == null ||
+                !m_PasswordService.Verify(account.PasswordFormat, pwd, account.Password, account.PasswordSalt))
                 return HttpUnauthorized();
+ 
 
             ClaimsIdentity identity = SecurityHelper.CreateIdentity(account, "Bearer");
 

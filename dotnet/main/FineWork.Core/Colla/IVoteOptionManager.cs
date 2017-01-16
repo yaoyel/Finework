@@ -10,9 +10,10 @@ namespace FineWork.Colla
     public interface IVoteOptionManager
     {
         VoteOptionEntity CreateVoteOption(VoteEntity vote, CreateVoteOptionModel voteOptionModel);
-
-        IEnumerable<VoteOptionEntity> FetchVoteOptionsByTaskIdAndVoteId(Guid taskId, Guid voteId);
+        
 
         VoteOptionEntity FindVoteOptionByOptionId(Guid optionId);
+
+        void UpdateVoteOption(UpdateVoteOptionModel voteOptionModel);
     }
 }

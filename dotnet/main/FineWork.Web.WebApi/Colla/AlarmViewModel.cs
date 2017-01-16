@@ -20,6 +20,11 @@ namespace FineWork.Web.WebApi.Colla
 
         public TaskViewModel Task { get; set; }
 
+        public int[] ReceiverKinds { get; set; }
+
+        public Guid[] ReceiverStaffIds { get; set; }
+         
+       
         public virtual void AssignFrom(AlarmEntity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -29,6 +34,15 @@ namespace FineWork.Web.WebApi.Colla
             this.IsEnabled = entity.IsEnabled;
             this.Task = entity.Task.ToViewModel();
             this.Bell = entity.Bell;
+
+            if (!string.IsNullOrEmpty(entity.ReceiverStaffIds))
+                this.ReceiverStaffIds =Array.ConvertAll(entity.ReceiverStaffIds.Split(','),Guid.Parse);
+            else
+            {
+                if (!string.IsNullOrEmpty(entity.ReceiverKinds))
+                    this.ReceiverKinds =Array.ConvertAll(entity.ReceiverKinds.Split(','),int.Parse);
+            }
+
         }
     }
 

@@ -43,7 +43,8 @@ namespace FineWork.Colla.Impls
             result.Id = Guid.NewGuid();
             result.Name = orgName;
             result.IsInvEnabled = true;
-            result.CreatedAt = DateTime.Now; 
+            result.CreatedAt = DateTime.Now;
+            result.SecurityStamp = Guid.NewGuid().ToString("D");
             this.InternalInsert(result);  
             return result;
         }
@@ -115,7 +116,7 @@ namespace FineWork.Colla.Impls
         {
             AvatarManager.CreateAvatars(KnownAvatarOwnerTypes.Orgs, orgId, stream);
             var org = OrgExistsResult.Check(this, orgId).ThrowIfFailed().Org;
-            this.UpdateOrgWithNewStamp(org);
+           this.UpdateOrgWithNewStamp(org);
         }
 
         protected void UpdateOrgWithNewStamp(OrgEntity org)

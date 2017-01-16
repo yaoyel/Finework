@@ -18,7 +18,9 @@ namespace FineWork.Colla
 
         public decimal QualityScore { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }  
+
+        public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
 
         [Timestamp]
         public byte[] RowVer { get; set; }

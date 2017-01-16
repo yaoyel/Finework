@@ -14,6 +14,7 @@ using System.Data.Entity;
 using System.Security.Cryptography;
 using AppBoot.Security.Crypto;
 using FineWork.Common;
+using FineWork.Core;
 using FineWork.Net.IM;
 using Microsoft.Extensions.Configuration;
 
@@ -27,7 +28,8 @@ namespace FineWork.Colla.Impls
             IFileManager fileManager,
             IIMService imService,
             ITaskLogManager taskLogManager,
-            IConfiguration config)
+            IConfiguration config,
+            ILazyResolver<IAnncAttManager> anncAttManagerLazyResolver )
             : base(sessionProvider)
         {
             Args.NotNull(sessionProvider, nameof(sessionProvider));
@@ -35,12 +37,14 @@ namespace FineWork.Colla.Impls
             Args.NotNull(staffManager, nameof(staffManager));
             Args.NotNull(imService, nameof(imService));
             Args.NotNull(taskLogManager, nameof(taskLogManager));
+            Args.NotNull(anncAttManagerLazyResolver, nameof(anncAttManagerLazyResolver));
             m_TaskManager = taskManager;
             m_StaffManager = staffManager;
             m_FileMamager = fileManager;
             m_IMService = imService;
             m_TaskLogManager = taskLogManager;
             m_Config = config;
+            m_AnncAttManagerLazyResolver = anncAttManagerLazyResolver;
         }
 
         private readonly ITaskManager m_TaskManager;
@@ -49,6 +53,14 @@ namespace FineWork.Colla.Impls
         private readonly IIMService m_IMService;
         private readonly ITaskLogManager m_TaskLogManager;
         private readonly IConfiguration m_Config;
+        private readonly ILazyResolver<IAnncAttManager> m_AnncAttManagerLazyResolver;
+
+        private   IAnncAttManager AnncAttManager
+        {
+            get { return m_AnncAttManagerLazyResolver.Required; }
+        }
+
+
 
         private string GetTaskSharingDirectory(TaskSharingEntity taskSharing)
         {
@@ -97,6 +109,8 @@ namespace FineWork.Colla.Impls
 
         public void DeleteTaskSharing(Guid taskSharingId)
         {
+            
+
             var taskSharing = TaskSharingExistsResult.Check(this, taskSharingId).TaskSharing;
             if (taskSharing == null) return;
 

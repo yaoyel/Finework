@@ -9,8 +9,8 @@
     <AzureEnableRemoteDesktop>True</AzureEnableRemoteDesktop>
     <AzureEnableWebDeploy>False</AzureEnableWebDeploy>
     <AzureFallbackToDeleteAndRecreateIfUpgradeFails>False</AzureFallbackToDeleteAndRecreateIfUpgradeFails>
-    <AzureHostedServiceLabel>taskalarmworker</AzureHostedServiceLabel>
-    <AzureHostedServiceName>taskalarmworker</AzureHostedServiceName>
+    <AzureHostedServiceLabel>fw-worker</AzureHostedServiceLabel>
+    <AzureHostedServiceName>fw-worker</AzureHostedServiceName>
     <AzureEnableIntelliTrace>True</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
     <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
@@ -19,6 +19,6 @@
     <AzureStorageAccountName>finework</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
     <EnableRemoteDebugger>True</EnableRemoteDebugger>
-    <RemoteDebuggerConnectorCertificateThumbprint>D426751FD91CCE8A0BBDDD5DAEFAE5D21B57BC4D</RemoteDebuggerConnectorCertificateThumbprint>
+    <RemoteDebuggerConnectorCertificateThumbprint>A5E3267C4D8EA550C491798225E4D598BC71A9A7</RemoteDebuggerConnectorCertificateThumbprint>
   </PropertyGroup>
 </Project>

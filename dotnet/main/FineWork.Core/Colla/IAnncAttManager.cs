@@ -15,9 +15,11 @@ namespace FineWork.Colla
 
         AnncAttEntity FindAnncAttByAnncAndSharingId(Guid anncId, Guid taskSharingId, bool isAchv);
 
+        IEnumerable<AnncAttEntity> FetchAnncAttsBySharingId(Guid taskSharingId);
+         
         void DeleteAnncAtt(Guid annAttId);
 
-        void DeleteAnncAttByAnncId(Guid anncId);
+        void DeleteAnncAttByAnncId(Guid anncId,bool isAchv);
 
         void UpdateAnncAtts(AnnouncementEntity annc,Guid[] taskSharingIds );
     }

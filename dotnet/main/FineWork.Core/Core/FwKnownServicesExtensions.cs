@@ -118,5 +118,10 @@ namespace FineWork.Core
         {
             return services.GetRequiredService<IIMService>();
         }
+
+        public static IAnnouncementManager AnnouncementManager(this FwWrappedServices services)
+        {
+            return services.GetRequiredService<IAnnouncementManager>();
+        }
     }
 }

@@ -14,6 +14,6 @@ namespace FineWork.Colla
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //是否表现突出的战友
-        public bool? IsExils { get; set; }
+        public bool? IsExils { get; set; } 
     }
 }

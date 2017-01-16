@@ -30,9 +30,7 @@ namespace FineWork.Colla
         [Timestamp]
         public byte[] RowVer { get; set; }
 
-        public virtual StaffEntity Creator { get; set; }
-
-        public virtual TaskEntity Task { get; set; } 
+        public virtual StaffEntity Creator { get; set; }  
 
         public virtual ICollection<VoteOptionEntity> VoteOptions { get; set; } = new HashSet<VoteOptionEntity>();
     }

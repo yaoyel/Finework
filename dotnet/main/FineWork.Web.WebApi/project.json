@@ -1,7 +1,6 @@
 {
   "webroot": "wwwroot",
-  "version": "1.0.0-rc1-final",
-  "runtime": "clr",
+  "version": "1.0.0-rc1-final", 
   "architecture": "x64",
 
   "dependencies": {
@@ -31,9 +30,9 @@
     "AspNet.Security.OpenIdConnect.Server": "1.0.0-beta4"
   },
 
-  "commands": { 
+  "commands": {
     "web": "Microsoft.AspNet.Server.Kestrel",
-    "kestrel": "Microsoft.AspNet.Server.Kestrel --server.urls http://192.168.1.222:4969" 
+    "kestrel": "Microsoft.AspNet.Server.Kestrel --server.urls http://192.168.1.222:4969"
   },
 
   "frameworks": {
@@ -45,9 +44,9 @@
         "FineWork.Core": "1.0.0-*"
       },
       "frameworkAssemblies": {
-        "System.Transactions": "4.0.0.0"  
+        "System.Transactions": "4.0.0.0"
       }
-    } 
+    }
   },
 
   "exclude": [

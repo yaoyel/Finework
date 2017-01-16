@@ -9,7 +9,11 @@ namespace FineWork.Colla
 {
     public class AnncIncentiveEntity:EntityBase<Guid>
     {
+        //预定的值
         public decimal  Amount { get; set; }
+
+        //实际发放的值
+        public decimal? Grant { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

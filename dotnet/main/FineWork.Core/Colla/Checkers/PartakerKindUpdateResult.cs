@@ -26,7 +26,7 @@ namespace FineWork.Colla
             if(alarmsAsCreateor.Any() || alarmsForPartakerKind.Any())
                 return Check($"{partaker.Staff.Name}存在未处理的预警.");
 
-            if (partaker.Staff.Votes.Any(p=>p.Task.Id==taskId && p.IsApproved==null))
+            if (partaker.Task.TaskVotes.Any(p=>p.Task.Id==taskId && p.Vote.IsApproved==null))
                 return Check($"{partaker.Staff.Name}存在未处理的共识.");
             return new AlarmOrVoteExistsResult(true, null);
         }
@@ -38,7 +38,7 @@ namespace FineWork.Colla
             var task = taskManager.FindTask(taskId);
             if(task.Alarms.Any(p=>p.ResolveStatus!=ResolveStatus.Closed))
                 return Check("该任务存在未处理的预警.");
-            if(task.Votes.Any(p=>p.IsApproved==null))
+            if(task.TaskVotes.Any(p=>p.Vote.IsApproved==null))
                 return Check("该任务存在未处理的共识.");
 
             return new AlarmOrVoteExistsResult(true, null);
